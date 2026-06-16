@@ -1,4 +1,21 @@
 <view class="page">
+<view class="card section" wx:if="{{bindingState==='loading'}}">
+  <text class="section-title">正在加载</text>
+  <text class="section-sub">正在确认情侣绑定状态</text>
+</view>
+
+<view class="card section" wx:elif="{{!bindingReady}}">
+  <text class="section-title">请先绑定情侣关系</text>
+  <text class="section-sub">{{bindingMessage}}</text>
+</view>
+
+<view class="card section" wx:elif="{{loadError}}">
+  <text class="section-title">加载失败</text>
+  <text class="section-sub">{{loadError}}</text>
+  <button class="btn primary" bindtap="refreshAll">重新加载</button>
+</view>
+
+<block wx:else>
 
 <!-- 顶部主卡：情侣名 + 天数 + 下一里程碑 -->
 <view class="hero card">
@@ -195,4 +212,5 @@
   </view>
 </view>
 
+ </block>
 </view>

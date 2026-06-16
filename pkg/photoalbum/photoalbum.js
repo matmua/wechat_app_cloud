@@ -1,6 +1,6 @@
 const db = wx.cloud.database();
 const COL = 'love_album';
-const { getCoupleId, ensureCoupleId } = require('../../utils/couple');
+const { getCoupleId, getPageBinding, getErrorMessage } = require('../../utils/couple');
 
 
 function ymd(d = new Date()) {
@@ -21,6 +21,10 @@ function randStr(n = 6) {
 Page({
   data: {
     coupleId: '',
+    bindingReady: false,
+    bindingState: 'loading',
+    bindingMessage: '正在读取绑定状态...',
+    loadError: '',
     keyword: '',
     monthOptions: ['全部月份'],
     monthIndex: 0,
@@ -53,21 +57,77 @@ Page({
 
   },
 
-  onLoad() {
-    ensureCoupleId();              // ✅ 确保缓存里有唯一 coupleId
-    const coupleId = getCoupleId();// ✅ 只读，不生成
-  
-    if (!coupleId) {
-      wx.showToast({ title: 'coupleId 缺失，请从首页进入', icon: 'none' });
-      return;
-    }
-  
-    this.setData({ coupleId }, () => this.reload());
+  async onLoad() {
+    const ok = await this.ensureBinding();
+    if (ok) await this.reload();
   },
   
 
   onPullDownRefresh() {
-    this.reload().finally(() => wx.stopPullDownRefresh());
+    this.ensureBinding()
+      .then((ok) => ok ? this.reload() : null)
+      .finally(() => wx.stopPullDownRefresh());
+  },
+
+  async ensureBinding() {
+    try {
+      const binding = await getPageBinding();
+      if (!binding.bindingReady) {
+        this.setData({
+          coupleId: '',
+          bindingReady: false,
+          bindingState: binding.bindingState,
+          bindingMessage: binding.bindingMessage,
+          loadError: '',
+          rawList: [],
+          filteredList: [],
+          favoriteList: [],
+          wfLeft: [],
+          wfRight: []
+        });
+        return false;
+      }
+
+      this.setData({
+        coupleId: binding.coupleId,
+        bindingReady: true,
+        bindingState: binding.bindingState,
+        bindingMessage: binding.bindingMessage,
+        loadError: ''
+      });
+      return true;
+    } catch (e) {
+      console.log('photoalbum ensureBinding fail:', e);
+      const cached = getCoupleId();
+      if (cached) {
+        this.setData({
+          coupleId: cached,
+          bindingReady: true,
+          bindingState: 'bound',
+          bindingMessage: '绑定状态刷新失败，暂用本地缓存',
+          loadError: ''
+        });
+        return true;
+      }
+      this.setData({
+        coupleId: '',
+        bindingReady: false,
+        bindingState: 'error',
+        bindingMessage: getErrorMessage(e, '绑定状态读取失败，请检查云函数'),
+        loadError: ''
+      });
+      return false;
+    }
+  },
+
+  hasCoupleOrToast() {
+    if (this.data.coupleId) return true;
+    wx.showToast({ title: '请先绑定情侣关系', icon: 'none' });
+    return false;
+  },
+
+  findLocalItem(id) {
+    return (this.data.rawList || []).find(x => x._id === id);
   },
 
   onKeywordInput(e) {
@@ -84,28 +144,38 @@ Page({
 
   async reload() {
     const { coupleId } = this.data;
+    if (!coupleId) return;
+    wx.showNavigationBarLoading?.();
 
-    const res = await db.collection(COL)
-      .where({ coupleId })
-      .orderBy('createdAt', 'desc')
-      .limit(200)
-      .get();
+    try {
+      const res = await db.collection(COL)
+        .where({ coupleId })
+        .orderBy('createdAt', 'desc')
+        .limit(200)
+        .get();
 
-    let list = (res.data || []).map(x => ({
-      ...x,
-      tempUrls: []
-    }));
+      let list = (res.data || []).map(x => ({
+        ...x,
+        tempUrls: []
+      }));
 
-    list = await this.hydrateTempUrls(list);
+      list = await this.hydrateTempUrls(list);
 
-    // 月份选项
-    const months = Array.from(new Set(list.map(x => monthKey(x.date)))).filter(Boolean);
-    const monthOptions = ['全部月份', ...months];
+      // 月份选项
+      const months = Array.from(new Set(list.map(x => monthKey(x.date)))).filter(Boolean);
+      const monthOptions = ['全部月份', ...months];
 
-    this.setData({ rawList: list, monthOptions }, () => {
-      this.buildFavorites();
-      this.applyFilter();
-    });
+      this.setData({ rawList: list, monthOptions, loadError: '' }, () => {
+        this.buildFavorites();
+        this.applyFilter();
+      });
+    } catch (e) {
+      console.log('photoalbum reload fail:', e);
+      this.setData({ loadError: getErrorMessage(e, '相册加载失败') });
+      wx.showToast({ title: '相册加载失败', icon: 'none' });
+    } finally {
+      wx.hideNavigationBarLoading?.();
+    }
   },
 
   async hydrateTempUrls(list) {
@@ -114,9 +184,15 @@ Page({
     const fileIDs = Array.from(new Set(all));
     if (!fileIDs.length) return list.map(it => ({ ...it, tempUrls: [] }));
 
-    const res = await wx.cloud.getTempFileURL({
-      fileList: fileIDs.map(id => ({ fileID: id, maxAge: 24 * 60 * 60 }))
-    });
+    let res;
+    try {
+      res = await wx.cloud.getTempFileURL({
+        fileList: fileIDs.map(id => ({ fileID: id, maxAge: 24 * 60 * 60 }))
+      });
+    } catch (e) {
+      console.log('album hydrate temp url fail:', e);
+      return list.map(it => ({ ...it, tempUrls: [] }));
+    }
 
     const map = {};
     (res.fileList || []).forEach(x => {
@@ -191,6 +267,7 @@ Page({
 
   // ========== 上传 ==========
   openUpload() {
+    if (!this.hasCoupleOrToast()) return;
     this.setData({
       showUpload: true,
       uploading: false,
@@ -254,6 +331,7 @@ Page({
     if (this.data.uploading) return;
 
     const { coupleId, form } = this.data;
+    if (!coupleId) return this.hasCoupleOrToast();
     if (!form.localPaths || !form.localPaths.length) {
       wx.showToast({ title: '请至少选择1张照片', icon: 'none' });
       return;
@@ -304,7 +382,7 @@ Page({
     } catch (e) {
       console.log(e);
       wx.hideLoading();
-      wx.showToast({ title: '上传失败', icon: 'none' });
+      wx.showToast({ title: getErrorMessage(e, '上传失败'), icon: 'none' });
       this.setData({ uploading: false });
     }
   },
@@ -319,8 +397,14 @@ Page({
 
   // ========== 收藏 ==========
   async toggleFav(e) {
+    if (!this.hasCoupleOrToast()) return;
     const id = e.currentTarget.dataset.id;
     const isFav = String(e.currentTarget.dataset.f) === 'true' || e.currentTarget.dataset.f === true;
+    const item = this.findLocalItem(id);
+    if (!item || item.coupleId !== this.data.coupleId) {
+      wx.showToast({ title: '记录不属于当前情侣空间', icon: 'none' });
+      return;
+    }
 
     wx.showLoading({ title: '更新中...' });
     try {
@@ -333,13 +417,19 @@ Page({
     } catch (err) {
       console.log(err);
       wx.hideLoading();
-      wx.showToast({ title: '操作失败', icon: 'none' });
+      wx.showToast({ title: getErrorMessage(err, '操作失败'), icon: 'none' });
     }
   },
 
   // ========== 删除 ==========
   delItem(e) {
+    if (!this.hasCoupleOrToast()) return;
     const id = e.currentTarget.dataset.id;
+    const item = this.findLocalItem(id);
+    if (!item || item.coupleId !== this.data.coupleId) {
+      wx.showToast({ title: '记录不属于当前情侣空间', icon: 'none' });
+      return;
+    }
     wx.showModal({
       title: '删除照片记录',
       content: '仅删除相册记录（不会删云存储照片），确定删除吗？',
@@ -356,7 +446,7 @@ Page({
         } catch (err) {
           console.log(err);
           wx.hideLoading();
-          wx.showToast({ title: '删除失败', icon: 'none' });
+          wx.showToast({ title: getErrorMessage(err, '删除失败'), icon: 'none' });
         }
       }
     });
@@ -364,9 +454,14 @@ Page({
 
   // ========== 编辑 ==========
   editItem(e) {
+    if (!this.hasCoupleOrToast()) return;
     const id = e.currentTarget.dataset.id;
     const item = (this.data.rawList || []).find(x => x._id === id);
     if (!item) return;
+    if (item.coupleId !== this.data.coupleId) {
+      wx.showToast({ title: '记录不属于当前情侣空间', icon: 'none' });
+      return;
+    }
 
     this.setData({
       showEdit: true,
@@ -411,6 +506,10 @@ Page({
 
     try {
       const { editId, editForm } = this.data;
+      const item = this.findLocalItem(editId);
+      if (!item || item.coupleId !== this.data.coupleId) {
+        throw new Error('记录不属于当前情侣空间');
+      }
       await db.collection(COL).doc(editId).update({
         data: {
           title: (editForm.title || '').trim(),
@@ -426,13 +525,14 @@ Page({
     } catch (e) {
       console.log(e);
       wx.hideLoading();
-      wx.showToast({ title: '保存失败', icon: 'none' });
+      wx.showToast({ title: getErrorMessage(e, '保存失败'), icon: 'none' });
       this.setData({ editing: false });
     }
   },
 
   // ========== 抽卡 ==========
   drawMemory() {
+    if (!this.hasCoupleOrToast()) return;
     const list = this.data.filteredList.length ? this.data.filteredList : this.data.rawList;
     if (!list.length) {
       wx.showToast({ title: '还没有照片，先上传吧', icon: 'none' });

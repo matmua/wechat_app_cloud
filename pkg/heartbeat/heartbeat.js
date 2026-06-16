@@ -1,8 +1,7 @@
 const db = wx.cloud.database();
 const _ = db.command;
-const { getCoupleId, ensureCoupleId } = require('../../utils/couple');
+const { getCoupleId, getBindingStatus, getPageBinding, getErrorMessage } = require('../../utils/couple');
 
-const COL_USERS = 'love_users';
 const COL_MOMENTS = 'heartbeat_moments';
 const COL_NOTES = 'heartbeat_notes';
 const COL_BANK = 'heartbeat_bank';
@@ -33,6 +32,10 @@ Page({
     openid: '',
     coupleId: '',
     partnerOpenid: '',
+    bindingReady: false,
+    bindingState: 'loading',
+    bindingMessage: '正在读取绑定状态...',
+    loadError: '',
 
     bankPoints: 0,
     unreadCount: 0,
@@ -69,31 +72,22 @@ Page({
 
   // ====== 生命周期 ======
   async onLoad() {
-    ensureCoupleId();               // ✅ 确保本地缓存里有“唯一 coupleId”（你写死/统一方案）
-    const coupleId = getCoupleId(); // ✅ 只读，不再生成
+    const ok = await this.ensureBinding();
+    if (!ok) return;
   
-    if (!coupleId) {
-      wx.showToast({ title: 'coupleId 缺失，请从首页进入', icon: 'none' });
-      return;
-    }
-  
-    this.setData({ coupleId });
-  
-    await this.ensureOpenid();
-    await this.upsertUser();
-    await this.findPartner();
-  
-    await this.ensureBank();
     await this.refreshAll();
     await this.initTask();
   },  
 
   async onShow() {
+    if (!this.data.coupleId || !this.data.openid) return;
     await this.refreshAll();
   },
 
   onPullDownRefresh() {
-    this.refreshAll().finally(() => wx.stopPullDownRefresh());
+    this.ensureBinding()
+      .then((ok) => ok ? this.refreshAll() : null)
+      .finally(() => wx.stopPullDownRefresh());
   },
 
   setTab(e) {
@@ -104,48 +98,100 @@ Page({
     this.setData({ 'noteForm.secret': !!e.detail.value });
   },  
 
-  // ====== 登录 & 用户映射 ======
-  async ensureOpenid() {
+  async ensureBinding() {
     try {
-      const res = await wx.cloud.callFunction({ name: 'login' });
-      const openid = res?.result?.openid || '';
-      if (!openid) throw new Error('no openid');
-      this.setData({ openid });
-      wx.setStorageSync('openid', openid);
-    } catch (e) {
-      // 兜底：用本地缓存（开发期）
-      let openid = wx.getStorageSync('openid');
-      if (!openid) {
-        openid = 'mock_' + randStr(8);
-        wx.setStorageSync('openid', openid);
+      const status = await getPageBinding();
+      const coupleId = status.coupleId || '';
+      const openid = status.openid || '';
+      const partnerOpenid = status.partner?.openid || '';
+
+      if (!status.bindingReady) {
+        this.setData({
+          openid,
+          coupleId: '',
+          partnerOpenid: '',
+          bindingReady: false,
+          bindingState: status.bindingState,
+          bindingMessage: status.bindingMessage,
+          loadError: '',
+          moments: [],
+          notes: [],
+          bankPoints: 0,
+          unreadCount: 0,
+          taskDone: false
+        });
+        return false;
       }
-      this.setData({ openid });
+
+      this.setData({
+        coupleId,
+        openid,
+        partnerOpenid,
+        bindingReady: true,
+        bindingState: status.bindingState,
+        bindingMessage: status.bindingMessage,
+        loadError: ''
+      });
+      if (openid) wx.setStorageSync('openid', openid);
+      return true;
+    } catch (e) {
+      console.log('ensureBinding fail:', e);
+      const cached = getCoupleId();
+      const cachedOpenid = this.data.openid || wx.getStorageSync('openid') || '';
+      if (cached && cachedOpenid) {
+        this.setData({
+          coupleId: cached,
+          openid: cachedOpenid,
+          bindingReady: true,
+          bindingState: 'bound',
+          bindingMessage: '绑定状态刷新失败，暂用本地缓存',
+          loadError: ''
+        });
+        return true;
+      }
+      this.setData({
+        coupleId: '',
+        bindingReady: false,
+        bindingState: 'error',
+        bindingMessage: getErrorMessage(e, '绑定状态读取失败，请检查云函数'),
+        loadError: ''
+      });
+      wx.showToast({ title: '绑定状态读取失败', icon: 'none' });
+      return false;
     }
   },
 
-  async upsertUser() {
-    const { openid, coupleId } = this.data;
-    const r = await db.collection(COL_USERS).where({ openid }).limit(1).get();
-    if (r.data && r.data.length) {
-      await db.collection(COL_USERS).doc(r.data[0]._id).update({ data: { coupleId, updatedAt: db.serverDate() } });
-    } else {
-      await db.collection(COL_USERS).add({ data: { openid, coupleId, createdAt: db.serverDate(), updatedAt: db.serverDate() } });
-    }
+  hasCoupleOrToast() {
+    if (this.data.coupleId && this.data.openid) return true;
+    wx.showToast({ title: '请先绑定情侣关系', icon: 'none' });
+    return false;
+  },
+
+  findMoment(id) {
+    return (this.data.moments || []).find(x => x._id === id);
+  },
+
+  findNote(id) {
+    return (this.data.notes || []).find(x => x._id === id);
   },
 
   async findPartner() {
-    const { openid, coupleId } = this.data;
-    const r = await db.collection(COL_USERS)
-      .where({ coupleId, openid: _.neq(openid) })
-      .limit(1)
-      .get();
-    const partnerOpenid = (r.data && r.data[0] && r.data[0].openid) ? r.data[0].openid : '';
-    this.setData({ partnerOpenid });
+    try {
+      const status = await getBindingStatus();
+      this.setData({
+        partnerOpenid: status.partner?.openid || '',
+        openid: status.openid || this.data.openid,
+        coupleId: status.coupleId || this.data.coupleId
+      });
+    } catch (e) {
+      console.log('findPartner fail:', e);
+    }
   },
 
   // ====== 金库 ======
   async ensureBank() {
     const { coupleId } = this.data;
+    if (!coupleId) return;
     const r = await db.collection(COL_BANK).where({ coupleId }).limit(1).get();
     if (r.data && r.data.length) {
       this.setData({ bankId: r.data[0]._id, bankPoints: Number(r.data[0].points || 0) });
@@ -158,6 +204,8 @@ Page({
   },
 
   async incBank(delta) {
+    if (!this.data.coupleId) return;
+    if (!this.data.bankId) await this.ensureBank();
     const { bankId } = this.data;
     if (!bankId) return;
     await db.collection(COL_BANK).doc(bankId).update({
@@ -170,18 +218,35 @@ Page({
 
   // ====== 全量刷新 ======
   async refreshAll() {
-    await Promise.all([
-      this.loadMoments(),
-      this.loadNotes(),
-      this.loadUnreadCount(),
-      this.ensureBank(),
-      this.findPartner()
-    ]);
+    if (!this.data.coupleId || !this.data.openid) return;
+    wx.showNavigationBarLoading?.();
+    try {
+      await Promise.all([
+        this.loadMoments(),
+        this.loadNotes(),
+        this.loadUnreadCount(),
+        this.ensureBank(),
+        this.findPartner()
+      ]);
+      this.setData({ loadError: '' });
+    } catch (e) {
+      console.log('heartbeat refresh fail:', e);
+      this.setData({ loadError: getErrorMessage(e, '心动页加载失败') });
+      wx.showToast({ title: '心动页加载失败', icon: 'none' });
+    } finally {
+      wx.hideNavigationBarLoading?.();
+    }
   },
 
   async unlockNote(e) {
+    if (!this.hasCoupleOrToast()) return;
     const id = e?.currentTarget?.dataset?.id || this.data.noteDetail?._id;
     if (!id) return;
+    const item = this.findNote(id) || this.data.noteDetail;
+    if (!item || item.coupleId !== this.data.coupleId) {
+      wx.showToast({ title: '记录不属于当前情侣空间', icon: 'none' });
+      return;
+    }
   
     const { openid } = this.data;
   
@@ -207,12 +272,13 @@ Page({
     } catch (err) {
       console.log(err);
       wx.hideLoading();
-      wx.showToast({ title: '解锁失败', icon: 'none' });
+      wx.showToast({ title: getErrorMessage(err, '解锁失败'), icon: 'none' });
     }
   },
   
   // ====== 心动瞬间 ======
   openMomentModal() {
+    if (!this.hasCoupleOrToast()) return;
     this.setData({
       showMoment: true,
       saving: false,
@@ -259,6 +325,7 @@ Page({
   async saveMoment() {
     if (this.data.saving) return;
     const { coupleId, openid, momentForm, momentTypes, momentTypeIndex } = this.data;
+    if (!coupleId || !openid) return this.hasCoupleOrToast();
     const title = (momentForm.title || '').trim();
     if (!title) return wx.showToast({ title: '标题不能为空', icon: 'none' });
 
@@ -307,13 +374,14 @@ Page({
     } catch (e) {
       console.log(e);
       wx.hideLoading();
-      wx.showToast({ title: '保存失败', icon: 'none' });
+      wx.showToast({ title: getErrorMessage(e, '保存失败'), icon: 'none' });
       this.setData({ saving: false });
     }
   },
 
   async loadMoments() {
     const { coupleId } = this.data;
+    if (!coupleId) return;
     const r = await db.collection(COL_MOMENTS)
       .where({ coupleId })
       .orderBy('createdAt', 'desc')
@@ -332,15 +400,22 @@ Page({
     list = list.map(it => ({
       ...it,
       photoUrl: it._urlMap?.[it.photoFileID] || '',
-      voiceUrl: it._urlMap?.[it.voiceFileID] || ''
+      voiceUrl: it._urlMap?.[it.voiceFileID] || '',
+      direction: it.openid === this.data.openid ? '我' : 'Ta'
     }));
 
     this.setData({ moments: list });
   },
 
   async toggleMomentFav(e) {
+    if (!this.hasCoupleOrToast()) return;
     const id = e.currentTarget.dataset.id;
     const isFav = e.currentTarget.dataset.f === true || String(e.currentTarget.dataset.f) === 'true';
+    const item = this.findMoment(id);
+    if (!item || item.coupleId !== this.data.coupleId) {
+      wx.showToast({ title: '记录不属于当前情侣空间', icon: 'none' });
+      return;
+    }
     wx.showLoading({ title: '更新中...' });
     try {
       await db.collection(COL_MOMENTS).doc(id).update({ data: { isFav: !isFav, updatedAt: db.serverDate() } });
@@ -350,12 +425,18 @@ Page({
     } catch (err) {
       console.log(err);
       wx.hideLoading();
-      wx.showToast({ title: '操作失败', icon: 'none' });
+      wx.showToast({ title: getErrorMessage(err, '操作失败'), icon: 'none' });
     }
   },
 
   deleteMoment(e) {
+    if (!this.hasCoupleOrToast()) return;
     const id = e.currentTarget.dataset.id;
+    const item = this.findMoment(id);
+    if (!item || item.coupleId !== this.data.coupleId) {
+      wx.showToast({ title: '记录不属于当前情侣空间', icon: 'none' });
+      return;
+    }
     wx.showModal({
       title: '删除心动瞬间',
       content: '删除后不可恢复，确定删除吗？',
@@ -372,7 +453,7 @@ Page({
         } catch (err) {
           console.log(err);
           wx.hideLoading();
-          wx.showToast({ title: '删除失败', icon: 'none' });
+          wx.showToast({ title: getErrorMessage(err, '删除失败'), icon: 'none' });
         }
       }
     });
@@ -394,6 +475,7 @@ Page({
 
   // ====== 盲盒抽卡 ======
   drawBlindBox() {
+    if (!this.hasCoupleOrToast()) return;
     const list = this.data.moments || [];
     if (!list.length) return wx.showToast({ title: '还没有瞬间，先记录一条吧', icon: 'none' });
     const i = Math.floor(Math.random() * list.length);
@@ -410,6 +492,7 @@ Page({
 
   // ====== 小纸条 ======
   openNoteModal() {
+    if (!this.hasCoupleOrToast()) return;
     this.setData({
       showNote: true,
       saving: false,
@@ -455,6 +538,7 @@ Page({
     if (this.data.saving) return;
 
     const { coupleId, openid, partnerOpenid, noteTypes, noteTypeIndex, noteForm } = this.data;
+    if (!coupleId || !openid) return this.hasCoupleOrToast();
     const noteType = noteTypes[noteTypeIndex];
     const secret = !!noteForm.secret;
     if (secret && !partnerOpenid) {
@@ -522,13 +606,14 @@ Page({
     } catch (e) {
       console.log(e);
       wx.hideLoading();
-      wx.showToast({ title: '发送失败', icon: 'none' });
+      wx.showToast({ title: getErrorMessage(e, '发送失败'), icon: 'none' });
       this.setData({ saving: false });
     }
   },
 
   async loadNotes() {
     const { coupleId, openid } = this.data;
+    if (!coupleId || !openid) return;
   
     // ✅ 显示：我收到的 + 我发出的 + (toOpenid为空时的公共纸条)
     const r = await db.collection(COL_NOTES)
@@ -570,6 +655,7 @@ Page({
   
   async loadUnreadCount() {
     const { coupleId, openid } = this.data;
+    if (!coupleId || !openid) return;
   
     // ✅ 未读只统计“发给我”的纸条
     const r = await db.collection(COL_NOTES)
@@ -581,17 +667,27 @@ Page({
   
 
   async openNoteDetail(e) {
+    if (!this.hasCoupleOrToast()) return;
     const id = e.currentTarget.dataset.id;
     const it = (this.data.notes || []).find(x => x._id === id);
     if (!it) return;
+    if (it.coupleId !== this.data.coupleId) {
+      wx.showToast({ title: '记录不属于当前情侣空间', icon: 'none' });
+      return;
+    }
 
     this.setData({ showNoteDetail: true, noteDetail: it });
 
     // 若是发给我的未读，打开就标为已读
     if (!it.lockedForMe && it.toOpenid === this.data.openid && it.read === false) {
-      await db.collection(COL_NOTES).doc(id).update({ data: { read: true, updatedAt: db.serverDate() } });
-      await this.loadNotes();
-      await this.loadUnreadCount();
+      try {
+        await db.collection(COL_NOTES).doc(id).update({ data: { read: true, updatedAt: db.serverDate() } });
+        await this.loadNotes();
+        await this.loadUnreadCount();
+      } catch (e) {
+        console.log('mark note read fail:', e);
+        wx.showToast({ title: '已打开，标记已读失败', icon: 'none' });
+      }
     }    
   },
   closeNoteDetail() { this.setData({ showNoteDetail: false, noteDetail: {}, playingNote: false }); },
@@ -609,6 +705,7 @@ Page({
 
   // ====== 今日任务 ======
   async initTask() {
+    if (!this.data.coupleId) return;
     const tasks = [
       { id: 't1', text: '给Ta发一句夸夸（认真一点）', reward: 2 },
       { id: 't2', text: '分享今天最想念Ta的瞬间', reward: 2 },
@@ -625,6 +722,7 @@ Page({
 
   async checkTaskDone() {
     const { coupleId, openid, todayTask, today } = this.data;
+    if (!coupleId || !openid) return;
     const r = await db.collection(COL_TASKLOG)
       .where({ coupleId, openid, date: today, taskId: todayTask.id })
       .limit(1)
@@ -633,6 +731,7 @@ Page({
   },
 
   async completeTask() {
+    if (!this.hasCoupleOrToast()) return;
     if (this.data.taskDone) return;
     const { coupleId, openid, todayTask, today } = this.data;
     wx.showLoading({ title: '打卡中...' });
@@ -647,11 +746,12 @@ Page({
     } catch (e) {
       console.log(e);
       wx.hideLoading();
-      wx.showToast({ title: '打卡失败', icon: 'none' });
+      wx.showToast({ title: getErrorMessage(e, '打卡失败'), icon: 'none' });
     }
   },
 
   refreshTask() {
+    if (!this.hasCoupleOrToast()) return;
     // “换一个”：用 taskNonce 改 seed
     this.setData({ taskNonce: (this.data.taskNonce || 0) + 1 }, () => this.initTask());
   },
@@ -665,9 +765,15 @@ Page({
     const fileIDs = Array.from(new Set(ids));
     if (!fileIDs.length) return (list || []).map(it => ({ ...it, _urlMap: {} }));
 
-    const res = await wx.cloud.getTempFileURL({
-      fileList: fileIDs.map(id => ({ fileID: id, maxAge: 24 * 60 * 60 }))
-    });
+    let res;
+    try {
+      res = await wx.cloud.getTempFileURL({
+        fileList: fileIDs.map(id => ({ fileID: id, maxAge: 24 * 60 * 60 }))
+      });
+    } catch (e) {
+      console.log('heartbeat hydrate file url fail:', e);
+      return (list || []).map(it => ({ ...it, _urlMap: {} }));
+    }
 
     const map = {};
     (res.fileList || []).forEach(x => {

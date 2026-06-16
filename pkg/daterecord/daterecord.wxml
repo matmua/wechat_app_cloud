@@ -1,4 +1,24 @@
 <view class="page">
+  <view class="empty" wx:if="{{bindingState==='loading'}}">
+    <view class="empty-emoji">⏳</view>
+    <text class="empty-title">正在加载</text>
+    <text class="empty-sub">正在确认情侣绑定状态</text>
+  </view>
+
+  <view class="empty" wx:elif="{{!bindingReady}}">
+    <view class="empty-emoji">🔒</view>
+    <text class="empty-title">请先绑定情侣关系</text>
+    <text class="empty-sub">{{bindingMessage}}</text>
+  </view>
+
+  <view class="empty" wx:elif="{{loadError}}">
+    <view class="empty-emoji">⚠️</view>
+    <text class="empty-title">加载失败</text>
+    <text class="empty-sub">{{loadError}}</text>
+    <button class="btn primary" bindtap="reload">重新加载</button>
+  </view>
+
+  <block wx:else>
   <!-- 顶部卡片 -->
   <view class="header-card">
     <view class="header-top">
@@ -106,8 +126,9 @@
           <view class="photos" wx:if="{{item.photoUrls && item.photoUrls.length}}">
             <image class="photo"
                    wx:for="{{item.photoUrls}}"
+                   wx:for-item="photoUrl"
                    wx:key="*this"
-                   src="{{item}}"
+                   src="{{photoUrl}}"
                    mode="aspectFill"
                    bindtap="previewPhoto"
                    catchtap="true"
@@ -235,4 +256,5 @@
       </view>
     </view>
   </view>
+  </block>
 </view>

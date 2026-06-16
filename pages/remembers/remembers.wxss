@@ -14,6 +14,29 @@ page { background: #f2f3f5; }
 
 .content { padding: 24rpx; }
 
+.bind-status {
+  margin: 0 0 20rpx;
+  padding: 18rpx 22rpx;
+  border-radius: 16rpx;
+  font-size: 24rpx;
+  line-height: 1.5;
+  color: #7a4a5b;
+  background: #fff3f7;
+  border: 1rpx solid #ffd8e4;
+}
+
+.bind-status.bound {
+  color: #276749;
+  background: #edfdf4;
+  border-color: #c6f6d5;
+}
+
+.bind-status.error {
+  color: #9b2c2c;
+  background: #fff5f5;
+  border-color: #fed7d7;
+}
+
 /* 通用卡片样式 */
 .card {
   background: var(--card);

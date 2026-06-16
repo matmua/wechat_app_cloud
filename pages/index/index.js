@@ -1,6 +1,6 @@
 // index.js
 const db = wx.cloud.database();
-const { ensureCoupleId } = require('../../utils/couple');
+const { getBindingStatus, getCoupleId } = require('../../utils/couple');
 
 const COL_WISH = 'love_wishes';
 const COL_ALBUM = 'love_album';
@@ -12,6 +12,7 @@ const CLOUD_PREFIX =
 Page({
   data: {
     coupleId: '',
+    bindingMessage: '',
     daysCount: 0,
 
     // ✅ 这三个字段继续沿用你 wxml 里的名字
@@ -32,21 +33,43 @@ Page({
     }
   },
 
-  onLoad() {
-    const coupleId = ensureCoupleId(); // ✅ 建议 ensureCoupleId 返回 coupleId
-    this.setData({ coupleId });
-
+  async onLoad() {
     this.calculateDays();
     this.loadCloudImages();
+
+    await this.refreshBindingStatus();
   },
 
   onShow() {
-    this.loadStatisticsFromDB();
+    this.refreshBindingStatus({ silent: true });
+  },
+
+  async refreshBindingStatus(options = {}) {
+    try {
+      const status = await getBindingStatus();
+      const coupleId = status.coupleId || '';
+      this.setData({
+        coupleId,
+        bindingMessage: coupleId ? '' : '请先在“我们”页完成情侣绑定'
+      });
+
+      if (coupleId) await this.loadStatisticsFromDB();
+      else if (!options.silent) wx.showToast({ title: '请先完成情侣绑定', icon: 'none' });
+    } catch (e) {
+      console.log('refreshBindingStatus error:', e);
+      const cached = getCoupleId();
+      this.setData({
+        coupleId: cached,
+        bindingMessage: cached ? '绑定状态刷新失败，暂用本地缓存' : '用户初始化失败，请检查云函数'
+      });
+      if (cached) await this.loadStatisticsFromDB();
+      if (!options.silent) wx.showToast({ title: '用户初始化失败', icon: 'none' });
+    }
   },
 
   // ====== 从数据库加载统计 ======
   async loadStatisticsFromDB() {
-    const coupleId = this.data.coupleId || ensureCoupleId();
+    const coupleId = this.data.coupleId || getCoupleId();
     if (!coupleId) return;
 
     wx.showNavigationBarLoading?.();

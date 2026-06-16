@@ -1,2 +1,3 @@
-// utils/const.js（新建）
-export const FIXED_COUPLE_ID = 'c_1c3d8gct77xu';
+// utils/const.js
+// 预留项目级常量。情侣关系不再使用前端固定 coupleId。
+module.exports = {};

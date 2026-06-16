@@ -1,6 +1,6 @@
 const db = wx.cloud.database();
 const _ = db.command;
-const { getCoupleId, ensureCoupleId } = require('../../utils/couple');
+const { getCoupleId, getPageBinding, getErrorMessage } = require('../../utils/couple');
 
 const COL = 'love_memorials';
 
@@ -124,6 +124,10 @@ function pickHero(list) {
 Page({
   data: {
     coupleId: '',
+    bindingReady: false,
+    bindingState: 'loading',
+    bindingMessage: '正在读取绑定状态...',
+    loadError: '',
     tab: 'all',
 
     allList: [],
@@ -148,24 +152,77 @@ Page({
   },
 
   async onLoad() {
-    ensureCoupleId();
-    const coupleId = getCoupleId();
-    this.setData({ coupleId });
-  
-    if (!coupleId) {
-      wx.showToast({ title: '未找到 coupleId，请从首页进入', icon: 'none' });
-      return;
-    }
-  
-    await this.loadList();
+    const ok = await this.ensureBinding();
+    if (ok) await this.loadList();
   },
   
 
   async onShow() {
-    if (this.data.coupleId) await this.loadList();
+    if (!this.data.coupleId) return;
+    await this.loadList();
   },
 
   noop() {},
+
+  async ensureBinding() {
+    try {
+      const binding = await getPageBinding();
+      if (!binding.bindingReady) {
+        this.setData({
+          coupleId: '',
+          bindingReady: false,
+          bindingState: binding.bindingState,
+          bindingMessage: binding.bindingMessage,
+          loadError: '',
+          allList: [],
+          showList: [],
+          hero: null,
+          bannerText: ''
+        });
+        return false;
+      }
+
+      this.setData({
+        coupleId: binding.coupleId,
+        bindingReady: true,
+        bindingState: binding.bindingState,
+        bindingMessage: binding.bindingMessage,
+        loadError: ''
+      });
+      return true;
+    } catch (e) {
+      console.log('memorial ensureBinding fail:', e);
+      const cached = getCoupleId();
+      if (cached) {
+        this.setData({
+          coupleId: cached,
+          bindingReady: true,
+          bindingState: 'bound',
+          bindingMessage: '绑定状态刷新失败，暂用本地缓存',
+          loadError: ''
+        });
+        return true;
+      }
+      this.setData({
+        coupleId: '',
+        bindingReady: false,
+        bindingState: 'error',
+        bindingMessage: getErrorMessage(e, '绑定状态读取失败，请检查云函数'),
+        loadError: ''
+      });
+      return false;
+    }
+  },
+
+  hasCoupleOrToast() {
+    if (this.data.coupleId) return true;
+    wx.showToast({ title: '请先绑定情侣关系', icon: 'none' });
+    return false;
+  },
+
+  findLocalItem(id) {
+    return (this.data.allList || []).find(x => x._id === id);
+  },
 
   switchTab(e) {
     const tab = e.currentTarget.dataset.tab;
@@ -175,6 +232,7 @@ Page({
 
   async loadList() {
     const { coupleId } = this.data;
+    if (!coupleId) return;
     wx.showLoading({ title: '加载中...' });
 
     try {
@@ -198,11 +256,12 @@ Page({
       const hero = pickHero(sorted);
       const bannerText = this.makeBanner(sorted);
 
-      this.setData({ allList: sorted, hero, bannerText });
+      this.setData({ allList: sorted, hero, bannerText, loadError: '' });
       this.applyTab();
     } catch (e) {
       console.log(e);
-      wx.showToast({ title: '加载失败', icon: 'none' });
+      this.setData({ loadError: getErrorMessage(e, '纪念日加载失败') });
+      wx.showToast({ title: '纪念日加载失败', icon: 'none' });
     } finally {
       wx.hideLoading();
     }
@@ -228,6 +287,7 @@ Page({
   },
 
   openCreate() {
+    if (!this.hasCoupleOrToast()) return;
     const today = ymdFromDate(startOfToday());
     this.setData({
       showModal: true,
@@ -244,9 +304,14 @@ Page({
   },
 
   async openEdit(e) {
+    if (!this.hasCoupleOrToast()) return;
     const id = e.currentTarget.dataset.id;
     const it = this.data.allList.find(x => x._id === id);
     if (!it) return;
+    if (it.coupleId !== this.data.coupleId) {
+      wx.showToast({ title: '记录不属于当前情侣空间', icon: 'none' });
+      return;
+    }
 
     const typeIndex = Math.max(0, TYPE_OPTIONS.findIndex(x => x.key === it.type));
     const colorIndex = Math.max(0, COLOR_OPTIONS.findIndex(x => x.key === it.color));
@@ -278,6 +343,7 @@ Page({
 
   async saveOne() {
     const { coupleId, editingId, form } = this.data;
+    if (!coupleId) return this.hasCoupleOrToast();
 
     const title = (form.title || '').trim();
     const date = form.date;
@@ -294,6 +360,10 @@ Page({
 
     try {
       if (editingId) {
+        const item = this.findLocalItem(editingId);
+        if (!item || item.coupleId !== coupleId) {
+          throw new Error('记录不属于当前情侣空间');
+        }
         await db.collection(COL).doc(editingId).update({
           data: {
             title, date, type, color, repeat, pinned,
@@ -318,12 +388,18 @@ Page({
     } catch (e) {
       console.log(e);
       wx.hideLoading();
-      wx.showToast({ title: '保存失败', icon: 'none' });
+      wx.showToast({ title: getErrorMessage(e, '保存失败'), icon: 'none' });
     }
   },
 
   async removeOne(e) {
+    if (!this.hasCoupleOrToast()) return;
     const id = e.currentTarget.dataset.id;
+    const item = this.findLocalItem(id);
+    if (!item || item.coupleId !== this.data.coupleId) {
+      wx.showToast({ title: '记录不属于当前情侣空间', icon: 'none' });
+      return;
+    }
     wx.showModal({
       title: '删除纪念日',
       content: '确定要删除吗？删除后无法恢复。',
@@ -338,15 +414,21 @@ Page({
         } catch (err) {
           console.log(err);
           wx.hideLoading();
-          wx.showToast({ title: '删除失败', icon: 'none' });
+          wx.showToast({ title: getErrorMessage(err, '删除失败'), icon: 'none' });
         }
       }
     });
   },
 
   async togglePin(e) {
+    if (!this.hasCoupleOrToast()) return;
     const id = e.currentTarget.dataset.id;
     const pinned = !!e.currentTarget.dataset.pinned;
+    const item = this.findLocalItem(id);
+    if (!item || item.coupleId !== this.data.coupleId) {
+      wx.showToast({ title: '记录不属于当前情侣空间', icon: 'none' });
+      return;
+    }
 
     try {
       await db.collection(COL).doc(id).update({
@@ -355,7 +437,7 @@ Page({
       await this.loadList();
     } catch (err) {
       console.log(err);
-      wx.showToast({ title: '操作失败', icon: 'none' });
+      wx.showToast({ title: getErrorMessage(err, '操作失败'), icon: 'none' });
     }
   }
 });

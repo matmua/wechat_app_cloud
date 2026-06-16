@@ -3,6 +3,9 @@
   <!-- <view style="height: {{statusBarHeight}}px;"></view> -->
 
   <view class="content">
+    <view wx:if="{{bindingMessage}}" class="bind-status {{bindingState}}">
+      <text>{{bindingMessage}}</text>
+    </view>
 
     <!-- 1. 顶部 用户-爱心-邀请（外层圆角框 + 内层卡片） -->
 <view class="moments-frame">
@@ -36,10 +39,10 @@
 
   </view>
 
-  <!-- 当未绑定情侣头像时，给一个模拟绑定按钮（本地） -->
-  <view wx:if="{{ !partnerAvatarUrl }}" class="bind-row">
-    <button class="bind-btn" bindtap="onMockBindPartnerAvatar">
-      绑定情侣头像
+  <!-- 未完成绑定时生成邀请 -->
+  <view wx:if="{{ bindingState !== 'bound' }}" class="bind-row">
+    <button class="bind-btn" loading="{{bindingLoading}}" bindtap="onInviteOrEditPartner">
+      生成邀请并分享给Ta
     </button>
   </view>
 </view>

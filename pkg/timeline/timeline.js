@@ -1,5 +1,7 @@
 const db = wx.cloud.database();
-const COL_COUPLE = 'remember_couples';
+const { getPageBinding, getErrorMessage } = require('../../utils/couple');
+
+const COL_COUPLE = 'couples';
 const COL_WISH = 'love_wishes';
 const COL_ALBUM = 'love_album';
 const COL_DATES = 'love_dates';
@@ -28,14 +30,6 @@ function parseAnyDate(v){
 function diffDays(a, b){
   return Math.round((b.getTime() - a.getTime()) / (1000*60*60*24));
 }
-function getCoupleId() {
-  return wx.getStorageSync('coupleId')
-    || wx.getStorageSync('remember_coupleId')
-    || wx.getStorageSync('love_coupleId')
-    || '';
-}
-
-
 // 你们的开始日期：优先从缓存/数据库取不到就用固定值（你可以改成你们真实日期）
 function getStartDateFallback(){
   return new Date('2023-12-15T00:00:00');
@@ -62,6 +56,10 @@ Page({
   data: {
     openid: '',
     coupleId: '',
+    bindingReady: false,
+    bindingState: 'loading',
+    bindingMessage: '正在读取绑定状态...',
+    loadError: '',
 
     coupleTitle: '我们的仪表盘',
     daysTogether: 0,
@@ -100,32 +98,71 @@ Page({
   },
 
   async onLoad() {
-    const coupleId = getCoupleId();
-    this.setData({ coupleId });
-    console.log('dashboard coupleId =', this.data.coupleId)
-    if (!coupleId) {
-      wx.showToast({ title: '未找到 coupleId，请先在“我们”页绑定', icon: 'none' });
-      return;
-    }
-
-    // openid（用于未读纸条）
-    try{
-      const res = await wx.cloud.callFunction({ name: 'login' });
-      this.setData({ openid: res?.result?.openid || '' });
-    }catch(e){
-      console.log('login fail', e);
-    }
-
-    await this.refreshAll();
+    const ok = await this.ensureBinding();
+    if (ok) await this.refreshAll();
   },
 
   async onShow() {
-    if (this.data.coupleId) await this.refreshAll();
+    if (!this.data.coupleId) return;
+    await this.refreshAll();
   },
 
   noop(){},
 
+  async ensureBinding(){
+    try {
+      const binding = await getPageBinding();
+      if (!binding.bindingReady) {
+        this.setData({
+          openid: binding.openid || '',
+          coupleId: '',
+          bindingReady: false,
+          bindingState: binding.bindingState,
+          bindingMessage: binding.bindingMessage,
+          loadError: '',
+          pendingWishes: [],
+          pendingWishCount: 0,
+          unreadNotes: 0,
+          soonMemorial: null,
+          goals: []
+        });
+        return false;
+      }
+
+      this.setData({
+        openid: binding.openid || '',
+        coupleId: binding.coupleId,
+        bindingReady: true,
+        bindingState: binding.bindingState,
+        bindingMessage: binding.bindingMessage,
+        loadError: ''
+      });
+      return true;
+    } catch (e) {
+      console.log('timeline ensureBinding fail:', e);
+      this.setData({
+        bindingReady: false,
+        bindingState: 'error',
+        bindingMessage: getErrorMessage(e, '绑定状态读取失败，请检查云函数'),
+        loadError: ''
+      });
+      wx.showToast({ title: '绑定状态读取失败', icon: 'none' });
+      return false;
+    }
+  },
+
+  hasCoupleOrToast() {
+    if (this.data.coupleId) return true;
+    wx.showToast({ title: '请先绑定情侣关系', icon: 'none' });
+    return false;
+  },
+
+  findGoal(id) {
+    return (this.data.goals || []).find(x => x._id === id);
+  },
+
   async refreshAll(){
+    if (!this.data.coupleId) return;
     wx.showLoading({ title: '加载中...' });
     try{
       await Promise.all([
@@ -135,9 +172,11 @@ Page({
         this.loadGoals()
       ]);
       this.makeBanner();
+      this.setData({ loadError: '' });
     }catch(e){
       console.log(e);
-      wx.showToast({ title: '加载失败', icon: 'none' });
+      this.setData({ loadError: getErrorMessage(e, '仪表盘加载失败') });
+      wx.showToast({ title: '仪表盘加载失败', icon: 'none' });
     }finally{
       wx.hideLoading();
     }
@@ -145,6 +184,7 @@ Page({
 
   async loadCoupleAndDays(){
     const { coupleId } = this.data;
+    if (!coupleId) return;
     const today = startOfToday();
 
     // 尝试从 remember_couples 取名字/开始日期（如果你未来要存 startDate，可直接用）
@@ -154,12 +194,12 @@ Page({
     try{
       const doc = await db.collection(COL_COUPLE).doc(coupleId).get();
       const d = doc.data || {};
-      // 你目前 doc 里有 nameForGuo/nameForLuan/wechatNick，可拼标题
-      const a = d.nameForGuo || d.guoWechatNick || '小郭';
-      const b = d.nameForLuan || d.luanWechatNick || '小栾';
+      const members = d.members || [];
+      const a = members[0]?.displayName || '我';
+      const b = members[1]?.displayName || 'Ta';
       coupleTitle = `${a} ❤ ${b}`;
 
-      // 如果你以后在 remember_couples 里加 startDate 字段（字符串或 Date），这里就能直接用
+      // 如果你以后在 couples 里加 startDate 字段（字符串或 Date），这里就能直接用
       startDate = parseAnyDate(d.startDate);
     }catch(e){
       // 没关系，fallback
@@ -208,6 +248,7 @@ Page({
 
   async loadTodos(){
     const { coupleId, openid } = this.data;
+    if (!coupleId) return;
     const today = startOfToday();
 
     // 1) 7天内纪念日：取全部后本地计算 nextDays（与你纪念日页逻辑一致）
@@ -253,8 +294,6 @@ Page({
     let pendingWishCount = 0;
     try{
       // 2) 未完成心愿（最多3条）
-      let pendingWishes = [];
-      let pendingWishCount = 0;
       try {
         const rr = await db.collection(COL_WISH)
           .where({ coupleId, status: 'todo' })
@@ -273,8 +312,6 @@ Page({
       } catch (e) {
         console.log('wish load fail', e);
       }
-
-      pendingWishCount = cc.total || 0;
     }catch(e){
       console.log('wish load fail', e);
     }
@@ -296,6 +333,7 @@ Page({
 
   async loadStats(){
     const { coupleId } = this.data;
+    if (!coupleId) return;
 
     // 成就统计：已结心愿 / 约会数 / 相册数 / 纸条总数
     const stats = { wishDone: 0, dateCount: 0, photoCount: 0, noteCount: 0 };
@@ -325,10 +363,12 @@ Page({
 
   async loadGoals(){
     const { coupleId } = this.data;
+    if (!coupleId) return;
     try{
       const r = await db.collection(COL_GOALS).where({ coupleId }).orderBy('updatedAt', 'desc').limit(200).get();
       const goals = (r.data || []).map(x => ({
         _id: x._id,
+        coupleId: x.coupleId,
         title: x.title || '目标',
         desc: x.desc || '',
         done: !!x.done
@@ -373,7 +413,7 @@ Page({
   async saveBoxToGoal(){
     // 把盲盒内容写进共同目标
     const { coupleId, boxTitle } = this.data;
-    if (!coupleId) return;
+    if (!coupleId) return this.hasCoupleOrToast();
 
     wx.showLoading({ title: '保存中...' });
     try{
@@ -393,12 +433,13 @@ Page({
     }catch(e){
       console.log(e);
       wx.hideLoading();
-      wx.showToast({ title: '保存失败', icon: 'none' });
+      wx.showToast({ title: getErrorMessage(e, '保存失败'), icon: 'none' });
     }
   },
 
   // -------- 共同目标 CRUD --------
   openAddGoal(){
+    if (!this.hasCoupleOrToast()) return;
     this.setData({ showGoalModal: true, goalForm: { title: '', desc: '' } });
   },
   closeGoalModal(){
@@ -409,6 +450,7 @@ Page({
 
   async saveGoal(){
     const { coupleId, goalForm } = this.data;
+    if (!coupleId) return this.hasCoupleOrToast();
     const title = (goalForm.title || '').trim();
     const desc = (goalForm.desc || '').trim();
     if (!title) return wx.showToast({ title: '标题不能为空', icon: 'none' });
@@ -432,13 +474,19 @@ Page({
     }catch(e){
       console.log(e);
       wx.hideLoading();
-      wx.showToast({ title: '添加失败', icon: 'none' });
+      wx.showToast({ title: getErrorMessage(e, '添加失败'), icon: 'none' });
     }
   },
 
   async toggleGoal(e){
+    if (!this.hasCoupleOrToast()) return;
     const id = e.currentTarget.dataset.id;
     const done = !!e.currentTarget.dataset.done;
+    const item = this.findGoal(id);
+    if (!item || item.coupleId !== this.data.coupleId) {
+      wx.showToast({ title: '记录不属于当前情侣空间', icon: 'none' });
+      return;
+    }
     try{
       await db.collection(COL_GOALS).doc(id).update({
         data: { done: !done, updatedAt: db.serverDate() }
@@ -446,12 +494,18 @@ Page({
       await this.loadGoals();
     }catch(err){
       console.log(err);
-      wx.showToast({ title: '操作失败', icon: 'none' });
+      wx.showToast({ title: getErrorMessage(err, '操作失败'), icon: 'none' });
     }
   },
 
   removeGoal(e){
+    if (!this.hasCoupleOrToast()) return;
     const id = e.currentTarget.dataset.id;
+    const item = this.findGoal(id);
+    if (!item || item.coupleId !== this.data.coupleId) {
+      wx.showToast({ title: '记录不属于当前情侣空间', icon: 'none' });
+      return;
+    }
     wx.showModal({
       title: '删除目标',
       content: '确定删除这个共同目标吗？',
@@ -466,7 +520,7 @@ Page({
         }catch(err){
           console.log(err);
           wx.hideLoading();
-          wx.showToast({ title: '删除失败', icon: 'none' });
+          wx.showToast({ title: getErrorMessage(err, '删除失败'), icon: 'none' });
         }
       }
     });

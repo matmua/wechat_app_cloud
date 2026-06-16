@@ -1,5 +1,9 @@
 // pages/couple/remembers.js
-const { getCoupleId, ensureCoupleId } = require('../../utils/couple');
+const {
+  getBindingStatus,
+  createInvite,
+  acceptInvite
+} = require('../../utils/couple');
 
 const db = wx.cloud.database();
 const COL = 'remember_couples';
@@ -21,28 +25,100 @@ Page({
     selfName: '我',
     selfAvatarUrl: '',
     partnerName: '',
-    partnerAvatarUrl: ''
+    partnerAvatarUrl: '',
+
+    bindingLoading: false,
+    bindingState: 'unknown', // unknown | unbound | pending | bound | error
+    bindingMessage: '',
+    invitePath: '',
+    inviteId: '',
+    inviteToken: ''
   },
 
   async onLoad(options) {
-    const loginRes = await wx.cloud.callFunction({ name: 'login' });
-    const openid = loginRes?.result?.openid || '';
-  
-    // ✅ 优先：分享链接参数 > 本地缓存（由首页 ensure 过）> 最后兜底 ensure（写死方案不会变）
-    let coupleId = options.coupleId || getCoupleId();
-    if (!coupleId) coupleId = ensureCoupleId();
-  
-    this.setData({ openid, coupleId });
-  
-    await this.ensureDoc();
-    await this.bindRoleIfNeeded(options);
-    await this.refresh();
+    this.setData({ bindingLoading: true, bindingMessage: '正在读取绑定状态...' });
+
+    try {
+      let status;
+      if (options.inviteId && options.token) {
+        status = await acceptInvite({
+          inviteId: options.inviteId,
+          token: options.token
+        });
+        wx.showToast({ title: '绑定成功', icon: 'success' });
+      } else {
+        status = await getBindingStatus();
+      }
+
+      await this.applyBindingStatus(status);
+    } catch (e) {
+      console.log('load binding status fail:', e);
+      this.setData({
+        bindingState: 'error',
+        bindingMessage: e.message || '绑定状态读取失败，请检查云函数是否已上传'
+      });
+      wx.showToast({ title: '绑定状态读取失败', icon: 'none' });
+    } finally {
+      this.setData({ bindingLoading: false });
+    }
   },
   
   
 
   async onShow() {
-    if (this.data.coupleId) await this.refresh();
+    if (this.data.bindingLoading) return;
+    try {
+      const status = await getBindingStatus();
+      await this.applyBindingStatus(status, { silent: true });
+    } catch (e) {
+      console.log('refresh binding status fail:', e);
+    }
+  },
+
+  async applyBindingStatus(status, options = {}) {
+    const openid = status?.openid || '';
+    const coupleId = status?.coupleId || '';
+    const bound = !!status?.bound;
+    const hasCouple = !!status?.hasCouple;
+    const partner = status?.partner || null;
+
+    let bindingState = 'unbound';
+    let bindingMessage = '还没有绑定情侣关系，点击右侧头像生成邀请后分享给Ta。';
+    if (hasCouple && !bound) {
+      bindingState = 'pending';
+      bindingMessage = '情侣空间已创建，等待Ta通过邀请链接进入完成绑定。';
+    }
+    if (bound) {
+      bindingState = 'bound';
+      bindingMessage = '已完成情侣绑定。';
+    }
+
+    this.setData({
+      openid,
+      coupleId,
+      bindingState,
+      bindingMessage,
+      partnerName: partner?.displayName || this.data.partnerName
+    });
+
+    if (coupleId) {
+      await this.ensureDoc();
+      await this.refresh();
+    } else {
+      this.setData({
+        selfName: '我',
+        selfAvatarUrl: '',
+        partnerName: '',
+        partnerAvatarUrl: '',
+        invitePath: '',
+        inviteId: '',
+        inviteToken: ''
+      });
+    }
+
+    if (!options.silent && bindingMessage) {
+      console.log('binding status:', bindingState, bindingMessage);
+    }
   },
 
   async ensureDoc() {
@@ -267,17 +343,74 @@ Page({
     });
   },
 
-  onInviteOrEditPartner() {
-    wx.showShareMenu({ withShareTicket: true });
-    wx.showToast({ title: '点右上角·分享给Ta进入绑定', icon: 'none' });
+  async onInviteOrEditPartner() {
+    if (this.data.bindingState === 'bound') {
+      return wx.showToast({ title: '你们已经绑定啦', icon: 'none' });
+    }
+
+    wx.showLoading({ title: '生成邀请...' });
+    try {
+      const invite = await createInvite();
+      const path = `/pages/remembers/remembers?inviteId=${invite.inviteId}&token=${invite.token}`;
+      this.setData({
+        openid: invite.openid || this.data.openid,
+        coupleId: invite.coupleId || this.data.coupleId,
+        invitePath: path,
+        inviteId: invite.inviteId,
+        inviteToken: invite.token,
+        bindingState: invite.bound ? 'bound' : 'pending',
+        bindingMessage: invite.bound ? '已完成情侣绑定。' : '邀请已生成，请点击右上角分享给Ta。'
+      });
+
+      wx.showShareMenu({ withShareTicket: true });
+      wx.hideLoading();
+      wx.showToast({ title: '请点右上角分享', icon: 'none' });
+
+      if (invite.coupleId) {
+        await this.ensureDoc();
+        await this.refresh();
+      }
+    } catch (e) {
+      wx.hideLoading();
+      console.log('create invite fail:', e);
+      this.setData({
+        bindingState: 'error',
+        bindingMessage: e.message || '邀请生成失败'
+      });
+      wx.showToast({ title: e.message || '邀请生成失败', icon: 'none' });
+    }
   },
 
   onShareAppMessage() {
-    const { coupleId } = this.data;
     return {
-      title: 'remembers 绑定',
-      // ✅ 强制她绑定成小栾
-      path: `/pages/couple/index?coupleId=${coupleId}&role=luan`
+      title: '邀请你加入我们的情侣空间',
+      path: this.data.invitePath || '/pages/remembers/remembers'
     };
+  },
+
+  onMoreMoments() {
+    wx.navigateTo({ url: '../../pkg/timeline/timeline' });
+  },
+
+  handleRecordMood() {
+    wx.navigateTo({ url: '../../pkg/heartbeat/heartbeat' });
+  },
+
+  onQuick(e) {
+    const type = e.currentTarget.dataset.type;
+    const map = {
+      album: '../../pkg/photoalbum/photoalbum',
+      letter: '../../pkg/heartbeat/heartbeat',
+      diary: '../../pkg/timeline/timeline',
+      more: '/pages/matters/matters'
+    };
+    const url = map[type];
+    if (!url) return;
+    if (type === 'more') return wx.switchTab({ url });
+    wx.navigateTo({ url });
+  },
+
+  onFab() {
+    wx.navigateTo({ url: '../../pkg/heartbeat/heartbeat' });
   }
 });
