@@ -1,0 +1,143 @@
+<view class="page">
+  <!-- 顶部统计 -->
+  <view class="header-card">
+    <view class="header-top">
+      <view>
+        <text class="title">心愿清单</text>
+        <text class="subtitle">把想做的事，一件件完成 ✨</text>
+      </view>
+      <view class="pill">
+        <text class="pill-text">{{doneCount}} / {{totalCount}}</text>
+      </view>
+    </view>
+
+    <view class="progress-row">
+      <view class="progress-track">
+        <view class="progress-fill" style="width: {{progressPercent}}%;"></view>
+      </view>
+      <text class="progress-text">{{progressPercent}}%</text>
+    </view>
+
+    <view class="tabs">
+      <view class="tab {{activeTab==='todo' ? 'tab-active' : ''}}" bindtap="switchTab" data-tab="todo">
+        <text>进行中</text>
+        <view class="badge" wx:if="{{todoCount>0}}">{{todoCount}}</view>
+      </view>
+      <view class="tab {{activeTab==='done' ? 'tab-active' : ''}}" bindtap="switchTab" data-tab="done">
+        <text>已完成</text>
+        <view class="badge gray" wx:if="{{doneCount>0}}">{{doneCount}}</view>
+      </view>
+    </view>
+
+    <view class="search-row">
+      <input class="search" placeholder="搜索心愿（标题/备注）" value="{{keyword}}" bindinput="onKeywordInput" />
+      <view class="chip" bindtap="toggleSort">
+        <text class="chip-text">{{sortModeText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 列表 -->
+  <view class="list">
+    <block wx:if="{{filteredList.length>0}}">
+      <view class="item-card" wx:for="{{filteredList}}" wx:key="_id">
+        <view class="left">
+          <view class="dot {{item.status==='done' ? 'dot-done' : 'dot-todo'}}"></view>
+        </view>
+
+        <view class="mid">
+          <view class="row1">
+            <text class="item-title {{item.status==='done' ? 'strike' : ''}}">{{item.title}}</text>
+            <view class="prio prio-{{item.priority}}">
+              <text class="prio-text">{{priorityTextMap[item.priority]}}</text>
+            </view>
+          </view>
+
+          <text class="item-note" wx:if="{{item.note}}">{{item.note}}</text>
+
+          <!-- ✅ 心愿照片（可选） -->
+          <view class="photo-wrap" wx:if="{{item.photoUrl}}">
+            <image class="photo" src="{{item.photoUrl}}" mode="aspectFill"></image>
+          </view>
+
+          <text class="time" wx:if="{{item.status==='done' && item.doneAtStr}}">
+            完成于 {{item.doneAtStr}}
+          </text>
+        </view>
+
+        <view class="right">
+          <button class="btn ghost" size="mini" bindtap="toggleDone" data-id="{{item._id}}" data-status="{{item.status}}">
+            {{item.status==='done' ? '撤销' : '完成'}}
+          </button>
+          <button class="btn danger" size="mini" bindtap="onDelete" data-id="{{item._id}}">
+            删除
+          </button>
+        </view>
+      </view>
+    </block>
+
+    <view class="empty" wx:else>
+      <view class="empty-emoji">🧸</view>
+      <text class="empty-title">{{activeTab==='todo' ? '还没有心愿' : '还没有完成的心愿'}}</text>
+      <text class="empty-sub">
+        {{activeTab==='todo' ? '点右下角 + 添加一个吧' : '完成后会自动出现在这里'}}
+      </text>
+      <button class="btn primary" bindtap="openAdd">添加心愿</button>
+    </view>
+  </view>
+
+  <!-- 悬浮新增按钮 -->
+  <view class="fab" bindtap="openAdd">＋</view>
+
+  <!-- 新增弹窗 -->
+  <view class="mask" wx:if="{{showAdd}}">
+    <view class="modal">
+      <view class="modal-title">添加心愿</view>
+
+      <view class="field">
+        <text class="label">标题</text>
+        <input class="input" placeholder="比如：一起去看海" value="{{newTitle}}" bindinput="onNewTitle" maxlength="40" />
+      </view>
+
+      <view class="field">
+        <text class="label">备注</text>
+        <textarea class="textarea" placeholder="可写具体计划/地点/想法（可空）" value="{{newNote}}" bindinput="onNewNote" maxlength="200"></textarea>
+      </view>
+
+      <view class="field">
+        <text class="label">优先级</text>
+        <view class="prio-row">
+          <view class="prio-chip {{newPriority===2?'chip-on':''}}" bindtap="setPriority" data-p="2">想马上做</view>
+          <view class="prio-chip {{newPriority===1?'chip-on':''}}" bindtap="setPriority" data-p="1">正常</view>
+          <view class="prio-chip {{newPriority===0?'chip-on':''}}" bindtap="setPriority" data-p="0">不着急</view>
+        </view>
+      </view>
+
+      <!-- ✅ 照片（可选，单张） -->
+      <view class="field">
+        <text class="label">照片（可选）</text>
+
+        <view class="photo-picker">
+          <!-- 未选择时：上传按钮 -->
+          <view class="pick-tile" wx:if="{{!newPhotoTempPath}}" bindtap="choosePhoto">
+            <text class="pick-plus">＋</text>
+            <text class="pick-text">添加照片</text>
+          </view>
+
+          <!-- 已选择：预览 + 移除 -->
+          <view class="picked" wx:else>
+            <image class="picked-img" src="{{newPhotoTempPath}}" mode="aspectFill" bindtap="previewNewPhoto"></image>
+            <view class="remove-btn" bindtap="removeNewPhoto">×</view>
+          </view>
+        </view>
+
+        <text class="hint">建议：你们的合照 / 想去的地方 / 想买的小礼物</text>
+      </view>
+
+      <view class="modal-actions">
+        <button class="btn ghost2" bindtap="closeAdd">取消</button>
+        <button class="btn primary2" bindtap="createWish" loading="{{creating}}">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

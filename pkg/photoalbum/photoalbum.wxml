@@ -1,0 +1,200 @@
+<view class="page">
+  <!-- 顶部：标题 + 操作 -->
+  <view class="header">
+    <view class="head-row">
+      <view>
+        <text class="title">甜蜜相册</text>
+        <text class="subtitle">把你们的每一帧都存起来 💗</text>
+      </view>
+      <view class="actions">
+        <view class="action-pill" bindtap="openUpload">＋上传</view>
+        <view class="action-pill ghost" bindtap="drawMemory">🎁抽卡</view>
+      </view>
+    </view>
+
+    <!-- 搜索 + 月份筛选 -->
+    <view class="search-row">
+      <input class="search" placeholder="搜索标题 / 标签" value="{{keyword}}" bindinput="onKeywordInput"/>
+      <picker mode="selector" range="{{monthOptions}}" value="{{monthIndex}}" bindchange="onMonthChange">
+        <view class="month-pill">{{monthOptions[monthIndex]}}</view>
+      </picker>
+    </view>
+
+    <!-- 收藏区：今日最甜 -->
+    <view class="fav-card" wx:if="{{favoriteList.length}}">
+      <view class="fav-head">
+        <text class="fav-title">今日最甜 ⭐</text>
+        <text class="fav-more" bindtap="showOnlyFav">
+          {{onlyFav ? '查看全部' : '只看收藏'}}
+        </text>
+      </view>
+      <scroll-view scroll-x class="fav-scroll">
+        <view class="fav-item" wx:for="{{favoriteList}}" wx:key="_id" bindtap="previewFromId" data-id="{{item._id}}">
+          <image class="fav-img" src="{{item.tempUrls[0]}}" mode="aspectFill"></image>
+          <text class="fav-text">{{item.title || '甜蜜瞬间'}}</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+<!-- 瀑布流：两列 -->
+<view class="wf" wx:if="{{wfLeft.length || wfRight.length}}">
+  <view class="col col-left">
+    <view class="tile" wx:for="{{wfLeft}}" wx:key="_id">
+      <view class="tile-img-wrap" bindtap="previewFromId" data-id="{{item._id}}">
+        <!-- 关键：widthFix 保持原比例，形成瀑布流 -->
+        <image class="tile-img" src="{{item.tempUrls[0]}}" mode="aspectFill"></image>
+        <view class="tile-badge" wx:if="{{item.isFav}}">⭐</view>
+      </view>
+
+      <view class="tile-meta">
+        <text class="tile-title">{{item.title || '甜蜜瞬间'}}</text>
+        <text class="tile-date">{{item.date}}</text>
+
+        <view class="tag-row" wx:if="{{item.tags && item.tags.length}}">
+          <view class="tag" wx:for="{{item.tags}}" wx:key="*this">{{item}}</view>
+        </view>
+
+        <view class="btn-row">
+          <view class="mini-btn ghost" bindtap="toggleFav" data-id="{{item._id}}" data-f="{{item.isFav}}">收藏</view>
+          <view class="mini-btn" bindtap="editItem" data-id="{{item._id}}">编辑</view>
+          <view class="mini-btn danger" bindtap="delItem" data-id="{{item._id}}">删除</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="col col-right">
+    <view class="tile" wx:for="{{wfRight}}" wx:key="_id">
+      <view class="tile-img-wrap" bindtap="previewFromId" data-id="{{item._id}}">
+        <image class="tile-img" src="{{item.tempUrls[0]}}" mode="widthFix"></image>
+        <view class="tile-badge" wx:if="{{item.isFav}}">⭐</view>
+      </view>
+
+      <view class="tile-meta">
+        <text class="tile-title">{{item.title || '甜蜜瞬间'}}</text>
+        <text class="tile-date">{{item.date}}</text>
+
+        <view class="tag-row" wx:if="{{item.tags && item.tags.length}}">
+          <view class="tag" wx:for="{{item.tags}}" wx:key="*this">{{item}}</view>
+        </view>
+
+        <view class="btn-row">
+          <view class="mini-btn ghost" bindtap="toggleFav" data-id="{{item._id}}" data-f="{{item.isFav}}">收藏</view>
+          <view class="mini-btn" bindtap="editItem" data-id="{{item._id}}">编辑</view>
+          <view class="mini-btn danger" bindtap="delItem" data-id="{{item._id}}">删除</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 空态（保留你原来的） -->
+<view class="empty" wx:else>
+  <view class="empty-emoji">📷</view>
+  <text class="empty-title">相册还是空的</text>
+  <text class="empty-sub">上传几张照片，就能抽卡回忆啦</text>
+  <button class="big-btn" bindtap="openUpload">上传照片</button>
+</view>
+
+
+  <!-- 上传弹窗 -->
+  <view class="mask" wx:if="{{showUpload}}">
+    <view class="modal">
+      <view class="modal-title">上传照片</view>
+
+      <view class="field">
+        <text class="label">标题（可选）</text>
+        <input class="input" placeholder="比如：圣诞树下的吻" value="{{form.title}}" bindinput="onTitle"/>
+      </view>
+
+      <view class="field">
+        <text class="label">标签（可选）</text>
+        <view class="tag-input-row">
+          <input class="tag-input" placeholder="输入后点添加（如：旅行/火锅/合照）" value="{{tagDraft}}" bindinput="onTagDraft"/>
+          <view class="tag-add" bindtap="addTag">添加</view>
+        </view>
+        <view class="tag-row" wx:if="{{form.tags.length}}">
+          <view class="tag removable" wx:for="{{form.tags}}" wx:key="*this" bindtap="removeTag" data-t="{{item}}">
+            {{item}} <text class="x">×</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="field">
+        <text class="label">描述（可选）</text>
+        <textarea class="textarea" placeholder="写点当时发生的甜甜小事～" value="{{form.desc}}" bindinput="onDesc"></textarea>
+      </view>
+
+      <view class="field">
+        <text class="label">照片（必填，1~9张）</text>
+        <view class="photo-picker">
+          <view class="pick" bindtap="chooseImages" wx:if="{{form.localPaths.length<9}}">
+            <text class="pick-plus">＋</text>
+            <text class="pick-text">选择</text>
+          </view>
+
+          <view class="picked" wx:for="{{form.localPaths}}" wx:key="*this">
+            <image class="picked-img" src="{{item}}" mode="aspectFill" bindtap="previewPicked" data-idx="{{index}}"></image>
+            <view class="remove-btn" bindtap="removePicked" data-idx="{{index}}">×</view>
+          </view>
+        </view>
+        <text class="hint">建议：合照 / 票根 / 美食 / 你们一起的任何瞬间</text>
+      </view>
+
+      <view class="modal-actions">
+        <button class="mini-btn ghost" bindtap="closeUpload" disabled="{{uploading}}">取消</button>
+        <button class="mini-btn primary" bindtap="submitUpload" loading="{{uploading}}">上传</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 编辑弹窗 -->
+  <view class="mask" wx:if="{{showEdit}}">
+    <view class="modal">
+      <view class="modal-title">编辑信息</view>
+
+      <view class="field">
+        <text class="label">标题</text>
+        <input class="input" value="{{editForm.title}}" bindinput="onEditTitle"/>
+      </view>
+
+      <view class="field">
+        <text class="label">标签</text>
+        <view class="tag-input-row">
+          <input class="tag-input" placeholder="输入后点添加" value="{{editTagDraft}}" bindinput="onEditTagDraft"/>
+          <view class="tag-add" bindtap="addEditTag">添加</view>
+        </view>
+        <view class="tag-row" wx:if="{{editForm.tags.length}}">
+          <view class="tag removable" wx:for="{{editForm.tags}}" wx:key="*this" bindtap="removeEditTag" data-t="{{item}}">
+            {{item}} <text class="x">×</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="field">
+        <text class="label">描述</text>
+        <textarea class="textarea" value="{{editForm.desc}}" bindinput="onEditDesc"></textarea>
+      </view>
+
+      <view class="modal-actions">
+        <button class="mini-btn ghost" bindtap="closeEdit" disabled="{{editing}}">取消</button>
+        <button class="mini-btn primary" bindtap="submitEdit" loading="{{editing}}">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 抽卡弹窗 -->
+  <view class="mask" wx:if="{{showCard}}">
+    <view class="card-modal">
+      <view class="card-title">回忆抽卡 🎁</view>
+      <image class="card-img" src="{{cardItem.tempUrls[0]}}" mode="aspectFill" bindtap="previewCard"></image>
+      <text class="card-text">{{cardItem.title || '甜蜜瞬间'}}</text>
+      <text class="card-sub">{{cardItem.date}}</text>
+      <view class="card-actions">
+        <button class="mini-btn ghost" bindtap="closeCard">关闭</button>
+        <button class="mini-btn primary" bindtap="drawMemory">再抽一次</button>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,140 @@
+<view class="container">
+  <!-- 主标题和搜索栏 -->
+  <view class="main-header">
+    <view class="title-section">
+      <text class="main-title">恋爱助手</text>
+      <text class="sub-title">随叫随到 ▶</text>
+    </view>
+    <view class="search-bar">
+      <picker class="location-picker" bindchange="onLocationChange">
+        <view class="picker-text">{{selectedLocation}}</view>
+        <!-- <image class="dropdown-icon" src="/images/home.png"></image> -->
+      </picker>
+      <input class="search-input" placeholder="输入你要找的服务" confirm-type="search" bindconfirm="onSearch"/>
+      <image class="search-icon" src="{{img.search}}"></image>
+    </view>
+  </view>
+  <!-- https://www.iconfont.cn/collections/detail?spm=a313x.home_2025.i1.dfa9d9a29.4cde3a81nQtOmc&cid=47088 -->
+  <!-- 功能菜单网格 -->
+  <view class="menu-grid">
+    <!-- 第一行 -->
+    <view class="menu-row">
+      <view class="menu-item" bindtap="goToDatePlan">
+        <image class="menu-icon" src="{{img.plan}}"></image>
+        <text class="menu-text">约会规划</text>
+      </view>
+      <view class="menu-item" bindtap="goToGiftSuggest">
+        <image class="menu-icon" src="{{img.mood}}"></image>
+        <text class="menu-text">心情日记</text>
+      </view>
+      <view class="menu-item" bindtap="goToLoveWords">
+        <image class="menu-icon" src="{{img.food}}"></image>
+        <text class="menu-text">美食猜猜</text>
+      </view>
+      <view class="menu-item" bindtap="goToMemorialDay">
+        <image class="menu-icon" src="{{img.game}}"></image>
+        <text class="menu-text">情侣游戏</text>
+      </view>
+      <view class="menu-item" bindtap="goToPhotoAlbum">
+        <image class="menu-icon" src="{{img.goal}}"></image>
+        <text class="menu-text">恋爱目标</text>
+      </view>
+    </view>
+
+    <!-- 第二行 -->
+    <view class="menu-row">
+      <view class="menu-item" bindtap="goToLoveTest">
+        <image class="menu-icon" src="{{img.socks}}"></image>
+        <text class="menu-text">树洞袜子</text>
+      </view>
+      <view class="menu-item" bindtap="goToCoupleTasks">
+        <image class="menu-icon" src="{{img.task}}"></image>
+        <text class="menu-text">情侣任务</text>
+      </view>
+      <view class="menu-item" bindtap="goToLoveCalendar">
+        <image class="menu-icon" src="{{img.calendar}}"></image>
+        <text class="menu-text">恋爱日历</text>
+      </view>
+      <view class="menu-item" bindtap="goToLoveTips">
+        <image class="menu-icon" src="{{img.balloon}}"></image>
+        <text class="menu-text">呼叫对方</text>
+      </view>
+      <view class="menu-item" bindtap="goToMoodDiary">
+        <image class="menu-icon" src="{{img.assistant}}"></image>
+        <text class="menu-text">AI助手</text>
+      </view>
+    </view>
+
+    <!-- 第三行 -->
+    <view class="menu-row">
+      <view class="menu-item" bindtap="goToChatTopics">
+        <image class="menu-icon" src="{{img.bear}}"></image>
+        <text class="menu-text">小小计划</text>
+      </view>
+      <view class="menu-item" bindtap="goToDateSpots">
+        <image class="menu-icon" src="{{img.doll}}"></image>
+        <text class="menu-text">大大喜欢</text>
+      </view>
+      <view class="menu-item" bindtap="goToLoveGames">
+        <image class="menu-icon" src="{{img.play}}"></image>
+        <text class="menu-text">打发时间</text>
+      </view>
+      <view class="menu-item" bindtap="goToRelationshipAdvice">
+        <image class="menu-icon" src="{{img.album}}"></image>
+        <text class="menu-text">情侣相册</text>
+      </view>
+      <view class="menu-item" bindtap="goToWishList">
+        <image class="menu-icon" src="{{img.sound}}"></image>
+        <text class="menu-text">快来听听</text>
+      </view>
+    </view>
+
+    <!-- 第四行 -->
+    <view class="menu-row">
+      <view class="menu-item" bindtap="goToLoveStory">
+        <image class="menu-icon" src="{{img.period}}"></image>
+        <text class="menu-text">经期日历</text>
+      </view>
+      <view class="menu-item" bindtap="goToSurpriseIdeas">
+        <image class="menu-icon" src="{{img.placeholder}}"></image>
+        <text class="menu-text">等待开发</text>
+      </view>
+      <view class="menu-item" bindtap="goToCoupleGoals">
+        <image class="menu-icon" src="{{img.placeholder}}"></image>
+        <text class="menu-text">等待开发</text>
+      </view>
+      <view class="menu-item" bindtap="goToEmotionAnalysis">
+        <image class="menu-icon" src="{{img.placeholder}}"></image>
+        <text class="menu-text">等待开发</text>
+      </view>
+      <view class="menu-item" bindtap="goToMoreServices">
+        <image class="menu-icon" src="{{img.placeholder}}"></image>
+        <text class="menu-text">更多服务</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分页指示器 -->
+  <view class="pagination">
+    <view class="dot active"></view>
+    <view class="dot"></view>
+  </view>
+
+  <!-- 天气提醒卡片 -->
+  <view class="weather-card">
+    <view class="weather-header">
+      <text class="weather-title">天气提醒</text>
+      <text class="weather-date">{{currentDate}}</text>
+    </view>
+    <view class="weather-content">
+      <view class="weather-info">
+        <text class="weather-main-text">今日适合约会 {{weatherDesc}}</text>
+        <text class="weather-sub-text">🌡️ 温度适宜，记得为TA准备一件外套</text>
+        <view class="weather-suggestion">
+          <button class="weather-btn" bindtap="checkWeatherDetail">查看详细天气</button>
+        </view>
+      </view>
+      <image class="weather-image" src="{{img.weather}}"></image>
+    </view>
+  </view>
+</view>

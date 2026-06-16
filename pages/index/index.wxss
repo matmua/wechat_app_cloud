@@ -1,0 +1,220 @@
+.container {
+  background-color: #f8f8f8;
+  min-height: 100vh;
+  padding: 0;
+  overflow-x: hidden;             /* 保险 */
+}
+
+/* 1) 横幅不要用 100vw，避免与其它 margin 叠加溢出 */
+.main-banner {
+  position: relative;
+  height: 325rpx;
+  width: 100%;                    /* ← 由 100vw 改为 100% */
+  margin: 0;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+/* 2) 菜单容器不要用 100vw；让它占满父容器宽度即可 */
+.menu-grid {
+  padding: 40rpx;
+  background-color: white;
+  margin: 0;
+  width: 100%;                    /* ← 由 100vw 改为 100% */
+  margin-top: 10rpx;
+  border-radius: 20rpx;
+}
+
+.banner-bg {
+  width: 100%;
+  top: -400rpx;          /* ✅ 往上挪：数值越大，画面越“偏下” */
+  height: calc(100% + 400rpx);  /* ✅ 防止挪动后露出空白 */
+  display: block; /* 确保图片正常显示 */
+  position: absolute;
+  pointer-events: none;/* 防止挡住上层点击（可选） */
+}
+
+.banner-content {
+  position: absolute;
+  top: 45%;
+  left: 60rpx;
+  transform: translateY(-50%);
+  color: rgb(215, 221, 233);
+  z-index: 2; /* 确保文字在图片上方 */
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3); /* 添加文字阴影提高可读性 */
+}
+
+.couple-names {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  margin-left: 80rpx; /* 向右偏移，不与第一行对齐 */
+}
+
+.love-diary {
+  font-size: 36rpx;
+  margin-left: 30rpx; /* 向右偏移，不与第一行对齐 */
+}
+
+
+.menu-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 60rpx;
+}
+
+.menu-row:last-child {
+  margin-bottom: 0;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 30%;
+}
+
+.menu-icon {
+  width: 80rpx;
+  height: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.menu-text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 恋爱天数统计 */
+.love-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40rpx;
+  background-color: white;
+  margin: 10rpx;
+  width: 90vw; /* 使用视口宽度，确保全屏 */
+  border-radius: 20rpx;
+}
+
+.days-together {
+  display: flex;
+  align-items: baseline;
+}
+
+.days-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.days-number {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #ff69b4;
+  margin: 0 10rpx;
+}
+
+.couple-avatar {
+  width: 100rpx;
+  height: 80rpx;
+}
+
+/* 统计数据 */
+.statistics {
+  display: flex;
+  justify-content: space-around;
+  padding: 40rpx;
+  background-color: white;
+  margin: 10rpx;
+  width: 90vw; /* 使用视口宽度，确保全屏 */
+  border-radius: 20rpx;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.stat-number {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.orange {
+  color: #ff9500;
+}
+
+.blue {
+  color: #007aff;
+}
+
+.pink {
+  color: #ff69b4;
+}
+
+/* 恋爱进度条 */
+.love-progress {
+  display: flex;
+  align-items: center;
+  padding: 40rpx;
+  background-color: white;
+  margin: 20rpx;
+  width: 100vw; /* 使用视口宽度，确保全屏 */
+  border-radius: 20rpx;
+  overflow-x: auto;
+}
+
+.progress-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120rpx;
+}
+
+.progress-dot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  background-color: #ddd;
+  margin-bottom: 20rpx;
+}
+
+.progress-dot.active {
+  background-color: #ff69b4;
+}
+
+.progress-line {
+  height: 4rpx;
+  width: 100rpx;
+  background-color: #ddd;
+  margin: 0 20rpx;
+  margin-top: -40rpx;
+}
+
+.progress-line.active {
+  background-color: #ff69b4;
+}
+
+.progress-label {
+  text-align: center;
+}
+
+.progress-title {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.progress-desc {
+  font-size: 24rpx;
+  color: #999;
+}

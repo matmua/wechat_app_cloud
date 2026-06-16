@@ -1,0 +1,322 @@
+page{ background:#f6f7fb; }
+.page{ padding:24rpx; padding-bottom: 120rpx; }
+
+/* header */
+.header{
+  background:#fff;
+  border-radius: 28rpx;
+  padding: 22rpx;
+  border: 1rpx solid #f1f2f6;
+  box-shadow: 0 14rpx 36rpx rgba(0,0,0,0.06);
+}
+.head-row{ display:flex; justify-content:space-between; gap: 14rpx; }
+.title{ font-size: 36rpx; font-weight: 900; color:#222; }
+.subtitle{ display:block; margin-top: 6rpx; font-size: 24rpx; color:#8a8f98; }
+
+.actions{ display:flex; gap: 10rpx; align-items:flex-start; }
+.action-pill{
+  padding: 10rpx 14rpx;
+  border-radius: 999rpx;
+  background:#fff6f9;
+  border:1rpx solid #ffd3df;
+  color:#ff4f7a;
+  font-size: 24rpx;
+  font-weight: 900;
+}
+.action-pill.ghost{
+  background:#fff;
+  border-color:#eef0f6;
+  color:#444;
+}
+
+.search-row{ margin-top: 14rpx; display:flex; gap: 12rpx; align-items:center; }
+.search{
+  flex:1;
+  height: 74rpx;
+  border-radius: 18rpx;
+  background:#f7f8fb;
+  border: 1rpx solid #eef0f6;
+  padding: 0 18rpx;
+  font-size: 26rpx;
+}
+.month-pill{
+  height: 74rpx;
+  padding: 0 16rpx;
+  border-radius: 18rpx;
+  background:#ffffff;
+  border: 1rpx solid #eef0f6;
+  display:flex;
+  align-items:center;
+  font-size: 24rpx;
+  color:#444;
+}
+
+/* fav */
+.fav-card{
+  margin-top: 16rpx;
+  background:#fff6f9;
+  border: 1rpx solid #ffd3df;
+  border-radius: 22rpx;
+  padding: 14rpx;
+}
+.fav-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom: 10rpx; }
+.fav-title{ font-size: 26rpx; font-weight: 900; color:#ff4f7a; }
+.fav-more{ font-size: 24rpx; color:#666; }
+.fav-scroll{ white-space: nowrap; }
+.fav-item{ width: 220rpx; display:inline-flex; flex-direction:column; margin-right: 12rpx; }
+.fav-img{ width: 220rpx; height: 220rpx; border-radius: 18rpx; border:1rpx solid #ffe0ea; }
+.fav-text{ margin-top: 8rpx; font-size: 22rpx; color:#444; }
+
+/* grid */
+.grid{ margin-top: 18rpx; }
+.tile{
+  background:#fff;
+  border-radius: 24rpx;
+  border: 1rpx solid #f1f2f6;
+  box-shadow: 0 10rpx 26rpx rgba(0,0,0,0.05);
+  margin-bottom: 16rpx;
+  overflow:hidden;
+}
+.tile-img-wrap{ position:relative; width: 100%; height: 420rpx; background:#f7f8fb; }
+.tile-img{ width:100%; height:100%; display:block; }
+.tile-badge{
+  position:absolute;
+  right: 12rpx;
+  top: 12rpx;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 999rpx;
+  background: rgba(255,111,142,0.92);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 28rpx;
+}
+
+.tile-meta{ padding: 16rpx 16rpx 18rpx; }
+.tile-title{ font-size: 30rpx; font-weight: 900; color:#222; display:block; }
+.tile-date{ font-size: 22rpx; color:#8a8f98; margin-top: 6rpx; display:block; }
+
+.tag-row{ margin-top: 10rpx; display:flex; gap: 10rpx; flex-wrap:wrap; }
+.tag{
+  padding: 6rpx 12rpx;
+  border-radius: 999rpx;
+  background:#f7f8fb;
+  border: 1rpx solid #eef0f6;
+  color:#555;
+  font-size: 22rpx;
+}
+.removable{ background:#fff6f9; border-color:#ffd3df; color:#ff4f7a; }
+.x{ margin-left: 6rpx; }
+
+.btn-row{ margin-top: 12rpx; display:flex; gap: 10rpx; justify-content:flex-end; }
+
+.mini-btn{
+  padding: 10rpx 14rpx;
+  border-radius: 16rpx;
+  font-size: 24rpx;
+  border: 1rpx solid #e9ecf3;
+  background:#fff;
+  color:#444;
+}
+.mini-btn.primary{ background:#ff6f8e; border:none; color:#fff; font-weight: 900; }
+.mini-btn.ghost{ background:#fff; }
+.mini-btn.danger{ background:#fff0f0; border-color:#ffd1d1; color:#d33; }
+
+/* empty */
+.empty{
+  margin-top: 26rpx;
+  background:#fff;
+  border-radius: 28rpx;
+  border: 1rpx solid #f1f2f6;
+  box-shadow: 0 12rpx 32rpx rgba(0,0,0,0.05);
+  padding: 40rpx 26rpx;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap: 10rpx;
+}
+.empty-emoji{ font-size: 72rpx; }
+.empty-title{ font-size: 30rpx; font-weight: 900; color:#222; }
+.empty-sub{ font-size: 24rpx; color:#8a8f98; }
+.big-btn{
+  margin-top: 8rpx;
+  background:#ff6f8e;
+  color:#fff;
+  border-radius: 999rpx;
+  font-weight: 900;
+}
+
+/* modal */
+.mask{
+  position: fixed; left:0; right:0; top:0; bottom:0;
+  background: rgba(0,0,0,0.35);
+  display:flex; align-items:flex-end;
+  z-index: 30;
+}
+.modal{
+  width: 100%;
+  background:#fff;
+  border-radius: 28rpx 28rpx 0 0;
+  padding: 22rpx 22rpx 18rpx;
+  max-height: 86vh;
+  overflow:auto;
+}
+.modal-title{ font-size: 32rpx; font-weight: 900; color:#222; margin-bottom: 10rpx; }
+.field{ margin-top: 16rpx; }
+.label{ display:block; font-size: 24rpx; color:#6b7280; margin-bottom: 8rpx; }
+.input{
+  height: 74rpx;
+  border-radius: 18rpx;
+  background:#f7f8fb;
+  border: 1rpx solid #eef0f6;
+  padding: 0 18rpx;
+  font-size: 26rpx;
+}
+.textarea{
+  height: 140rpx;
+  border-radius: 18rpx;
+  background:#f7f8fb;
+  border: 1rpx solid #eef0f6;
+  padding: 16rpx 18rpx;
+  font-size: 26rpx;
+}
+
+.tag-input-row{ display:flex; gap: 12rpx; align-items:center; }
+.tag-input{ flex:1; height:74rpx; border-radius:18rpx; background:#f7f8fb; border:1rpx solid #eef0f6; padding:0 18rpx; font-size:26rpx; }
+.tag-add{ height:74rpx; padding:0 16rpx; border-radius:18rpx; background:#fff6f9; border:1rpx solid #ffd3df; color:#ff4f7a; font-weight:900; display:flex; align-items:center; }
+
+.photo-picker{ display:flex; gap: 12rpx; flex-wrap: wrap; }
+.pick{
+  width: 190rpx; height: 190rpx;
+  border-radius: 18rpx;
+  background:#f7f8fb;
+  border: 1rpx dashed #d7dbe6;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.pick-plus{ font-size: 52rpx; color:#ff6f8e; line-height:1; }
+.pick-text{ font-size: 22rpx; color:#6b7280; }
+.picked{
+  width: 190rpx; height: 190rpx;
+  border-radius: 18rpx;
+  overflow:hidden;
+  position: relative;
+  border: 1rpx solid #eef0f6;
+  background:#f6f7fb;
+}
+.picked-img{ width:100%; height:100%; display:block; }
+.remove-btn{
+  position:absolute; right: 10rpx; top: 10rpx;
+  width: 42rpx; height: 42rpx;
+  border-radius: 999rpx;
+  background: rgba(0,0,0,0.55);
+  color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-size: 30rpx;
+}
+.hint{ display:block; margin-top: 10rpx; font-size: 22rpx; color:#9aa0a6; }
+
+.modal-actions{ margin-top: 20rpx; display:flex; gap: 12rpx; justify-content:flex-end; }
+
+/* 抽卡 */
+.card-modal{
+  width: 100%;
+  background:#fff;
+  border-radius: 28rpx 28rpx 0 0;
+  padding: 22rpx;
+}
+.card-title{ font-size: 30rpx; font-weight: 900; color:#222; margin-bottom: 12rpx; }
+.card-img{
+  width: 100%;
+  height: 760rpx;
+  border-radius: 22rpx;
+  background:#f7f8fb;
+  border: 1rpx solid #eef0f6;
+}
+.card-text{ display:block; margin-top: 12rpx; font-size: 30rpx; font-weight: 900; color:#222; }
+.card-sub{ display:block; margin-top: 6rpx; font-size: 24rpx; color:#8a8f98; }
+.card-actions{ margin-top: 14rpx; display:flex; gap: 12rpx; justify-content:flex-end; }
+
+/* ===== 小红书瀑布流两列 ===== */
+.wf{
+  margin-top: 18rpx;
+  display: flex;
+  align-items: flex-start;
+}
+
+.col{
+  flex: 1;
+}
+
+.col-left{ margin-right: 10rpx; }
+.col-right{ margin-left: 10rpx; }
+
+.tile{
+  background:#fff;
+  border-radius: 22rpx;
+  border: 1rpx solid #f1f2f6;
+  box-shadow: 0 10rpx 22rpx rgba(0,0,0,0.05);
+  margin-bottom: 16rpx;
+  overflow: hidden;
+}
+
+.tile-img-wrap{
+  position: relative;
+  width: 100%;
+  background: #f7f8fb;
+}
+
+/* 关键：widthFix 会自动按原比例算高度 */
+.tile-img{
+  width: 100%;
+  display: block;
+}
+
+.tile-badge{
+  position:absolute;
+  right: 12rpx;
+  top: 12rpx;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 999rpx;
+  background: rgba(255,111,142,0.92);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 28rpx;
+}
+
+.tile-meta{ padding: 14rpx 14rpx 16rpx; }
+
+/* 图片区域：统一裁剪，防止竖图撑爆/横图太扁 */
+.tile-img-wrap{
+  position: relative;
+  width: 100%;
+  border-radius: 18rpx;
+  overflow: hidden;          /* ✅ 圆角裁剪生效 */
+  background: #f7f8fb;
+}
+
+/* 用一个“自适应高度范围”来做瀑布流：不会超、也不会太扁 */
+.tile-img-wrap::before{
+  content: "";
+  display: block;
+  /* 这个比例决定默认高度：0.85~1.2 都可以，你想更像小红书就用 1.1 */
+  padding-top: 110%;
+}
+
+/* 图片铺满容器 */
+.tile-img{
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 防止 badge 被裁掉 */
+.tile-badge{
+  z-index: 2;
+}

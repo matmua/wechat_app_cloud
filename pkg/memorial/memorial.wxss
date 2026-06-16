@@ -1,0 +1,198 @@
+page{ background:#f2f3f5; }
+.page{ padding: 20rpx 20rpx 140rpx; }
+
+.card{
+  background:#fff;
+  border-radius: 24rpx;
+  box-shadow: 0 12rpx 28rpx rgba(0,0,0,0.06);
+  border: 1rpx solid #f0f0f0;
+}
+
+.banner{
+  background:#fff6f9;
+  border: 1rpx solid #ffd3df;
+  border-radius: 18rpx;
+  padding: 16rpx 18rpx;
+  margin-bottom: 18rpx;
+}
+.banner-text{ font-size: 26rpx; color:#ff4f7a; line-height: 1.5; }
+
+.hero{
+  padding: 22rpx;
+  display:flex;
+  justify-content: space-between;
+  margin-bottom: 18rpx;
+}
+.hero-title{ font-size: 34rpx; font-weight: 900; color:#222; }
+.hero-sub{ margin-top: 8rpx; font-size: 24rpx; color:#8a8f98; }
+.hero-metrics{ margin-top: 16rpx; display:flex; gap: 18rpx; }
+.metric{ padding: 14rpx 16rpx; border-radius: 18rpx; background:#fafafa; border:1rpx solid #f0f0f0; }
+.metric-label{ font-size: 22rpx; color:#8a8f98; }
+.metric-value{ font-size: 40rpx; font-weight: 900; color:#ff4f7a; margin: 2rpx 8rpx 0 0; }
+.metric-unit{ font-size: 22rpx; color:#8a8f98; }
+
+.hero-right{ display:flex; flex-direction: column; align-items:flex-end; gap: 10rpx; }
+.badge{
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 22rpx;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.badge-text{ font-size: 44rpx; }
+.star{ font-size: 34rpx; }
+
+.tabs{
+  display:flex;
+  background:#fff;
+  border-radius: 22rpx;
+  overflow:hidden;
+  border: 1rpx solid #f0f0f0;
+  margin-bottom: 16rpx;
+}
+.tab{
+  flex:1;
+  text-align:center;
+  padding: 18rpx 0;
+  font-size: 28rpx;
+  color:#666;
+}
+.tab.active{
+  color:#ff4f7a;
+  font-weight: 900;
+  background:#fff6f9;
+}
+
+.list{ display:flex; flex-direction: column; gap: 16rpx; }
+
+.item{ padding: 18rpx; }
+.item-left{ display:flex; gap: 16rpx; }
+.type-dot{
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 20rpx;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.type-icon{ font-size: 40rpx; }
+
+.item-main{ flex:1; }
+.row1{ display:flex; align-items:center; gap: 10rpx; }
+.item-title{ font-size: 30rpx; font-weight: 900; color:#222; }
+.pin{ font-size: 28rpx; }
+.item-sub{ margin-top: 6rpx; font-size: 24rpx; color:#8a8f98; }
+
+.chips{ margin-top: 12rpx; display:flex; gap: 10rpx; flex-wrap: wrap; }
+.chip{ padding: 10rpx 14rpx; border-radius: 999rpx; font-size: 22rpx; }
+.chip-text{ font-size: 22rpx; }
+.chip-pink{ background:#fff0f5; color:#ff4f7a; border:1rpx solid #ffd3df; }
+.chip-blue{ background:#eef6ff; color:#2b7cff; border:1rpx solid #cfe4ff; }
+.chip-gray{ background:#f6f7f8; color:#666; border:1rpx solid #ececec; }
+
+.item-actions{
+  margin-top: 14rpx;
+  display:flex;
+  gap: 12rpx;
+}
+.btn{
+  flex:1;
+  text-align:center;
+  padding: 16rpx 0;
+  border-radius: 16rpx;
+  font-size: 26rpx;
+  background:#f6f7f8;
+  border:1rpx solid #ececec;
+  color:#444;
+}
+.btn.danger{
+  background:#fff1f2;
+  border-color:#ffd3df;
+  color:#ff4f7a;
+}
+
+.empty{
+  margin-top: 80rpx;
+  text-align:center;
+  color:#8a8f98;
+}
+.empty-title{ font-size: 30rpx; font-weight: 900; color:#444; }
+.empty-sub{ margin-top: 10rpx; font-size: 24rpx; }
+
+.fab{
+  position: fixed;
+  right: 32rpx;
+  bottom: 170rpx;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 999rpx;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#ff6f8e;
+  color:#fff;
+  font-size: 44rpx;
+  box-shadow: 0 18rpx 34rpx rgba(255,111,142,0.45);
+  z-index: 10;
+}
+
+/* Modal */
+.mask{
+  position: fixed;
+  left:0; top:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.35);
+  display:flex;
+  align-items:flex-end;
+  z-index: 99;
+}
+.modal{
+  width: 100%;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding: 22rpx;
+}
+.modal-title{ font-size: 32rpx; font-weight: 900; color:#222; margin-bottom: 18rpx; }
+.field{ margin-bottom: 16rpx; }
+.label{ font-size: 24rpx; color:#8a8f98; margin-bottom: 8rpx; display:block; }
+.input{
+  height: 80rpx;
+  border-radius: 18rpx;
+  padding: 0 18rpx;
+  background:#fafafa;
+  border:1rpx solid #f0f0f0;
+  font-size: 28rpx;
+}
+.picker{
+  height: 80rpx;
+  border-radius: 18rpx;
+  padding: 0 18rpx;
+  background:#fafafa;
+  border:1rpx solid #f0f0f0;
+  display:flex;
+  align-items:center;
+  font-size: 28rpx;
+  color:#333;
+}
+.row{ display:flex; gap: 14rpx; }
+.col{ flex:1; }
+
+.modal-actions{
+  display:flex;
+  gap: 14rpx;
+  margin-top: 8rpx;
+}
+.ghost{
+  flex:1;
+  height: 84rpx;
+  border-radius: 20rpx;
+  background:#f6f7f8;
+  color:#444;
+}
+.primary{
+  flex:1;
+  height: 84rpx;
+  border-radius: 20rpx;
+  background:#ff6f8e;
+  color:#fff;
+}

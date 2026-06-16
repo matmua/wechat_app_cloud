@@ -1,0 +1,303 @@
+<view class="page">
+  <!-- 顶部：金库 + tabs -->
+  <view class="header">
+    <view class="bank">
+      <view class="bank-left">
+        <text class="bank-title">心动金库</text>
+        <text class="bank-sub">记录/任务/纸条都会加分 💗</text>
+      </view>
+      <view class="bank-right">
+        <text class="bank-num">{{bankPoints}}</text>
+        <text class="bank-unit">分</text>
+      </view>
+    </view>
+
+    <view class="tabs">
+      <view class="tab {{tab==='moments'?'on':''}}" bindtap="setTab" data-t="moments">瞬间</view>
+      <view class="tab {{tab==='notes'?'on':''}}" bindtap="setTab" data-t="notes">
+        纸条
+        <text class="badge" wx:if="{{unreadCount>0}}">{{unreadCount}}</text>
+      </view>
+      <view class="tab {{tab==='tasks'?'on':''}}" bindtap="setTab" data-t="tasks">任务</view>
+    </view>
+  </view>
+
+  <!-- ========== 瞬间 ========== -->
+  <view wx:if="{{tab==='moments'}}">
+    <view class="row-actions">
+      <view class="pill" bindtap="openMomentModal">＋记录心动</view>
+      <view class="pill ghost" bindtap="drawBlindBox">🎁盲盒抽卡</view>
+    </view>
+
+    <view class="list" wx:if="{{moments.length}}">
+      <view class="card" wx:for="{{moments}}" wx:key="_id">
+        <view class="card-top">
+          <view class="type">{{item.type}}</view>
+          <text class="date">{{item.direction}} · {{item.date}}</text>
+        </view>
+
+        <text class="title">{{item.title}}</text>
+        <text class="content" wx:if="{{item.content}}">{{item.content}}</text>
+
+        <view class="attach" wx:if="{{item.photoUrl}}">
+          <image class="photo" src="{{item.photoUrl}}" mode="aspectFill" bindtap="previewMomentPhoto" data-id="{{item._id}}"></image>
+        </view>
+
+        <view class="audio" wx:if="{{item.voiceUrl}}" bindtap="playMomentVoice" data-id="{{item._id}}">
+          <text class="audio-icon">🔊</text>
+          <text class="audio-text">{{playingId===item._id ? '播放中...' : '播放语音'}}</text>
+        </view>
+
+        <view class="hearts">
+          <text class="h" wx:for="{{item.heartsArr}}" wx:key="*this">❤</text>
+        </view>
+
+        <view class="ops">
+          <view class="mini ghost" bindtap="toggleMomentFav" data-id="{{item._id}}" data-f="{{item.isFav}}">收藏</view>
+          <view class="mini danger" bindtap="deleteMoment" data-id="{{item._id}}">删除</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty" wx:else>
+      <view class="empty-emoji">💓</view>
+      <text class="empty-title">还没有心动瞬间</text>
+      <text class="empty-sub">把“突然心跳一下”的时刻记下来吧</text>
+      <button class="btn primary" bindtap="openMomentModal">记录第一条</button>
+    </view>
+  </view>
+
+  <!-- ========== 纸条 ========== -->
+  <view wx:if="{{tab==='notes'}}">
+    <view class="row-actions">
+      <view class="pill" bindtap="openNoteModal">＋发纸条</view>
+      <view class="pill ghost" bindtap="refreshAll">刷新</view>
+    </view>
+
+    <view class="hintbox" wx:if="{{!partnerOpenid}}">
+      <text class="hinttext">提示：目前还没识别到 Ta（Ta 至少打开一次小程序就会自动识别）。你现在发的纸条会先存为“情侣空间”，等识别到 Ta 后会正常走未读提示。</text>
+    </view>
+
+    <view class="list" wx:if="{{notes.length}}">
+      <view class="card" wx:for="{{notes}}" wx:key="_id" bindtap="openNoteDetail" data-id="{{item._id}}">
+        <view class="card-top">
+          <text class="type">
+            {{item.noteType}}
+            <text wx:if="{{item.isSecret}}"> 🔒</text>
+          </text>
+          <text class="date">{{item.direction}} · {{item.date}}</text>
+        </view>
+
+        <text class="title">{{item.title || '小纸条'}}</text>
+        <text class="content" wx:if="{{item.lockedForMe}}">🔒 私密纸条：点开后点击“我在”解锁</text>
+        <text class="content" wx:elif="{{item.text}}">{{item.text}}</text>
+
+
+        <view class="attach" wx:if="{{item.photoUrl && !item.lockedForMe}}">
+          <image class="photo" src="{{item.photoUrl}}" mode="aspectFill"></image>
+        </view>
+
+        <view class="audio" wx:if="{{item.voiceUrl && !item.lockedForMe}}">
+          <text class="audio-icon">🔊</text>
+          <text class="audio-text">有语音（点开播放）</text>
+        </view>
+
+
+        <view class="unread" wx:if="{{!item.read}}">未读</view>
+      </view>
+    </view>
+
+    <view class="empty" wx:else>
+      <view class="empty-emoji">💌</view>
+      <text class="empty-title">还没有纸条</text>
+      <text class="empty-sub">发一句想说的话，Ta 打开就能看到</text>
+      <button class="btn primary" bindtap="openNoteModal">发第一张纸条</button>
+    </view>
+  </view>
+
+  <!-- ========== 任务 ========== -->
+  <view wx:if="{{tab==='tasks'}}">
+    <view class="task-card">
+      <view class="task-top">
+        <text class="task-title">今日心跳任务</text>
+        <text class="task-date">{{today}}</text>
+      </view>
+
+      <text class="task-text">{{todayTask.text}}</text>
+
+      <view class="task-reward">
+        <text>奖励：+{{todayTask.reward}} 分</text>
+      </view>
+
+      <view class="task-actions">
+        <button class="btn ghost" bindtap="refreshTask">换一个</button>
+        <button class="btn primary" bindtap="completeTask" disabled="{{taskDone}}">
+          {{taskDone ? '已完成 ✅' : '完成打卡'}}
+        </button>
+      </view>
+    </view>
+
+    <view class="small">
+      <text class="small-title">规则</text>
+      <text class="small-text">记录心动瞬间 +1 分；发纸条 +1 分；完成今日任务 +{{todayTask.reward}} 分。</text>
+    </view>
+  </view>
+
+  <!-- ========== 记录瞬间弹窗 ========== -->
+  <view class="mask" wx:if="{{showMoment}}">
+    <view class="modal">
+      <view class="modal-title">记录心动 💓</view>
+
+      <view class="field">
+        <text class="label">标题</text>
+        <input class="input" placeholder="比如：你给我带了奶茶" value="{{momentForm.title}}" bindinput="onMomentTitle"/>
+      </view>
+
+      <view class="field">
+        <text class="label">类型</text>
+        <picker mode="selector" range="{{momentTypes}}" value="{{momentTypeIndex}}" bindchange="onMomentTypeChange">
+          <view class="picker">{{momentTypes[momentTypeIndex]}}</view>
+        </picker>
+      </view>
+
+      <view class="field">
+        <text class="label">心动值（1~5）</text>
+        <view class="stars">
+          <view class="star {{momentForm.hearts>=1?'on':''}}" bindtap="setMomentHearts" data-v="1">❤</view>
+          <view class="star {{momentForm.hearts>=2?'on':''}}" bindtap="setMomentHearts" data-v="2">❤</view>
+          <view class="star {{momentForm.hearts>=3?'on':''}}" bindtap="setMomentHearts" data-v="3">❤</view>
+          <view class="star {{momentForm.hearts>=4?'on':''}}" bindtap="setMomentHearts" data-v="4">❤</view>
+          <view class="star {{momentForm.hearts>=5?'on':''}}" bindtap="setMomentHearts" data-v="5">❤</view>
+        </view>
+      </view>
+
+      <view class="field">
+        <text class="label">想说的话（可选）</text>
+        <textarea class="textarea" placeholder="写一句当时的感受…" value="{{momentForm.content}}" bindinput="onMomentContent"></textarea>
+      </view>
+
+      <view class="field">
+        <text class="label">照片（可选 1 张）</text>
+        <view class="photo-picker">
+          <view class="pick" wx:if="{{!momentForm.photoPath}}" bindtap="chooseMomentPhoto">
+            <text class="pick-plus">＋</text>
+            <text class="pick-text">选择</text>
+          </view>
+          <view class="picked" wx:if="{{momentForm.photoPath}}">
+            <image class="picked-img" src="{{momentForm.photoPath}}" mode="aspectFill"></image>
+            <view class="remove-btn" bindtap="removeMomentPhoto">×</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="field">
+        <text class="label">语音（可选）</text>
+        <view class="voice-row">
+          <button class="btn ghost" bindtap="toggleRecord">
+            {{recording ? '停止录音' : '开始录音'}}
+          </button>
+          <text class="voice-tip" wx:if="{{momentForm.voicePath}}">已录好 ✅（点保存上传）</text>
+        </view>
+      </view>
+
+      <view class="modal-actions">
+        <button class="btn ghost" bindtap="closeMomentModal" disabled="{{saving}}">取消</button>
+        <button class="btn primary" bindtap="saveMoment" loading="{{saving}}">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 发纸条弹窗 ========== -->
+  <view class="mask" wx:if="{{showNote}}">
+    <view class="modal">
+      <view class="modal-title">发小纸条 💌</view>
+
+      <view class="field">
+        <text class="label">类型</text>
+        <picker mode="selector" range="{{noteTypes}}" value="{{noteTypeIndex}}" bindchange="onNoteTypeChange">
+          <view class="picker">{{noteTypes[noteTypeIndex]}}</view>
+        </picker>
+      </view>
+      <view class="field">
+        <view class="secret-row">
+          <text class="label">只给Ta（加密）</text>
+          <switch checked="{{noteForm.secret}}" bindchange="onNoteSecretChange" color="#ff6f8e" />
+        </view>
+        <text class="secret-tip">Ta 需要点一下“我在”才会看到内容（未解锁前不算已读）</text>
+      </view>
+
+      <view class="field">
+        <text class="label">标题（可选）</text>
+        <input class="input" placeholder="比如：今天想你了" value="{{noteForm.title}}" bindinput="onNoteTitle"/>
+      </view>
+
+      <view class="field" wx:if="{{noteTypes[noteTypeIndex]==='文字'}}">
+        <text class="label">内容</text>
+        <textarea class="textarea" placeholder="写给Ta…" value="{{noteForm.text}}" bindinput="onNoteText"></textarea>
+      </view>
+
+      <view class="field" wx:if="{{noteTypes[noteTypeIndex]==='图片'}}">
+        <text class="label">图片（1 张）</text>
+        <view class="photo-picker">
+          <view class="pick" wx:if="{{!noteForm.photoPath}}" bindtap="chooseNotePhoto">
+            <text class="pick-plus">＋</text>
+            <text class="pick-text">选择</text>
+          </view>
+          <view class="picked" wx:if="{{noteForm.photoPath}}">
+            <image class="picked-img" src="{{noteForm.photoPath}}" mode="aspectFill"></image>
+            <view class="remove-btn" bindtap="removeNotePhoto">×</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="field" wx:if="{{noteTypes[noteTypeIndex]==='语音'}}">
+        <text class="label">语音</text>
+        <view class="voice-row">
+          <button class="btn ghost" bindtap="toggleRecordNote">
+            {{recordingNote ? '停止录音' : '开始录音'}}
+          </button>
+          <text class="voice-tip" wx:if="{{noteForm.voicePath}}">已录好 ✅</text>
+        </view>
+      </view>
+
+      <view class="modal-actions">
+        <button class="btn ghost" bindtap="closeNoteModal" disabled="{{saving}}">取消</button>
+        <button class="btn primary" bindtap="sendNote" loading="{{saving}}">发送</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 纸条详情弹窗 ========== -->
+  <view class="mask" wx:if="{{showNoteDetail}}">
+    <view class="modal">
+      <view class="modal-title">{{noteDetail.title || '小纸条'}}</view>
+      <text class="date">{{noteDetail.date}}</text>
+
+    <!-- 私密且未解锁：不显示内容 -->
+    <view wx:if="{{noteDetail.lockedForMe}}" class="secret-box">
+      <text class="secret-title">🔒 这是一张只给你的私密纸条</text>
+      <text class="secret-sub">点击“我在”后才会解锁显示内容</text>
+      <button class="btn primary" bindtap="unlockNote" data-id="{{noteDetail._id}}">我在</button>
+    </view>
+
+    <!-- 已解锁 / 非私密：正常展示 -->
+    <view wx:else>
+      <text class="content" wx:if="{{noteDetail.text}}">{{noteDetail.text}}</text>
+
+      <view class="attach" wx:if="{{noteDetail.photoUrl}}">
+        <image class="photo" src="{{noteDetail.photoUrl}}" mode="aspectFill" bindtap="previewNotePhoto"></image>
+      </view>
+
+      <view class="audio" wx:if="{{noteDetail.voiceUrl}}" bindtap="playNoteVoice">
+        <text class="audio-icon">🔊</text>
+        <text class="audio-text">{{playingNote ? '播放中...' : '播放语音'}}</text>
+      </view>
+    </view>
+
+
+      <view class="modal-actions">
+        <button class="btn ghost" bindtap="closeNoteDetail">关闭</button>
+      </view>
+    </view>
+  </view>
+</view>

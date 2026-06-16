@@ -1,0 +1,75 @@
+{
+  "requiredPrivateInfos": ["chooseLocation"],
+  "pages": [
+    "pages/index/index",
+    "pages/matters/matters",
+    "pages/remembers/remembers"
+  ],
+  "subpackages": [
+    {
+      "root": "pkg",
+      "pages": [
+        "daterecord/daterecord",
+        "heartbeat/heartbeat",
+        "photoalbum/photoalbum",
+        "memorial/memorial",
+        "timeline/timeline",
+        "weather/weather",
+        "datePlan/datePlan",
+        "giftSuggest/giftSuggest",
+        "loveWords/loveWords",
+        "memorialDay/memorialDay",
+        "photolove/photolove",
+        "loveTest/loveTest",
+        "coupleTasks/coupleTasks",
+        "loveCalendar/loveCalendar",
+        "loveTips/loveTips",
+        "moodDiary/moodDiary",
+        "chatTopics/chatTopics",
+        "dateSpots/dateSpots",
+        "loveGames/loveGames",
+        "relationshipAdvice/relationshipAdvice",
+        "loveStory/loveStory",
+        "surpriseIdeas/surpriseIdeas",
+        "coupleGoals/coupleGoals",
+        "emotionAnalysis/emotionAnalysis",
+        "moreServices/moreServices",
+        "wishlist/wishlist"
+      ]
+    }
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ff69b4",
+    "navigationBarTitleText": "爱木长诗",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f8f8f8"
+  },
+  "tabBar": {
+    "selectedColor": "#b4282d",
+    "position": "bottom",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/home.png",
+        "selectedIconPath": "images/home_select.png"
+      },
+      {
+        "pagePath": "pages/matters/matters",
+        "text": "工具",
+        "iconPath": "images/login.png",
+        "selectedIconPath": "images/login_select.png"
+      },
+      {
+        "pagePath": "pages/remembers/remembers",
+        "text": "我们",
+        "iconPath": "images/login.png",
+        "selectedIconPath": "images/login_select.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

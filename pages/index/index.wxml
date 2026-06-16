@@ -1,0 +1,111 @@
+<!--index.wxml-->
+<view class="container">
+  <!-- 主横幅区域 -->
+<view class="main-banner">
+  <!-- 检查图片是否存在 -->
+  <image class="banner-bg" src="{{img.home}}" mode="aspectFill" binderror="imageError" bindload="imageLoad"></image>
+  <view class="banner-content">
+    <text class="couple-names">小栾和小郭</text>
+    <text class="love-diary">の恋爱日记</text>
+  </view>
+</view>
+
+  <!-- 功能菜单区域 -->
+  <view class="menu-grid">
+    <!-- 第一行 -->
+    <view class="menu-row">
+      <view class="menu-item" bindtap="goToWishList">
+        <image class="menu-icon" src="{{img.hamster}}"></image>
+        <text class="menu-text">心愿清单</text>
+      </view>
+      <view class="menu-item" bindtap="goToDateRecord">
+        <image class="menu-icon" src="{{img.shiba}}"></image>
+        <text class="menu-text">约会记录</text>
+      </view>
+      <view class="menu-item" bindtap="goToHeartbeat">
+        <image class="menu-icon" src="{{img.golden}}"></image>
+        <text class="menu-text">心动瞬间</text>
+      </view>
+    </view>
+    
+    <!-- 第二行 -->
+    <view class="menu-row">
+      <view class="menu-item" bindtap="goToPhotoAlbum">
+        <image class="menu-icon" src="{{img.psyduck}}"></image>
+        <text class="menu-text">甜蜜相册</text>
+      </view>
+      <view class="menu-item" bindtap="goToMemorialDay">
+        <image class="menu-icon" src="{{img.sheep}}"></image>
+        <text class="menu-text">纪念日</text>
+      </view>
+      <view class="menu-item" bindtap="goToTimeline">
+        <image class="menu-icon" src="{{img.calico}}"></image>
+        <text class="menu-text">时光回顾</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 恋爱天数统计 -->
+  <view class="love-stats">
+    <view class="days-together">
+      <text class="days-text">今天是在一起的第</text>
+      <text class="days-number">{{daysCount}}</text>
+      <text class="days-text">天</text>
+    </view>
+    <image class="couple-avatar" src="{{img.lovedays}}"></image>
+  </view>
+
+  <!-- 统计数据 -->
+  <view class="statistics">
+    <view class="stat-item">
+      <text class="stat-label">完成心愿</text>
+      <text class="stat-number orange">{{dateCount}}个</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">照片数量</text>
+      <text class="stat-number blue">{{photoCount}}张</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-label">心动金库</text>
+      <text class="stat-number pink">{{heartbeatCount}}分</text>
+    </view>
+  </view>
+
+  <!-- 恋爱进度条 -->
+  <view class="love-progress">
+    <view class="progress-item">
+      <view class="progress-dot active"></view>
+      <view class="progress-label">
+        <text class="progress-title">相识</text>
+        <text class="progress-desc">情窦初开</text>
+      </view>
+    </view>
+    <view class="progress-line active"></view>
+    
+    <view class="progress-item">
+      <view class="progress-dot active"></view>
+      <view class="progress-label">
+        <text class="progress-title">相恋</text>
+        <text class="progress-desc">两情相悦</text>
+      </view>
+    </view>
+    <view class="progress-line active"></view>
+    
+    <view class="progress-item">
+      <view class="progress-dot active"></view>
+      <view class="progress-label">
+        <text class="progress-title">相爱</text>
+        <text class="progress-desc">深陷爱河</text>
+      </view>
+    </view>
+    <view class="progress-line"></view>
+    
+    <view class="progress-item">
+      <view class="progress-dot"></view>
+      <view class="progress-label">
+        <text class="progress-title">相守</text>
+        <text class="progress-desc">执手偕老</text>
+      </view>
+    </view>
+  </view>
+</view>

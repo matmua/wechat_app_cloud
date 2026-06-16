@@ -1,0 +1,238 @@
+<view class="page">
+  <!-- 顶部卡片 -->
+  <view class="header-card">
+    <view class="header-top">
+      <view>
+        <text class="title">约会记录</text>
+        <text class="subtitle">把每一次见面都存成“可回放”的甜</text>
+      </view>
+
+      <view class="seg">
+        <view class="seg-item {{viewMode==='timeline'?'on':''}}" bindtap="setViewMode" data-m="timeline">时间轴</view>
+        <view class="seg-item {{viewMode==='calendar'?'on':''}}" bindtap="setViewMode" data-m="calendar">日历</view>
+      </view>
+    </view>
+
+    <view class="stats-row">
+      <view class="stat">
+        <text class="stat-num">{{totalCount}}</text>
+        <text class="stat-label">次约会</text>
+      </view>
+      <view class="stat">
+        <text class="stat-num">{{monthCount}}</text>
+        <text class="stat-label">本月</text>
+      </view>
+      <view class="stat">
+        <text class="stat-num">{{totalCost}}</text>
+        <text class="stat-label">总花费(元)</text>
+      </view>
+    </view>
+
+    <view class="search-row">
+      <input class="search" placeholder="搜索：标题 / 地点 / 标签" value="{{keyword}}" bindinput="onKeywordInput" />
+      <view class="chip" bindtap="openAdd">
+        <text class="chip-text">＋新增</text>
+      </view>
+    </view>
+
+    <view class="tpl-row">
+      <view class="tpl" bindtap="useTpl" data-t="看电影🎬">看电影🎬</view>
+      <view class="tpl" bindtap="useTpl" data-t="吃火锅🍲">吃火锅🍲</view>
+      <view class="tpl" bindtap="useTpl" data-t="散步🌙">散步🌙</view>
+      <view class="tpl" bindtap="useTpl" data-t="小旅行✈️">小旅行✈️</view>
+    </view>
+  </view>
+
+  <!-- 日历视图 -->
+  <view class="calendar-card" wx:if="{{viewMode==='calendar'}}">
+    <view class="cal-header">
+      <view class="cal-btn" bindtap="prevMonth">‹</view>
+      <text class="cal-title">{{calMonth}}</text>
+      <view class="cal-btn" bindtap="nextMonth">›</view>
+    </view>
+
+    <view class="cal-week">
+      <text class="wk">日</text><text class="wk">一</text><text class="wk">二</text><text class="wk">三</text><text class="wk">四</text><text class="wk">五</text><text class="wk">六</text>
+    </view>
+
+    <view class="cal-grid">
+      <view class="cal-cell {{item.isToday?'today':''}} {{item.isSelected?'selected':''}}"
+            wx:for="{{calDays}}" wx:key="idx"
+            bindtap="selectDay"
+            data-date="{{item.date}}"
+            data-blank="{{item.blank}}">
+        <text class="cal-day" wx:if="{{!item.blank}}">{{item.day}}</text>
+        <view class="cal-dot" wx:if="{{!item.blank && item.hasEvent}}"></view>
+      </view>
+    </view>
+
+    <view class="cal-selected-row">
+      <text class="cal-selected">已选：{{selectedDate || '（未选择）'}}</text>
+      <view class="cal-clear" bindtap="clearSelectedDate">清除</view>
+    </view>
+  </view>
+
+  <!-- 列表 -->
+  <view class="list">
+    <block wx:if="{{filteredList.length>0}}">
+      <view class="item-card" wx:for="{{filteredList}}" wx:key="_id" bindtap="openEdit" data-id="{{item._id}}">
+        <view class="left">
+          <view class="dot"></view>
+          <view class="line" wx:if="{{!item.isLast}}"></view>
+        </view>
+
+        <view class="mid">
+          <view class="row1">
+            <text class="date">{{item.date}}</text>
+            <view class="mood">
+              <text wx:for="{{item.moodStars}}" wx:key="*this" class="mood-star">❤</text>
+              <text wx:if="{{item.moodStars.length===0}}" class="mood-empty">—</text>
+            </view>
+          </view>
+
+          <text class="item-title">{{item.title}}</text>
+
+          <view class="meta">
+            <text class="meta-text" wx:if="{{item.locationName}}">📍 {{item.locationName}}</text>
+            <text class="meta-text" wx:if="{{item.cost>0}}">💰 {{item.cost}} 元</text>
+          </view>
+
+          <view class="tags" wx:if="{{item.tags && item.tags.length}}">
+            <view class="tag" wx:for="{{item.tags}}" wx:key="*this">{{item}}</view>
+          </view>
+
+          <text class="note" wx:if="{{item.note}}">{{item.note}}</text>
+
+          <view class="photos" wx:if="{{item.photoUrls && item.photoUrls.length}}">
+            <image class="photo"
+                   wx:for="{{item.photoUrls}}"
+                   wx:key="*this"
+                   src="{{item}}"
+                   mode="aspectFill"
+                   bindtap="previewPhoto"
+                   catchtap="true"
+                   data-idx="{{index}}"
+                   data-id="{{item._id}}"></image>
+          </view>
+        </view>
+
+        <view class="right">
+          <button class="btn ghost" size="mini" bindtap="makePoster" data-id="{{item._id}}" catchtap="true">海报</button>
+          <button class="btn danger" size="mini" bindtap="onDelete" data-id="{{item._id}}" catchtap="true">删除</button>
+        </view>
+      </view>
+    </block>
+
+    <view class="empty" wx:else>
+      <view class="empty-emoji">🍓</view>
+      <text class="empty-title">还没有约会记录</text>
+      <text class="empty-sub">点右下角按钮，把第一条记下来吧</text>
+      <button class="btn primary" bindtap="openAdd">添加约会</button>
+    </view>
+  </view>
+
+  <!-- 悬浮按钮 -->
+  <view class="fab" bindtap="openAdd">＋</view>
+
+  <!-- 票根海报弹窗 -->
+  <view class="mask" wx:if="{{showPoster}}">
+    <view class="poster-modal">
+      <view class="poster-title">票根海报</view>
+      <image class="poster-img" src="{{posterPath}}" mode="widthFix" bindtap="previewPoster"></image>
+
+      <view class="poster-actions">
+        <button class="btn ghost" bindtap="closePoster">关闭</button>
+        <button class="btn ghost" bindtap="savePoster">保存相册</button>
+        <button class="btn primary" bindtap="sharePoster">分享给Ta</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 隐藏画布：生成海报用 -->
+  <canvas canvas-id="posterCanvas" class="poster-canvas"></canvas>
+
+  <!-- 新增/编辑弹窗 -->
+  <view class="mask" wx:if="{{showModal}}">
+    <view class="modal">
+      <view class="modal-title">{{editingId ? '编辑约会' : '新增约会'}}</view>
+
+      <view class="field">
+        <text class="label">标题</text>
+        <input class="input" placeholder="比如：圣诞逛街 + 火锅" value="{{form.title}}" bindinput="onTitle" maxlength="50" />
+      </view>
+
+      <view class="field">
+        <text class="label">日期</text>
+        <picker mode="date" value="{{form.date}}" bindchange="onDate">
+          <view class="picker">{{form.date || '选择日期'}}</view>
+        </picker>
+      </view>
+
+      <!-- 📍 地点 + 地图选点 -->
+      <view class="field">
+        <text class="label">地点</text>
+        <view class="loc-row">
+          <input class="input loc-input" placeholder="比如：徐家汇 / 迪士尼" value="{{form.locationName}}" bindinput="onLocationName" maxlength="60" />
+          <view class="loc-btn" bindtap="pickLocation">地图选点</view>
+        </view>
+        <text class="hint" wx:if="{{form.locationAddr}}">{{form.locationAddr}}</text>
+      </view>
+
+      <view class="field">
+        <text class="label">花费（元，可选）</text>
+        <input class="input" type="number" placeholder="0" value="{{form.cost}}" bindinput="onCost" />
+      </view>
+
+      <view class="field">
+        <text class="label">心情（可选）</text>
+        <view class="stars">
+          <view class="star {{form.mood>=1?'on':''}}" bindtap="setMood" data-v="1">❤</view>
+          <view class="star {{form.mood>=2?'on':''}}" bindtap="setMood" data-v="2">❤</view>
+          <view class="star {{form.mood>=3?'on':''}}" bindtap="setMood" data-v="3">❤</view>
+          <view class="star {{form.mood>=4?'on':''}}" bindtap="setMood" data-v="4">❤</view>
+          <view class="star {{form.mood>=5?'on':''}}" bindtap="setMood" data-v="5">❤</view>
+          <view class="clear" bindtap="setMood" data-v="0">清空</view>
+        </view>
+      </view>
+
+      <view class="field">
+        <text class="label">标签（可选）</text>
+        <view class="tag-input-row">
+          <input class="tag-input" placeholder="输入后点“添加”" value="{{tagDraft}}" bindinput="onTagDraft" maxlength="10"/>
+          <view class="tag-add" bindtap="addTag">添加</view>
+        </view>
+        <view class="tags" wx:if="{{form.tags.length}}">
+          <view class="tag removable" wx:for="{{form.tags}}" wx:key="*this" bindtap="removeTag" data-t="{{item}}">
+            {{item}} <text class="x">×</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="field">
+        <text class="label">照片（可选，最多3张）</text>
+        <view class="photo-picker">
+          <view class="pick" bindtap="choosePhotos" wx:if="{{form.photos.length<3}}">
+            <text class="pick-plus">＋</text>
+            <text class="pick-text">添加</text>
+          </view>
+
+          <view class="picked" wx:for="{{form.photos}}" wx:key="idx">
+            <image class="picked-img" src="{{item.preview}}" mode="aspectFill" bindtap="previewPicked" data-idx="{{index}}"></image>
+            <view class="remove-btn" bindtap="removePicked" data-idx="{{index}}">×</view>
+          </view>
+        </view>
+        <text class="hint">建议：合照 / 当天吃的 / 票根 / 想回忆的小细节</text>
+      </view>
+
+      <view class="field">
+        <text class="label">备注（可选）</text>
+        <textarea class="textarea" placeholder="写点当天发生的可爱小事～" value="{{form.note}}" bindinput="onNote" maxlength="300"></textarea>
+      </view>
+
+      <view class="modal-actions">
+        <button class="btn ghost" bindtap="closeModal" disabled="{{saving}}">取消</button>
+        <button class="btn primary" bindtap="saveRecord" loading="{{saving}}">{{editingId ? '保存修改' : '保存'}}</button>
+      </view>
+    </view>
+  </view>
+</view>

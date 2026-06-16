@@ -1,0 +1,216 @@
+/* 页面外背景为浅灰；卡片为白底，边框+阴影清晰分区 */
+page { background: #f2f3f5; }
+
+:root {
+  --brand: #ff6f8e;
+  --text: #333;
+  --sub: #9aa0a6;
+  --card: #ffffff;
+  --card-border: #ececec;
+  --shadow: 0 12rpx 32rpx rgba(0,0,0,0.05);
+  --radius-lg: 24rpx;
+  --radius-sm: 16rpx;
+}
+
+.content { padding: 24rpx; }
+
+/* 通用卡片样式 */
+.card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+.card-outlined { border: 1rpx solid var(--card-border); }
+
+/* pages/couple/index.wxss */
+.top-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  border: 2rpx solid #eee;
+  overflow: hidden;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.heart-img {
+  width: 72rpx;
+  height: auto;
+  display: block;
+}
+
+.label {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.bind-row {
+  margin-top: 24rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.bind-btn {
+  height: 72rpx;
+  line-height: 72rpx;
+  padding: 0 24rpx;
+  border-radius: 36rpx;
+  background: #ffe7ea;
+  color: #d63a52;
+}
+
+
+
+/* 外层圆角框（可复用在任意区块外） */
+.moments-frame {
+  padding: 16rpx;
+  border-radius: 28rpx;
+  background: #fff6f9;
+  border: 1rpx solid #ffe1ea;
+  box-shadow: 0 8rpx 20rpx rgba(255,111,142,0.08);
+  margin-bottom: 24rpx;
+}
+.no-margin { margin-bottom: 0 !important; }
+
+/* 顶部三项卡片 */
+.top-card {
+  padding: 28rpx 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 24rpx; /* 包在外框里时会被 .no-margin 去掉 */
+}
+.top-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 180rpx;
+}
+.avatar, .add {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 999rpx;
+  background: #f7f8f9;
+  border: 6rpx solid #ffd2dc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.avatar-emoji { font-size: 60rpx; }
+.add { border-color: #eee; }
+.add-plus { font-size: 60rpx; color: #bbb; line-height: 1; }
+.heart { font-size: 80rpx; color: var(--brand); }
+.label { margin-top: 12rpx; font-size: 24rpx; color: #666; }
+
+/* 区块卡片（美好瞬间/今日心情） */
+.section-card {
+  padding: 20rpx 24rpx 28rpx;
+  margin-bottom: 24rpx; /* 包在外框里时会被 .no-margin 去掉 */
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64rpx;
+}
+.section-title { font-size: 30rpx; font-weight: 600; color: #222; }
+.more { font-size: 24rpx; color: #9a9a9a; }
+.divider { height: 1px; background: #f0f0f0; margin: 10rpx 0 20rpx; }
+.placeholder {
+  height: 300rpx;
+  border-radius: var(--radius-sm);
+  background: #fafafa;
+  color: #b4b6ba;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+}
+
+/* 今日心情 */
+.mood-area {
+  padding: 20rpx 0 8rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+}
+.mood-empty { font-size: 26rpx; color: #9aa0a6; }
+.primary-btn {
+  width: 280rpx;
+  height: 80rpx;
+  margin-top: 45rpx;
+  line-height: 60rpx;
+  text-align: center;
+  color: rgb(0, 0, 0);
+  font-size: 28rpx;
+  background: var(--brand);
+  border-radius: 999rpx;
+  box-shadow: 0 10rpx 20rpx rgba(255,111,142,0.36);
+}
+
+/* 快捷功能栅格 */
+.quick-wrapper { padding-bottom: 140rpx; }
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20rpx;
+}
+.quick-item {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  border: 1rpx solid var(--card-border);
+  padding: 24rpx 10rpx;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.icon-box {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(180deg, #fff2f6, #ffe6ec);
+  color: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  margin-bottom: 12rpx;
+}
+.quick-text { font-size: 26rpx; color: #555; }
+.tile-hover { opacity: 0.9; }
+
+/* 悬浮按钮 */
+.fab {
+  position: fixed;
+  right: 36rpx;
+  bottom: 180rpx;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 999rpx;
+  background: var(--brand);
+  color: #fff;
+  font-size: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 16rpx 30rpx rgba(255,111,142,0.45);
+  z-index: 11;
+}
+.fab-hover { transform: translateY(2rpx); opacity: 0.95; }

@@ -1,0 +1,133 @@
+<view class="page">
+  <!-- 顶部提醒条 -->
+  <view wx:if="{{bannerText}}" class="banner">
+    <text class="banner-text">{{bannerText}}</text>
+  </view>
+
+  <!-- 顶部：最近一个置顶/最近的纪念日大卡 -->
+  <view class="hero card" wx:if="{{hero}}">
+    <view class="hero-left">
+      <text class="hero-title">{{hero.title}}</text>
+      <text class="hero-sub">{{hero.displayDate}} · {{hero.typeLabel}}{{hero.repeat === 'yearly' ? '（每年）' : ''}}</text>
+      <view class="hero-metrics">
+        <view class="metric">
+          <text class="metric-label">累计</text>
+          <text class="metric-value">{{hero.daysAbs}}</text>
+          <text class="metric-unit">天</text>
+        </view>
+        <view class="metric">
+          <text class="metric-label">{{hero.repeat==='yearly' ? '下一次' : '距离'}}</text>
+          <text class="metric-value">{{hero.nextDays}}</text>
+          <text class="metric-unit">天后</text>
+        </view>
+      </view>
+    </view>
+    <view class="hero-right">
+      <view class="badge" style="background: {{hero.colorBg}};">
+        <text class="badge-text">{{hero.typeIcon}}</text>
+      </view>
+      <view class="star" wx:if="{{hero.pinned}}">⭐</view>
+    </view>
+  </view>
+
+  <!-- Tab -->
+  <view class="tabs">
+    <view class="tab {{tab==='all' ? 'active' : ''}}" data-tab="all" bindtap="switchTab">全部</view>
+    <view class="tab {{tab==='soon' ? 'active' : ''}}" data-tab="soon" bindtap="switchTab">即将到来</view>
+  </view>
+
+  <!-- 列表 -->
+  <view class="list">
+    <block wx:for="{{showList}}" wx:key="_id">
+      <view class="item card">
+        <view class="item-left">
+          <view class="type-dot" style="background: {{item.colorBg}};">
+            <text class="type-icon">{{item.typeIcon}}</text>
+          </view>
+
+          <view class="item-main">
+            <view class="row1">
+              <text class="item-title">{{item.title}}</text>
+              <text class="pin" wx:if="{{item.pinned}}">⭐</text>
+            </view>
+            <text class="item-sub">{{item.displayDate}} · {{item.typeLabel}}{{item.repeat==='yearly' ? '（每年）' : ''}}</text>
+
+            <view class="chips">
+              <view class="chip chip-blue">
+                <text class="chip-text">累计 {{item.daysAbs}} 天</text>
+              </view>
+              <view class="chip chip-gray">
+                <text class="chip-text">{{item.repeat==='yearly' ? '下一次' : '距离'}} {{item.nextDays}} 天{{item.repeat==='yearly' ? '后' : ''}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <view class="item-actions">
+          <view class="btn" bindtap="togglePin" data-id="{{item._id}}" data-pinned="{{item.pinned}}">置顶</view>
+          <view class="btn" bindtap="openEdit" data-id="{{item._id}}">编辑</view>
+          <view class="btn danger" bindtap="removeOne" data-id="{{item._id}}">删除</view>
+        </view>
+      </view>
+    </block>
+
+    <view wx:if="{{showList.length===0}}" class="empty">
+      <text class="empty-title">还没有纪念日</text>
+      <text class="empty-sub">点右下角 “+” 添加一个吧～</text>
+    </view>
+  </view>
+
+  <!-- 悬浮新增按钮 -->
+  <view class="fab" bindtap="openCreate">＋</view>
+
+  <!-- 新建/编辑弹窗 -->
+  <view wx:if="{{showModal}}" class="mask" bindtap="closeModal">
+    <view class="modal card" catchtap="noop">
+      <view class="modal-title">{{editingId ? '编辑纪念日' : '新增纪念日'}}</view>
+
+      <view class="field">
+        <text class="label">标题</text>
+        <input class="input" value="{{form.title}}" placeholder="比如：第一次约会" bindinput="onTitle"/>
+      </view>
+
+      <view class="field">
+        <text class="label">日期</text>
+        <picker mode="date" value="{{form.date}}" bindchange="onDate">
+          <view class="picker">{{form.date || '选择日期'}}</view>
+        </picker>
+      </view>
+
+      <view class="field row">
+        <view class="col">
+          <text class="label">类型</text>
+          <picker range="{{typeOptions}}" range-key="label" value="{{form.typeIndex}}" bindchange="onType">
+            <view class="picker">{{typeOptions[form.typeIndex].label}}</view>
+          </picker>
+        </view>
+
+        <view class="col">
+          <text class="label">颜色</text>
+          <picker range="{{colorOptions}}" range-key="label" value="{{form.colorIndex}}" bindchange="onColor">
+            <view class="picker">{{colorOptions[form.colorIndex].label}}</view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="field row">
+        <view class="col">
+          <text class="label">每年重复</text>
+          <switch checked="{{form.repeat==='yearly'}}" bindchange="onRepeat" color="#ff6f8e"/>
+        </view>
+        <view class="col">
+          <text class="label">置顶</text>
+          <switch checked="{{form.pinned}}" bindchange="onPinned" color="#ff6f8e"/>
+        </view>
+      </view>
+
+      <view class="modal-actions">
+        <button class="ghost" bindtap="closeModal">取消</button>
+        <button class="primary" bindtap="saveOne">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

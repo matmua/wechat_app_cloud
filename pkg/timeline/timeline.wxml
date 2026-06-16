@@ -1,0 +1,198 @@
+<view class="page">
+
+<!-- 顶部主卡：情侣名 + 天数 + 下一里程碑 -->
+<view class="hero card">
+  <view class="hero-top">
+    <view>
+      <text class="hero-title">{{coupleTitle}}</text>
+      <text class="hero-sub">今天是第 {{daysTogether}} 天</text>
+    </view>
+    <view class="hero-badge">
+      <text class="hero-badge-text">{{nextMilestoneLabel}}</text>
+      <text class="hero-badge-sub">还差 {{nextMilestoneLeft}} 天</text>
+    </view>
+  </view>
+
+  <view class="progress">
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{milestoneProgress}}%;"></view>
+    </view>
+    <view class="progress-row">
+      <text class="progress-left">已达 {{currentMilestone}} 天</text>
+      <text class="progress-right">目标 {{nextMilestone}} 天</text>
+    </view>
+  </view>
+
+  <view class="hero-actions">
+    <view class="pill" bindtap="goWish">心愿</view>
+    <view class="pill" bindtap="goDates">约会</view>
+    <view class="pill" bindtap="goAlbum">相册</view>
+    <view class="pill" bindtap="goMemorial">纪念日</view>
+  </view>
+</view>
+
+<!-- 今日提醒 -->
+<view wx:if="{{bannerText}}" class="banner">
+  <text class="banner-text">{{bannerText}}</text>
+</view>
+
+<!-- 今日盲盒 -->
+<view class="card box">
+  <view class="box-hd">
+    <text class="box-title">🎲 今日盲盒</text>
+    <text class="box-more" bindtap="rollBox">换一个</text>
+  </view>
+  <view class="box-body">
+    <text class="box-main">{{boxTitle}}</text>
+    <text class="box-sub">{{boxDesc}}</text>
+    <view class="box-btns">
+      <button class="btn primary" bindtap="rollBox">再抽一次</button>
+      <button class="btn ghost" bindtap="saveBoxToGoal">加入共同目标</button>
+    </view>
+  </view>
+</view>
+
+<!-- 今日待办聚合 -->
+<view class="card section">
+  <view class="section-hd">
+    <text class="section-title">📌 今日待办</text>
+    <text class="section-sub">把“重要的事”放在眼前</text>
+  </view>
+
+  <!-- 7天内纪念日 -->
+  <view class="todo-item" wx:if="{{soonMemorial}}">
+    <view class="todo-left">
+      <text class="todo-icon">📅</text>
+      <view class="todo-main">
+        <text class="todo-title">距「{{soonMemorial.title}}」</text>
+        <text class="todo-sub">{{soonMemorial.label}}</text>
+      </view>
+    </view>
+    <view class="todo-right">
+      <text class="todo-num">{{soonMemorial.nextDays}}</text>
+      <text class="todo-unit">天</text>
+    </view>
+  </view>
+
+  <!-- 未完成心愿（最多3条） -->
+  <view class="todo-item" wx:if="{{pendingWishes.length>0}}">
+    <view class="todo-left">
+      <text class="todo-icon">🧸</text>
+      <view class="todo-main">
+        <text class="todo-title">未完成心愿（{{pendingWishCount}}）</text>
+        <text class="todo-sub">最近：{{pendingWishes[0].title}}</text>
+      </view>
+    </view>
+    <view class="todo-right link" bindtap="goWish">
+      <text>去看看</text>
+    </view>
+  </view>
+
+  <!-- 未读纸条（如果你的纸条集合有 read/toOpenid，会显示） -->
+  <view class="todo-item" wx:if="{{unreadNotes>0}}">
+    <view class="todo-left">
+      <text class="todo-icon">💌</text>
+      <view class="todo-main">
+        <text class="todo-title">你有 {{unreadNotes}} 条未读小纸条</text>
+        <text class="todo-sub">去心动瞬间里看看吧</text>
+      </view>
+    </view>
+    <view class="todo-right link" bindtap="goHeartbeat">
+      <text>打开</text>
+    </view>
+  </view>
+
+  <view wx:if="{{!soonMemorial && pendingWishes.length===0 && unreadNotes===0}}" class="todo-empty">
+    <text class="todo-empty-text">今天没有紧急待办～那就去制造一点甜蜜吧！</text>
+  </view>
+</view>
+
+<!-- 契约与成长：徽章 + 成就 + 共同目标 -->
+<view class="card section">
+  <view class="section-hd">
+    <text class="section-title">🏆 契约与成长</text>
+    <text class="section-sub">你们正在变成更好的“我们”</text>
+  </view>
+
+  <!-- 里程碑徽章 -->
+  <view class="badge-grid">
+    <block wx:for="{{milestonesUI}}" wx:key="d">
+      <view class="badge-item {{item.unlocked ? 'unlocked' : ''}}">
+        <text class="badge-num">{{item.d}}</text>
+        <text class="badge-text">{{item.label}}</text>
+        <text class="badge-sub">{{item.unlocked ? '已达成' : ('还差' + item.left + '天')}}</text>
+      </view>
+    </block>
+  </view>
+
+  <!-- 成就统计 -->
+  <view class="stats">
+    <view class="stat">
+      <text class="stat-num">{{stats.wishDone}}</text>
+      <text class="stat-label">已结心愿</text>
+    </view>
+    <view class="stat">
+      <text class="stat-num">{{stats.dateCount}}</text>
+      <text class="stat-label">约会记录</text>
+    </view>
+    <view class="stat">
+      <text class="stat-num">{{stats.photoCount}}</text>
+      <text class="stat-label">相册作品</text>
+    </view>
+    <view class="stat">
+      <text class="stat-num">{{stats.noteCount}}</text>
+      <text class="stat-label">小纸条总数</text>
+    </view>
+  </view>
+
+  <!-- 共同目标 -->
+  <view class="goals-hd">
+    <text class="goals-title">🎯 共同目标</text>
+    <text class="goals-add" bindtap="openAddGoal">＋添加</text>
+  </view>
+
+  <view class="goals">
+    <block wx:for="{{goals}}" wx:key="_id">
+      <view class="goal {{item.done ? 'done' : ''}}">
+        <view class="goal-left" data-id="{{item._id}}" data-done="{{item.done}}" bindtap="toggleGoal">
+          <view class="checkbox">{{item.done ? '✓' : ''}}</view>
+          <view class="goal-main">
+            <text class="goal-title">{{item.title}}</text>
+            <text class="goal-sub" wx:if="{{item.desc}}">{{item.desc}}</text>
+          </view>
+        </view>
+        <view class="goal-right">
+          <text class="goal-del" data-id="{{item._id}}" bindtap="removeGoal">删除</text>
+        </view>
+      </view>
+    </block>
+
+    <view wx:if="{{goals.length===0}}" class="goals-empty">
+      <text class="goals-empty-text">加 3 个目标，比如：旅行一次 / 做饭 10 次 / 看完一部剧</text>
+    </view>
+  </view>
+</view>
+
+<!-- 新增目标弹窗 -->
+<view wx:if="{{showGoalModal}}" class="mask" bindtap="closeGoalModal">
+  <view class="modal card" catchtap="noop">
+    <text class="modal-title">新增共同目标</text>
+
+    <view class="field">
+      <text class="label">标题</text>
+      <input class="input" placeholder="比如：一起看海" value="{{goalForm.title}}" bindinput="onGoalTitle"/>
+    </view>
+
+    <view class="field">
+      <text class="label">描述（可选）</text>
+      <input class="input" placeholder="比如：今年夏天去一次" value="{{goalForm.desc}}" bindinput="onGoalDesc"/>
+    </view>
+
+    <view class="modal-actions">
+      <button class="btn ghost" bindtap="closeGoalModal">取消</button>
+      <button class="btn primary" bindtap="saveGoal">保存</button>
+    </view>
+  </view>
+</view>
+
+</view>
