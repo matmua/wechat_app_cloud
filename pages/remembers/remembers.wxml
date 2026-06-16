@@ -41,11 +41,42 @@
 
   <!-- 未完成绑定时生成邀请 -->
   <view wx:if="{{ bindingState !== 'bound' }}" class="bind-row">
-    <button class="bind-btn" loading="{{bindingLoading}}" bindtap="onInviteOrEditPartner">
-      生成邀请并分享给Ta
-    </button>
+    <view class="bind-actions">
+      <button class="bind-btn" loading="{{bindingLoading}}" bindtap="onInviteOrEditPartner">
+        生成邀请码
+      </button>
+      <button class="bind-btn ghost" bindtap="openInviteInput">
+        输入对方邀请码
+      </button>
+    </view>
+
+    <view wx:if="{{inviteCode}}" class="invite-panel">
+      <text class="invite-label">我的邀请码</text>
+      <text class="invite-code" selectable="true">{{inviteCode}}</text>
+      <text class="invite-hint">复制后发给Ta，Ta在“我们页”输入即可绑定。</text>
+      <view class="invite-actions">
+        <button class="bind-btn compact" bindtap="copyInviteCode">复制邀请码</button>
+        <button class="bind-btn compact ghost" open-type="share" bindtap="onShareInviteTap">分享给Ta（可选）</button>
+      </view>
+    </view>
   </view>
 </view>
+
+    <view wx:if="{{showInviteInput}}" class="mask" bindtap="closeInviteInput">
+      <view class="invite-modal" catchtap="noop">
+        <text class="modal-title">输入对方邀请码</text>
+        <textarea class="invite-input"
+                  placeholder="粘贴对方发来的完整邀请码"
+                  value="{{inviteInput}}"
+                  bindinput="onInviteInput"
+                  maxlength="260"></textarea>
+        <text class="invite-hint">邀请码格式为 inviteId:token，请复制完整内容。</text>
+        <view class="modal-actions">
+          <button class="bind-btn ghost" bindtap="closeInviteInput" disabled="{{inviteSubmitting}}">取消</button>
+          <button class="bind-btn" bindtap="confirmInviteBind" loading="{{inviteSubmitting}}">确认绑定</button>
+        </view>
+      </view>
+    </view>
 
 
     <!-- 2. 美好瞬间（外层圆角框 + 内层卡片） -->

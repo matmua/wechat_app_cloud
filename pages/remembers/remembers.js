@@ -7,6 +7,7 @@ const {
 
 const db = wx.cloud.database();
 const COL = 'remember_couples';
+const PAGE_PATH = '/pages/remembers/remembers';
 
 const AVATAR_FILEID = {
   guo: 'cloud://cloud1-4gmaqc42550b0950.636c-cloud1-4gmaqc42550b0950-1391881406/images/remember/小郭.svg',
@@ -15,6 +16,47 @@ const AVATAR_FILEID = {
 
 function genCoupleId() {
   return 'c_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(2, 6);
+}
+
+function buildInvitePath(inviteId, token) {
+  const query = [
+    `inviteId=${encodeURIComponent(inviteId)}`,
+    `token=${encodeURIComponent(token)}`
+  ].join('&');
+  return `${PAGE_PATH}?${query}`;
+}
+
+function buildInviteCode(inviteId, token) {
+  return `${inviteId}:${token}`;
+}
+
+function parseInviteCode(value) {
+  const text = (value || '').trim();
+  if (!text) return { error: '请输入邀请码' };
+
+  let inviteId = '';
+  let token = '';
+
+  if (text.includes('inviteId=')) {
+    const query = text.includes('?') ? text.split('?').pop() : text;
+    query.split('&').forEach((part) => {
+      const [rawKey, rawValue = ''] = part.split('=');
+      const key = decodeURIComponent(rawKey || '');
+      const val = decodeURIComponent(rawValue || '');
+      if (key === 'inviteId') inviteId = val;
+      if (key === 'token') token = val;
+    });
+  } else {
+    const parts = text.split(/[:|#\s,，]+/).filter(Boolean);
+    inviteId = parts[0] || '';
+    token = parts[1] || '';
+  }
+
+  if (!inviteId || !token) {
+    return { error: '邀请码不完整，请复制完整邀请码' };
+  }
+
+  return { inviteId, token };
 }
 
 Page({
@@ -32,7 +74,12 @@ Page({
     bindingMessage: '',
     invitePath: '',
     inviteId: '',
-    inviteToken: ''
+    invitationId: '',
+    inviteToken: '',
+    inviteCode: '',
+    showInviteInput: false,
+    inviteInput: '',
+    inviteSubmitting: false
   },
 
   async onLoad(options) {
@@ -60,6 +107,7 @@ Page({
       wx.showToast({ title: '绑定状态读取失败', icon: 'none' });
     } finally {
       this.setData({ bindingLoading: false });
+      this.updateShareMenu();
     }
   },
   
@@ -93,13 +141,27 @@ Page({
       bindingMessage = '已完成情侣绑定。';
     }
 
-    this.setData({
+    const nextData = {
       openid,
       coupleId,
       bindingState,
       bindingMessage,
       partnerName: partner?.displayName || this.data.partnerName
-    });
+    };
+
+    if (bound) {
+      Object.assign(nextData, {
+        invitePath: '',
+        inviteId: '',
+        invitationId: '',
+        inviteToken: '',
+        inviteCode: '',
+        showInviteInput: false,
+        inviteInput: ''
+      });
+    }
+
+    this.setData(nextData);
 
     if (coupleId) {
       await this.ensureDoc();
@@ -112,9 +174,13 @@ Page({
         partnerAvatarUrl: '',
         invitePath: '',
         inviteId: '',
-        inviteToken: ''
+        invitationId: '',
+        inviteToken: '',
+        inviteCode: ''
       });
     }
+
+    this.updateShareMenu();
 
     if (!options.silent && bindingMessage) {
       console.log('binding status:', bindingState, bindingMessage);
@@ -351,20 +417,23 @@ Page({
     wx.showLoading({ title: '生成邀请...' });
     try {
       const invite = await createInvite();
-      const path = `/pages/remembers/remembers?inviteId=${invite.inviteId}&token=${invite.token}`;
+      const path = buildInvitePath(invite.inviteId, invite.token);
+      const inviteCode = buildInviteCode(invite.inviteId, invite.token);
       this.setData({
         openid: invite.openid || this.data.openid,
         coupleId: invite.coupleId || this.data.coupleId,
         invitePath: path,
         inviteId: invite.inviteId,
+        invitationId: invite.inviteId,
         inviteToken: invite.token,
+        inviteCode,
         bindingState: invite.bound ? 'bound' : 'pending',
-        bindingMessage: invite.bound ? '已完成情侣绑定。' : '邀请已生成，请点击右上角分享给Ta。'
+        bindingMessage: invite.bound ? '已完成情侣绑定。' : '邀请码已生成，复制后发给Ta即可绑定。'
       });
 
-      wx.showShareMenu({ withShareTicket: true });
+      this.updateShareMenu();
       wx.hideLoading();
-      wx.showToast({ title: '请点右上角分享', icon: 'none' });
+      wx.showToast({ title: '邀请已生成', icon: 'success' });
 
       if (invite.coupleId) {
         await this.ensureDoc();
@@ -381,12 +450,119 @@ Page({
     }
   },
 
+  copyInviteCode() {
+    if (!this.data.inviteCode) {
+      return wx.showToast({ title: '请先生成邀请码', icon: 'none' });
+    }
+
+    wx.setClipboardData({
+      data: this.data.inviteCode,
+      success: () => wx.showToast({ title: '邀请码已复制', icon: 'success' }),
+      fail: () => wx.showToast({ title: '复制失败，请手动复制', icon: 'none' })
+    });
+  },
+
+  openInviteInput() {
+    if (this.data.bindingState === 'bound') {
+      return wx.showToast({ title: '你们已经绑定啦', icon: 'none' });
+    }
+    this.setData({
+      showInviteInput: true,
+      inviteInput: '',
+      inviteSubmitting: false
+    });
+  },
+
+  closeInviteInput() {
+    if (this.data.inviteSubmitting) return;
+    this.setData({ showInviteInput: false, inviteInput: '' });
+  },
+
+  onInviteInput(e) {
+    this.setData({ inviteInput: e.detail.value || '' });
+  },
+
+  async confirmInviteBind() {
+    if (this.data.bindingState === 'bound') {
+      return wx.showToast({ title: '你们已经绑定啦', icon: 'none' });
+    }
+    if (this.data.inviteSubmitting) return;
+
+    const parsed = parseInviteCode(this.data.inviteInput);
+    if (parsed.error) {
+      return wx.showToast({ title: parsed.error, icon: 'none' });
+    }
+
+    this.setData({ inviteSubmitting: true });
+    wx.showLoading({ title: '绑定中...' });
+
+    try {
+      const status = await acceptInvite({
+        inviteId: parsed.inviteId,
+        token: parsed.token
+      });
+
+      wx.hideLoading();
+      wx.showToast({ title: '绑定成功', icon: 'success' });
+      this.setData({
+        showInviteInput: false,
+        inviteInput: '',
+        inviteSubmitting: false
+      });
+      await this.applyBindingStatus(status);
+    } catch (e) {
+      wx.hideLoading();
+      console.log('accept invite by code fail:', e);
+      const message = e.message || '绑定失败，请检查邀请码是否正确';
+      this.setData({
+        bindingState: 'error',
+        bindingMessage: message,
+        inviteSubmitting: false
+      });
+      wx.showToast({ title: message, icon: 'none' });
+    }
+  },
+
+  hasInviteToShare() {
+    return !!(this.data.inviteId && this.data.inviteToken && this.data.invitePath);
+  },
+
+  updateShareMenu() {
+    if (this.hasInviteToShare() && this.data.bindingState !== 'bound') {
+      wx.showShareMenu({
+        withShareTicket: true,
+        menus: ['shareAppMessage']
+      });
+      return;
+    }
+
+    wx.hideShareMenu({
+      menus: ['shareAppMessage']
+    });
+  },
+
+  onShareInviteTap() {
+    if (!this.hasInviteToShare()) {
+      wx.showToast({ title: '请先生成邀请', icon: 'none' });
+    }
+  },
+
   onShareAppMessage() {
+    if (!this.hasInviteToShare()) {
+      wx.showToast({ title: '请先生成邀请', icon: 'none' });
+      return {
+        title: '邀请你加入我们的情侣空间',
+        path: PAGE_PATH
+      };
+    }
+
     return {
       title: '邀请你加入我们的情侣空间',
-      path: this.data.invitePath || '/pages/remembers/remembers'
+      path: this.data.invitePath
     };
   },
+
+  noop() {},
 
   onMoreMoments() {
     wx.navigateTo({ url: '../../pkg/timeline/timeline' });
