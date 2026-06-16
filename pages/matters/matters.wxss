@@ -11,12 +11,11 @@
   height: 210rpx;
   width: 100%;
   margin: 0;
-  /* 添加背景以覆盖下方内容 */
   background: linear-gradient(135deg, #a1b0f1 0%, #764ba2 100%);
 }
 
 .title-section {
-  margin-top: 15rpx; /* 顶部对齐 */
+  margin-top: 15rpx;
   margin-bottom: 30rpx;
 }
 
@@ -38,10 +37,8 @@
   align-items: center;
   background: white;
   border-radius: 50rpx;
-  /* 减小上下内边距解决"太胖"问题 */
   padding: 15rpx 30rpx;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
-  /* 关键：限制宽度并包含内边距计算 */
   width: 93%;
   box-sizing: border-box;
 }

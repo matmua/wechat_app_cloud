@@ -1,1 +1,1 @@
-/* pkg/coupleTasks/coupleTasks.wxss */
+@import "../common/starter.wxss";

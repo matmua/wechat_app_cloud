@@ -139,7 +139,7 @@ Page({
     console.log('搜索内容:', searchValue);
   },
 
-  // 查看详细天气
+  // 查看对方天气
   checkWeatherDetail: function () {
     wx.navigateTo({
       url: '../../pkg/weather/weather'
@@ -251,7 +251,7 @@ Page({
     });
   },
 
-  // 爱情故事
+  // 经期日历
   goToLoveStory: function () {
     wx.navigateTo({
       url: '../../pkg/loveStory/loveStory'

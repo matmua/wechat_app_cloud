@@ -1,2 +1,36 @@
-<!--pkg/loveTips/loveTips.wxml-->
-<text>pkg/loveTips/loveTips.wxml</text>
+<view class="call-page">
+  <view class="radar-card">
+    <text class="kicker">爱木长诗 · 小小呼叫台</text>
+    <text class="title">呼叫对方</text>
+    <view class="radar">
+      <view class="ring ring-one"></view>
+      <view class="ring ring-two"></view>
+      <view class="ring ring-three"></view>
+      <view class="dot"></view>
+    </view>
+    <text class="signal">信号强度 {{signal}}%</text>
+  </view>
+
+  <view class="message-card">
+    <text class="level">{{active.level}}</text>
+    <text class="message-title">{{active.title}}</text>
+    <text class="message-text">{{active.text}}</text>
+    <view class="actions">
+      <button class="btn dark" bindtap="randomCall">换一个</button>
+      <button class="btn light" bindtap="copyCall">复制给Ta</button>
+    </view>
+  </view>
+
+  <view class="call-strip">
+    <view class="call-chip {{active.title===item.title ? 'active' : ''}}"
+          wx:for="{{calls}}"
+          wx:key="title"
+          data-index="{{index}}"
+          bindtap="switchCall">
+      <text>{{item.title}}</text>
+      <text>{{item.level}}</text>
+    </view>
+  </view>
+
+  <text class="note">这里不会真正推送消息，只帮你生成适合复制给 Ta 的自然文案。</text>
+</view>

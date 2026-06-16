@@ -1,2 +1,22 @@
-<!--pkg/moreServices/moreServices.wxml-->
-<text>pkg/moreServices/moreServices.wxml</text>
+<view class="starter-page">
+  <view class="starter-hero">
+    <text class="starter-eyebrow">{{eyebrow}}</text>
+    <text class="starter-title">{{title}}</text>
+    <text class="starter-subtitle">{{subtitle}}</text>
+    <text class="starter-status">{{statusText}}</text>
+  </view>
+  <view class="starter-card" wx:if="{{sceneList.length}}">
+    <text class="section-title">当前入口</text>
+    <view class="scene-grid">
+      <view class="scene-item" wx:for="{{sceneList}}" wx:key="title">
+        <text class="scene-name">{{item.title}}</text>
+        <text class="scene-desc">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+  <view class="action-card">
+    <button class="starter-btn primary" bindtap="primaryTap">{{primaryText}}</button>
+    <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
+  </view>
+  <text class="note">{{note}}</text>
+</view>

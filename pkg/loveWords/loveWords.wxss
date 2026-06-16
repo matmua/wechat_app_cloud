@@ -1,1 +1,292 @@
-/* pkg/loveWords/loveWords.wxss */
+page {
+  background: #fff7f4;
+}
+
+.food-page {
+  min-height: 100vh;
+  padding: 28rpx;
+  box-sizing: border-box;
+  color: #27242b;
+}
+
+.food-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 24rpx;
+  padding: 34rpx 30rpx;
+  border-radius: 34rpx;
+  background: linear-gradient(135deg, #ff6f7d 0%, #ffb36b 100%);
+  color: #ffffff;
+  box-shadow: 0 20rpx 42rpx rgba(255, 111, 125, 0.28);
+}
+
+.eyebrow,
+.title,
+.subtitle,
+.food-tag,
+.food-name,
+.food-note,
+.draw-copy,
+.section-title,
+.today-food,
+.today-time,
+.today-note,
+.pill-name,
+.pill-tag {
+  display: block;
+}
+
+.eyebrow {
+  font-size: 22rpx;
+  font-weight: 700;
+  opacity: 0.86;
+}
+
+.title {
+  margin-top: 10rpx;
+  font-size: 48rpx;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.subtitle {
+  margin-top: 12rpx;
+  max-width: 470rpx;
+  font-size: 25rpx;
+  line-height: 1.55;
+  opacity: 0.92;
+}
+
+.steam {
+  width: 104rpx;
+  height: 146rpx;
+  border-radius: 52rpx 52rpx 26rpx 26rpx;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4rpx;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.draw-stage {
+  margin-top: 28rpx;
+  padding: 30rpx 24rpx;
+  border-radius: 34rpx;
+  background: #ffffff;
+  border: 1rpx solid #ffe0dc;
+  text-align: center;
+  box-shadow: 0 16rpx 34rpx rgba(68, 45, 50, 0.08);
+}
+
+.plate-ring {
+  width: 430rpx;
+  height: 430rpx;
+  margin: 0 auto 26rpx;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, #ffffff 0 50%, transparent 51%),
+    conic-gradient(from 16deg, #ff6f7d, #ffd36c, #7dd8c2, #f799bf, #ff6f7d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.is-rolling .plate-ring {
+  animation: spinPlate 0.7s linear infinite;
+}
+
+.food-card {
+  width: 300rpx;
+  min-height: 250rpx;
+  padding: 34rpx 28rpx;
+  border-radius: 34rpx;
+  background: #fffaf8;
+  box-shadow: inset 0 0 0 2rpx #ffe3dc;
+  transform: rotate(-4deg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.food-tag {
+  color: #e55766;
+  font-size: 23rpx;
+  font-weight: 800;
+}
+
+.food-name {
+  margin-top: 14rpx;
+  font-size: 42rpx;
+  line-height: 1.2;
+  font-weight: 900;
+  color: #26232a;
+}
+
+.food-note {
+  margin-top: 14rpx;
+  color: #71636a;
+  font-size: 24rpx;
+  line-height: 1.45;
+}
+
+.draw-btn {
+  width: 100%;
+  height: 84rpx;
+  line-height: 84rpx;
+  border-radius: 999rpx;
+  background: #2f2b34;
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.draw-copy {
+  margin-top: 16rpx;
+  color: #df5f6e;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.today-card,
+.menu-panel,
+.history-panel {
+  margin-top: 24rpx;
+  padding: 26rpx;
+  border-radius: 28rpx;
+  background: #ffffff;
+  border: 1rpx solid #ffe4df;
+}
+
+.section-title {
+  font-size: 30rpx;
+  color: #28252c;
+  font-weight: 900;
+}
+
+.today-row,
+.panel-head,
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.today-row {
+  margin-top: 16rpx;
+}
+
+.today-food {
+  font-size: 38rpx;
+  font-weight: 900;
+}
+
+.today-time {
+  font-size: 22rpx;
+  color: #9b8d94;
+}
+
+.today-note {
+  margin-top: 12rpx;
+  color: #6b6268;
+  font-size: 25rpx;
+  line-height: 1.5;
+}
+
+.mini-link {
+  color: #e65f70;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.add-row {
+  margin-top: 18rpx;
+  display: flex;
+  gap: 14rpx;
+}
+
+.food-input {
+  flex: 1;
+  height: 76rpx;
+  padding: 0 22rpx;
+  border-radius: 20rpx;
+  background: #fff7f4;
+  font-size: 26rpx;
+}
+
+.add-btn {
+  width: 132rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  border-radius: 20rpx;
+  background: #ff7f72;
+  color: #ffffff;
+  font-size: 26rpx;
+}
+
+.quick-row {
+  margin-top: 16rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.quick-chip {
+  padding: 10rpx 18rpx;
+  border-radius: 999rpx;
+  background: #fff0ed;
+  color: #d85a66;
+  font-size: 23rpx;
+}
+
+.food-list {
+  margin-top: 18rpx;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14rpx;
+}
+
+.food-pill {
+  min-height: 84rpx;
+  padding: 16rpx;
+  border-radius: 20rpx;
+  background: #f8fafb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+
+.pill-name {
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.pill-tag {
+  margin-top: 4rpx;
+  color: #9a8d94;
+  font-size: 21rpx;
+}
+
+.delete {
+  flex: 0 0 auto;
+  color: #d95d67;
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
+.history-item {
+  margin-top: 14rpx;
+  padding: 16rpx 0 0;
+  border-top: 1rpx solid #f0ecef;
+  color: #5f5860;
+  font-size: 24rpx;
+}
+
+@keyframes spinPlate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

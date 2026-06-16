@@ -1,3 +1,6 @@
 {
+  "navigationBarTitleText": "纪念日备忘",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f6f7fb",
   "usingComponents": {}
 }

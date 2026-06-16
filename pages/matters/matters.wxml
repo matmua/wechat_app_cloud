@@ -25,7 +25,7 @@
       </view>
       <view class="menu-item" bindtap="goToGiftSuggest">
         <image class="menu-icon" src="{{img.mood}}"></image>
-        <text class="menu-text">心情日记</text>
+        <text class="menu-text">礼物建议</text>
       </view>
       <view class="menu-item" bindtap="goToLoveWords">
         <image class="menu-icon" src="{{img.food}}"></image>
@@ -33,11 +33,11 @@
       </view>
       <view class="menu-item" bindtap="goToMemorialDay">
         <image class="menu-icon" src="{{img.game}}"></image>
-        <text class="menu-text">情侣游戏</text>
+        <text class="menu-text">纪念日备忘</text>
       </view>
       <view class="menu-item" bindtap="goToPhotoAlbum">
         <image class="menu-icon" src="{{img.goal}}"></image>
-        <text class="menu-text">恋爱目标</text>
+        <text class="menu-text">甜蜜相册</text>
       </view>
     </view>
 
@@ -81,11 +81,11 @@
       </view>
       <view class="menu-item" bindtap="goToRelationshipAdvice">
         <image class="menu-icon" src="{{img.album}}"></image>
-        <text class="menu-text">情侣相册</text>
+        <text class="menu-text">关系建议</text>
       </view>
       <view class="menu-item" bindtap="goToWishList">
         <image class="menu-icon" src="{{img.sound}}"></image>
-        <text class="menu-text">快来听听</text>
+        <text class="menu-text">心愿清单</text>
       </view>
     </view>
 
@@ -97,15 +97,15 @@
       </view>
       <view class="menu-item" bindtap="goToSurpriseIdeas">
         <image class="menu-icon" src="{{img.placeholder}}"></image>
-        <text class="menu-text">等待开发</text>
+        <text class="menu-text">惊喜灵感</text>
       </view>
       <view class="menu-item" bindtap="goToCoupleGoals">
         <image class="menu-icon" src="{{img.placeholder}}"></image>
-        <text class="menu-text">等待开发</text>
+        <text class="menu-text">恋爱目标</text>
       </view>
       <view class="menu-item" bindtap="goToEmotionAnalysis">
         <image class="menu-icon" src="{{img.placeholder}}"></image>
-        <text class="menu-text">等待开发</text>
+        <text class="menu-text">情绪分析</text>
       </view>
       <view class="menu-item" bindtap="goToMoreServices">
         <image class="menu-icon" src="{{img.placeholder}}"></image>
@@ -120,18 +120,18 @@
     <view class="dot"></view>
   </view>
 
-  <!-- 天气提醒卡片 -->
+  <!-- 对方天气卡片 -->
   <view class="weather-card">
     <view class="weather-header">
-      <text class="weather-title">天气提醒</text>
+      <text class="weather-title">对方天气</text>
       <text class="weather-date">{{currentDate}}</text>
     </view>
     <view class="weather-content">
       <view class="weather-info">
-        <text class="weather-main-text">今日适合约会 {{weatherDesc}}</text>
-        <text class="weather-sub-text">🌡️ 温度适宜，记得为TA准备一件外套</text>
+        <text class="weather-main-text">看看 Ta 那里的天气 {{weatherDesc}}</text>
+        <text class="weather-sub-text">只有对方主动同步位置后，这里才会显示远方天气卡</text>
         <view class="weather-suggestion">
-          <button class="weather-btn" bindtap="checkWeatherDetail">查看详细天气</button>
+          <button class="weather-btn" bindtap="checkWeatherDetail">查看对方天气</button>
         </view>
       </view>
       <image class="weather-image" src="{{img.weather}}"></image>

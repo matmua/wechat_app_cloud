@@ -1,3 +1,6 @@
 {
+  "navigationBarTitleText": "情侣任务",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f6f7fb",
   "usingComponents": {}
 }

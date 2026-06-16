@@ -1,2 +1,49 @@
-<!--pkg/loveGames/loveGames.wxml-->
-<text>pkg/loveGames/loveGames.wxml</text>
+<view class="arcade-page">
+  <view class="arcade-hero">
+    <text class="kicker">爱木长诗 · 口袋街机厅</text>
+    <text class="title">打发时间</text>
+    <text class="subtitle">无聊的时候插一张卡带，先玩一局贪吃蛇。</text>
+  </view>
+
+  <scroll-view class="cassette-wall" scroll-x="true">
+    <view class="cassette {{activeGame===item.key ? 'active' : ''}}"
+          wx:for="{{games}}"
+          wx:key="key"
+          data-key="{{item.key}}"
+          bindtap="chooseGame">
+      <text>{{item.status}}</text>
+      <text>{{item.title}}</text>
+      <text>{{item.desc}}</text>
+    </view>
+  </scroll-view>
+
+  <view class="machine">
+    <view class="screen">
+      <view class="screen-top">
+        <text>贪吃蛇</text>
+        <text>得分 {{score}}</text>
+      </view>
+      <view class="snake-board">
+        <view class="cell {{item.type}}" wx:for="{{board}}" wx:key="index"></view>
+      </view>
+      <text class="message">{{message}}</text>
+    </view>
+
+    <view class="controls">
+      <view></view>
+      <button data-dir="up" bindtap="changeDirection">上</button>
+      <view></view>
+      <button data-dir="left" bindtap="changeDirection">左</button>
+      <button class="start" bindtap="startGame">{{gameOver ? '再来' : running ? '进行中' : '开始'}}</button>
+      <button data-dir="right" bindtap="changeDirection">右</button>
+      <button bindtap="pauseGame">暂停</button>
+      <button data-dir="down" bindtap="changeDirection">下</button>
+      <button bindtap="resetGame">重置</button>
+    </view>
+  </view>
+
+  <view class="coming">
+    <text>下一批卡带</text>
+    <text>扫雷、打飞机、俄罗斯方块会继续补成独立小游戏。</text>
+  </view>
+</view>

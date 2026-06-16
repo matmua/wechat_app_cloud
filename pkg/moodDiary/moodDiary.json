@@ -1,3 +1,4 @@
 {
-  "usingComponents": {}
+  "navigationBarTitleText": "AI助手",
+  "backgroundColor": "#f3f7fb"
 }

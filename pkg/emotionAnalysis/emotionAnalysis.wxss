@@ -1,1 +1,1 @@
-/* pkg/emotionAnalysis/emotionAnalysis.wxss */
+@import "../common/starter.wxss";

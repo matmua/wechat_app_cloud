@@ -1,3 +1,6 @@
 {
+  "navigationBarTitleText": "照片故事",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f6f7fb",
   "usingComponents": {}
 }

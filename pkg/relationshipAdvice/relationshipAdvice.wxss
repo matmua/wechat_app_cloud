@@ -1,1 +1,1 @@
-/* pkg/relationshipAdvice/relationshipAdvice.wxss */
+@import "../common/starter.wxss";

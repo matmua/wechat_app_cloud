@@ -1,1 +1,1 @@
-/* pkg/loveCalendar/loveCalendar.wxss */
+@import "../common/starter.wxss";

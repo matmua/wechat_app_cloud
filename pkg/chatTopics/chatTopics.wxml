@@ -1,2 +1,33 @@
-<!--pkg/chatTopics/chatTopics.wxml-->
-<text>pkg/chatTopics/chatTopics.wxml</text>
+<view class="plan-page">
+  <view class="desk">
+    <text class="kicker">爱木长诗 · 轻便便签</text>
+    <text class="title">小小计划</text>
+    <text class="subtitle">不用那么正式，先把想一起做的小事贴上来。</text>
+  </view>
+
+  <view class="composer">
+    <input class="plan-input" placeholder="比如：周五晚上去江边吹风" value="{{draft}}" bindinput="onDraftInput" maxlength="32" />
+    <picker mode="selector" range="{{types}}" value="{{typeIndex}}" bindchange="onTypeChange">
+      <view class="type-picker">{{types[typeIndex]}}</view>
+    </picker>
+    <button class="add-btn" bindtap="addPlan">贴上去</button>
+  </view>
+
+  <view class="board" wx:if="{{plans.length}}">
+    <view class="note note-{{index % 4}}" wx:for="{{plans}}" wx:key="title">
+      <view class="pin"></view>
+      <text class="note-type">{{item.type}}</text>
+      <text class="note-title {{item.done ? 'done' : ''}}">{{item.title}}</text>
+      <view class="note-actions">
+        <text data-index="{{index}}" bindtap="togglePlan">{{item.done ? '重新来' : '完成'}}</text>
+        <text data-index="{{index}}" bindtap="deletePlan">撕掉</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:else>
+    <text>便签板空了</text>
+    <text>贴一个今天就能做的小计划。</text>
+    <button bindtap="resetPlans">放回示例</button>
+  </view>
+</view>

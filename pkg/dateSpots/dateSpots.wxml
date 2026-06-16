@@ -1,2 +1,38 @@
-<!--pkg/dateSpots/dateSpots.wxml-->
-<text>pkg/dateSpots/dateSpots.wxml</text>
+<view class="like-page">
+  <view class="like-hero">
+    <text class="kicker">爱木长诗 · 偏好收藏夹</text>
+    <text class="title">大大喜欢</text>
+    <text class="subtitle">把 Ta 喜欢的小事记清楚，下一次就不用临时猜。</text>
+  </view>
+
+  <view class="form-card">
+    <input class="input" placeholder="Ta 喜欢什么？" value="{{title}}" bindinput="onTitleInput" maxlength="24" />
+    <textarea class="textarea" placeholder="补一句细节，比如口味、颜色、时间" value="{{detail}}" bindinput="onDetailInput" maxlength="80"></textarea>
+    <view class="form-row">
+      <picker mode="selector" range="{{types}}" value="{{typeIndex}}" bindchange="onTypeChange">
+        <view class="picker">{{types[typeIndex]}}</view>
+      </picker>
+      <button class="add-btn" bindtap="addLike">记住</button>
+    </view>
+  </view>
+
+  <view class="filter-row">
+    <text class="{{activeType==='全部' ? 'on' : ''}}" data-type="全部" bindtap="setFilter">全部</text>
+    <text class="{{activeType===item ? 'on' : ''}}" wx:for="{{types}}" wx:key="*this" data-type="{{item}}" bindtap="setFilter">{{item}}</text>
+  </view>
+
+  <view class="like-grid" wx:if="{{filteredLikes.length}}">
+    <view class="like-card" wx:for="{{filteredLikes}}" wx:key="title">
+      <text class="like-type">{{item.type}}</text>
+      <text class="like-title">{{item.title}}</text>
+      <text class="like-detail">{{item.detail}}</text>
+      <text class="delete" data-index="{{index}}" bindtap="deleteLike">删掉</text>
+    </view>
+  </view>
+
+  <view class="empty" wx:else>
+    <text>这个分类还空着</text>
+    <text>先记一个最近观察到的小偏好。</text>
+    <button bindtap="resetLikes">放回示例</button>
+  </view>
+</view>

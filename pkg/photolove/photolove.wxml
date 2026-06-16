@@ -1,2 +1,46 @@
-<!--pkg/photolove/photolove.wxml-->
-<text>pkg/photolove/photolove.wxml</text>
+<view class="starter-page">
+  <view class="starter-hero">
+    <text class="starter-eyebrow">{{eyebrow}}</text>
+    <text class="starter-title">{{title}}</text>
+    <text class="starter-subtitle">{{subtitle}}</text>
+    <text class="starter-status">{{statusText}}</text>
+  </view>
+  <view class="bind-card" wx:if="{{requiresCouple && bindingState==='loading'}}">
+    <text class="bind-title">正在确认绑定状态</text>
+    <text class="bind-text">{{bindingMessage}}</text>
+  </view>
+  <view class="bind-card" wx:elif="{{requiresCouple && !bindingReady}}">
+    <text class="bind-title">请先绑定情侣关系</text>
+    <text class="bind-text">{{bindingMessage}}</text>
+    <view class="bind-actions">
+      <button class="starter-btn primary" bindtap="goBind">先去绑定</button>
+      <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
+    </view>
+  </view>
+  <block wx:else>
+    <view class="starter-card" wx:if="{{sceneList.length}}">
+      <text class="section-title">可以先这样用</text>
+      <view class="scene-grid">
+        <view class="scene-item" wx:for="{{sceneList}}" wx:key="title">
+          <text class="scene-name">{{item.title}}</text>
+          <text class="scene-desc">{{item.desc}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="empty-card" wx:if="{{localItems.length===0}}">
+      <text class="empty-title">{{emptyTitle}}</text>
+      <text class="empty-text">{{emptyText}}</text>
+    </view>
+    <view class="draft-list" wx:else>
+      <view class="draft-item" wx:for="{{localItems}}" wx:key="_id">
+        <text class="draft-title">{{item.title}}</text>
+        <text class="draft-desc">{{item.desc}}</text>
+      </view>
+    </view>
+    <view class="action-card">
+      <button class="starter-btn primary" bindtap="primaryTap">{{primaryText}}</button>
+      <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
+    </view>
+    <text class="note">{{note}}</text>
+  </block>
+</view>

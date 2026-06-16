@@ -1,2 +1,35 @@
-<!--pkg/moodDiary/moodDiary.wxml-->
-<text>pkg/moodDiary/moodDiary.wxml</text>
+<view class="assistant-page">
+  <view class="assistant-hero">
+    <text class="kicker">爱木长诗 · 本地心情助手</text>
+    <text class="title">AI助手</text>
+    <text class="subtitle">不联网、不分析隐私，只根据你选的状态给一句温柔提醒。</text>
+  </view>
+
+  <view class="orbit">
+    <view class="mood-dot dot-{{item.color}} {{active.key===item.key ? 'active' : ''}}"
+          wx:for="{{moods}}"
+          wx:key="key"
+          data-key="{{item.key}}"
+          bindtap="chooseMood">
+      <text>{{item.label}}</text>
+    </view>
+  </view>
+
+  <view class="reply-card card-{{active.color}}">
+    <text class="reply-label">当前状态：{{active.label}}</text>
+    <text class="reply-text">{{active.reply}}</text>
+    <button class="copy-btn" bindtap="copyReply">复制这句提醒</button>
+  </view>
+
+  <view class="write-card">
+    <textarea placeholder="想补一句今天发生了什么，可以只写给自己看" value="{{sentence}}" bindinput="onSentenceInput" maxlength="120"></textarea>
+    <button bindtap="saveReflection">留在本页</button>
+  </view>
+
+  <view class="saved-list" wx:if="{{saved.length}}">
+    <view class="saved-item" wx:for="{{saved}}" wx:key="text">
+      <text>{{item.mood}}</text>
+      <text>{{item.text}}</text>
+    </view>
+  </view>
+</view>

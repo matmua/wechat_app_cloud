@@ -1,1 +1,1 @@
-/* pkg/photolove/photolove.wxss */
+@import "../common/starter.wxss";

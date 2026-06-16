@@ -1,3 +1,6 @@
 {
+  "navigationBarTitleText": "恋爱日历",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f6f7fb",
   "usingComponents": {}
 }

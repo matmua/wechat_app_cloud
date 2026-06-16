@@ -1,1 +1,172 @@
-/* pkg/chatTopics/chatTopics.wxss */
+page {
+  background: #eef1e8;
+}
+
+.plan-page {
+  min-height: 100vh;
+  padding: 28rpx;
+  box-sizing: border-box;
+  color: #2d322d;
+}
+
+.desk {
+  padding: 34rpx 30rpx;
+  border-radius: 30rpx;
+  background: #314338;
+  color: #ffffff;
+}
+
+.kicker,
+.title,
+.subtitle,
+.note-type,
+.note-title,
+.empty text {
+  display: block;
+}
+
+.kicker {
+  font-size: 22rpx;
+  color: #d6e7bc;
+  font-weight: 800;
+}
+
+.title {
+  margin-top: 10rpx;
+  font-size: 46rpx;
+  font-weight: 900;
+}
+
+.subtitle {
+  margin-top: 12rpx;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 25rpx;
+  line-height: 1.5;
+}
+
+.composer {
+  margin-top: 24rpx;
+  padding: 20rpx;
+  border-radius: 26rpx;
+  background: #ffffff;
+  display: grid;
+  grid-template-columns: 1fr 144rpx;
+  gap: 14rpx;
+}
+
+.plan-input {
+  grid-column: span 2;
+  height: 76rpx;
+  padding: 0 20rpx;
+  border-radius: 18rpx;
+  background: #f4f6ef;
+  font-size: 26rpx;
+}
+
+.type-picker,
+.add-btn {
+  height: 74rpx;
+  line-height: 74rpx;
+  border-radius: 18rpx;
+  text-align: center;
+  font-size: 25rpx;
+  font-weight: 800;
+}
+
+.type-picker {
+  background: #eef1e8;
+  color: #314338;
+}
+
+.add-btn {
+  background: #314338;
+  color: #ffffff;
+}
+
+.board {
+  margin-top: 26rpx;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18rpx;
+}
+
+.note {
+  position: relative;
+  min-height: 210rpx;
+  padding: 34rpx 22rpx 20rpx;
+  border-radius: 12rpx;
+  box-shadow: 0 14rpx 28rpx rgba(54, 62, 54, 0.12);
+}
+
+.note-0 { background: #fff08f; transform: rotate(-1.5deg); }
+.note-1 { background: #c9f0dc; transform: rotate(1.2deg); }
+.note-2 { background: #ffd4df; transform: rotate(-0.8deg); }
+.note-3 { background: #c8dcff; transform: rotate(1.5deg); }
+
+.pin {
+  position: absolute;
+  left: 50%;
+  top: 12rpx;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  background: #e55766;
+  transform: translateX(-50%);
+}
+
+.note-type {
+  color: #51604f;
+  font-size: 22rpx;
+  font-weight: 900;
+}
+
+.note-title {
+  margin-top: 14rpx;
+  min-height: 80rpx;
+  color: #293028;
+  font-size: 29rpx;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.note-title.done {
+  text-decoration: line-through;
+  color: #7b8276;
+}
+
+.note-actions {
+  margin-top: 18rpx;
+  display: flex;
+  justify-content: space-between;
+  color: #314338;
+  font-size: 23rpx;
+  font-weight: 800;
+}
+
+.empty {
+  margin-top: 26rpx;
+  padding: 42rpx 26rpx;
+  border-radius: 26rpx;
+  background: #ffffff;
+  text-align: center;
+}
+
+.empty text:first-child {
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.empty text:nth-child(2) {
+  margin-top: 10rpx;
+  color: #70796f;
+  font-size: 24rpx;
+}
+
+.empty button {
+  margin-top: 24rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  border-radius: 18rpx;
+  background: #314338;
+  color: #ffffff;
+}

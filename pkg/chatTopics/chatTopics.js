@@ -1,66 +1,68 @@
-// pkg/chatTopics/chatTopics.js
+const PLAN_KEY = 'chat_topics_tiny_plans_v1';
+const DEFAULT_PLANS = [
+  { title: '下次一起散步 20 分钟', type: '见面', done: false },
+  { title: '选一家没吃过的小店', type: '吃饭', done: false },
+  { title: '互相拍一张今天的照片', type: '日常', done: false }
+];
+
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
-
+    plans: [],
+    draft: '',
+    types: ['日常', '见面', '吃饭', '礼物', '旅行'],
+    typeIndex: 0
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad(options) {
-
+  onLoad() {
+    wx.setNavigationBarTitle({ title: '小小计划' });
+    this.setData({ plans: wx.getStorageSync(PLAN_KEY) || DEFAULT_PLANS });
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
+  onDraftInput(e) {
+    this.setData({ draft: e.detail.value });
   },
 
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
-
+  onTypeChange(e) {
+    this.setData({ typeIndex: Number(e.detail.value || 0) });
   },
 
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
+  addPlan() {
+    const title = (this.data.draft || '').trim();
+    if (!title) {
+      wx.showToast({ title: '先写一个小计划', icon: 'none' });
+      return;
+    }
+    const next = [
+      { title, type: this.data.types[this.data.typeIndex], done: false },
+      ...this.data.plans
+    ];
+    wx.setStorageSync(PLAN_KEY, next);
+    this.setData({ plans: next, draft: '' });
   },
 
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
+  togglePlan(e) {
+    const index = Number(e.currentTarget.dataset.index || 0);
+    const plans = this.data.plans.map((item, idx) => idx === index ? { ...item, done: !item.done } : item);
+    wx.setStorageSync(PLAN_KEY, plans);
+    this.setData({ plans });
   },
 
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
+  deletePlan(e) {
+    const index = Number(e.currentTarget.dataset.index || 0);
+    const plans = this.data.plans.filter((_, idx) => idx !== index);
+    wx.setStorageSync(PLAN_KEY, plans);
+    this.setData({ plans });
   },
 
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
+  resetPlans() {
+    wx.setStorageSync(PLAN_KEY, DEFAULT_PLANS);
+    this.setData({ plans: DEFAULT_PLANS });
   },
 
-  /**
-   * 用户点击右上角分享
-   */
   onShareAppMessage() {
-
+    return {
+      title: '爱木长诗 · 小小计划',
+      path: '/pkg/chatTopics/chatTopics'
+    };
   }
-})
+});

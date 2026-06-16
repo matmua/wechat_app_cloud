@@ -1,2 +1,53 @@
-<!--pkg/weather/weather.wxml-->
-<text>pkg/weather/weather.wxml</text>
+<view class="weather-page">
+  <view class="sky-hero">
+    <text class="kicker">爱木长诗 · 远方天气卡</text>
+    <text class="title">对方天气</text>
+    <text class="subtitle">只看 Ta 主动同步的位置。没有授权或填写，就等待 Ta 先同步。</text>
+  </view>
+
+  <view class="state-card" wx:if="{{bindingState==='loading'}}">
+    <text>正在确认绑定状态</text>
+    <text>{{bindingMessage}}</text>
+  </view>
+
+  <view class="state-card" wx:elif="{{!bindingReady}}">
+    <text>请先绑定情侣关系</text>
+    <text>{{bindingMessage}}</text>
+  </view>
+
+  <block wx:else>
+    <view class="remote-card" wx:if="{{partnerWeather}}">
+      <view class="remote-top">
+        <view>
+          <text class="city">{{partnerWeather.city}}</text>
+          <text class="updated">最近同步 {{partnerWeather.updatedText || '刚刚'}}</text>
+        </view>
+        <view class="temp">{{partnerWeather.temp}}°</view>
+      </view>
+      <view class="weather-line">
+        <text>{{partnerWeather.condition}}</text>
+        <text>{{partnerWeather.feels}}</text>
+      </view>
+      <text class="care-tip">{{partnerWeather.tip}}</text>
+      <text class="api-note">当前为页面结构和模拟天气，真实天气接口待通过云函数接入。</text>
+    </view>
+
+    <view class="waiting-card" wx:else>
+      <text class="waiting-title">{{waitingText}}</text>
+      <text class="waiting-text">不能偷偷获取对方定位。需要 Ta 主动授权选择位置，或手动填写城市后同步。</text>
+    </view>
+
+    <view class="sync-card">
+      <text class="section-title">把我的位置同步给 Ta</text>
+      <text class="privacy">只同步城市/经纬度/更新时间；如果不想共享，可以不填写。</text>
+      <view class="city-row">
+        <input placeholder="手动填写城市或地点" value="{{cityInput}}" bindinput="onCityInput" maxlength="40" />
+        <button bindtap="chooseMyLocation">选位置</button>
+      </view>
+      <button class="sync-btn" bindtap="saveMyLocation" loading="{{saving}}">同步我的天气位置</button>
+      <text class="mine" wx:if="{{myCity}}">我已同步：{{myCity}} {{myUpdatedText}}</text>
+    </view>
+
+    <view class="error" wx:if="{{errorMessage}}">{{errorMessage}}</view>
+  </block>
+</view>

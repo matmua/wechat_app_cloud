@@ -1,2 +1,44 @@
-<!--pkg/giftSuggest/giftSuggest.wxml-->
-<text>pkg/giftSuggest/giftSuggest.wxml</text>
+<view class="starter-page">
+  <view class="starter-hero">
+    <text class="starter-eyebrow">{{eyebrow}}</text>
+    <text class="starter-title">{{title}}</text>
+    <text class="starter-subtitle">{{subtitle}}</text>
+    <text class="starter-status">{{statusText}}</text>
+  </view>
+
+  <block>
+    <view class="starter-card" wx:if="{{sceneList.length}}">
+      <text class="section-title">可以先这样用</text>
+      <view class="scene-grid">
+        <view class="scene-item" wx:for="{{sceneList}}" wx:key="title">
+          <text class="scene-name">{{item.title}}</text>
+          <text class="scene-desc">{{item.desc}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="starter-card" wx:if="{{steps.length}}">
+      <text class="section-title">下一步</text>
+      <view class="step-list">
+        <view class="step-item" wx:for="{{steps}}" wx:key="*this">
+          <text class="step-dot">{{index + 1}}</text>
+          <text class="step-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="empty-card" wx:if="{{localItems.length===0}}">
+      <text class="empty-title">{{emptyTitle}}</text>
+      <text class="empty-text">{{emptyText}}</text>
+    </view>
+    <view class="draft-list" wx:else>
+      <view class="draft-item" wx:for="{{localItems}}" wx:key="_id">
+        <text class="draft-title">{{item.title}}</text>
+        <text class="draft-desc">{{item.desc}}</text>
+      </view>
+    </view>
+    <view class="action-card">
+      <button class="starter-btn primary" bindtap="primaryTap">{{primaryText}}</button>
+      <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
+    </view>
+    <text class="note">{{note}}</text>
+  </block>
+</view>

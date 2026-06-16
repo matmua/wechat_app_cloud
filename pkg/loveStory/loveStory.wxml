@@ -1,2 +1,104 @@
-<!--pkg/loveStory/loveStory.wxml-->
-<text>pkg/loveStory/loveStory.wxml</text>
+<view class="period-page">
+  <view class="period-hero">
+    <text class="kicker">爱木长诗 · 私密关心日历</text>
+    <text class="title">经期记录</text>
+    <text class="subtitle">默认用“关心模式”，对方只知道这几天需要多照顾，不直接看到你的细节。</text>
+  </view>
+
+  <view class="state-card" wx:if="{{bindingState==='loading'}}">
+    <text>正在确认绑定状态</text>
+    <text>{{bindingMessage}}</text>
+  </view>
+
+  <view class="state-card" wx:elif="{{!bindingReady}}">
+    <text>请先绑定情侣关系</text>
+    <text>{{bindingMessage}}</text>
+    <button bindtap="goBind">先去绑定</button>
+  </view>
+
+  <block wx:else>
+    <view class="privacy-card">
+      <text>隐私提示</text>
+      <text>这是敏感信息。建议默认使用“关心模式”：Ta 只看到需要多关心，不展示日期、备注等细节。</text>
+    </view>
+
+    <view class="month-card">
+      <view class="month-head">
+        <text bindtap="prevMonth">‹</text>
+        <text>{{monthTitle}}</text>
+        <text bindtap="nextMonth">›</text>
+      </view>
+      <view class="week-row">
+        <text>日</text><text>一</text><text>二</text><text>三</text><text>四</text><text>五</text><text>六</text>
+      </view>
+      <view class="calendar-grid">
+        <view class="day {{item.muted ? 'muted' : ''}} {{item.today ? 'today' : ''}} {{item.mark}}"
+              wx:for="{{calendarDays}}"
+              wx:key="date">
+          <text>{{item.day}}</text>
+          <text wx:if="{{item.markText}}">{{item.markText}}</text>
+        </view>
+      </view>
+      <view class="legend">
+        <text>经期</text>
+        <text>预测</text>
+        <text>关心</text>
+      </view>
+    </view>
+
+    <view class="status-card">
+      <text class="status-title">{{prediction ? prediction.text : '还没有足够记录做预测'}}</text>
+      <text class="status-text" wx:if="{{prediction}}">预计 {{prediction.nextStart}} 到 {{prediction.nextEnd}}</text>
+      <text class="status-text" wx:else>先记录一次开始和结束日期，就可以生成下次预测。</text>
+    </view>
+
+    <view class="form-card">
+      <text class="section-title">记录本次</text>
+      <view class="form-row">
+        <picker mode="date" value="{{periodStart}}" bindchange="onStartChange">
+          <view>开始 {{periodStart}}</view>
+        </picker>
+        <picker mode="date" value="{{periodEnd}}" bindchange="onEndChange">
+          <view>结束 {{periodEnd}}</view>
+        </picker>
+      </view>
+      <view class="form-row">
+        <input type="number" value="{{cycleLength}}" bindinput="onCycleInput" placeholder="周期天数" />
+        <input type="number" value="{{periodLength}}" bindinput="onLengthInput" placeholder="持续天数" />
+      </view>
+      <textarea placeholder="备注只建议写给自己看的必要信息" value="{{notes}}" bindinput="onNotesInput" maxlength="160"></textarea>
+
+      <view class="visibility-row">
+        <view class="{{visibility===item.key ? 'on' : ''}}"
+              wx:for="{{visibilityOptions}}"
+              wx:key="key"
+              data-key="{{item.key}}"
+              bindtap="setVisibility">
+          <text>{{item.label}}</text>
+          <text>{{item.desc}}</text>
+        </view>
+      </view>
+
+      <button class="save-btn" bindtap="savePeriod" loading="{{saving}}">保存记录</button>
+    </view>
+
+    <view class="care-card" wx:if="{{partnerCareRecords.length || partnerSharedRecords.length}}">
+      <text class="section-title">给 Ta 的关心提示</text>
+      <text class="care-text" wx:if="{{partnerCareRecords.length}}">Ta 开启了关心模式：这几天多准备热水、少催促，多给休息空间。</text>
+      <view class="shared-item" wx:for="{{partnerSharedRecords}}" wx:key="_id">
+        <text>共享记录：{{item.periodStart}} 到 {{item.periodEnd}}</text>
+        <text wx:if="{{item.notes}}">{{item.notes}}</text>
+      </view>
+    </view>
+
+    <view class="record-list" wx:if="{{myRecords.length}}">
+      <text class="section-title">我的最近记录</text>
+      <view class="record-item" wx:for="{{myRecords}}" wx:key="_id">
+        <text>{{item.periodStart}} - {{item.periodEnd}}</text>
+        <text>{{item.visibility === 'private' ? '仅自己' : item.visibility === 'careOnly' ? '关心模式' : '共享细节'}}</text>
+      </view>
+    </view>
+
+    <view class="error" wx:if="{{errorMessage}}">{{errorMessage}}</view>
+  </block>
+</view>

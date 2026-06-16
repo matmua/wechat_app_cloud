@@ -1,2 +1,45 @@
-<!--pkg/coupleGoals/coupleGoals.wxml-->
-<text>pkg/coupleGoals/coupleGoals.wxml</text>
+<view class="goal-page">
+  <view class="hero">
+    <text class="kicker">爱木长诗 · 两个人的进度条</text>
+    <text class="title">恋爱目标</text>
+    <text class="subtitle">不用一次做到满分，只要一起往前挪一点。</text>
+  </view>
+
+  <view class="bind-card" wx:if="{{!bindingReady}}">
+    <text class="bind-title">请先绑定情侣关系</text>
+    <text class="bind-text">{{bindingMessage}}</text>
+    <button bindtap="goBind">先去绑定</button>
+  </view>
+
+  <block wx:else>
+    <view class="goal-orbit" wx:if="{{goals.length}}">
+      <view class="big-progress">
+        <text>{{goals[activeIndex].progress}}%</text>
+        <text>{{goals[activeIndex].title}}</text>
+      </view>
+    </view>
+
+    <view class="add-card">
+      <input placeholder="新增一个两个人的小目标" value="{{draft}}" bindinput="onDraftInput" maxlength="32" />
+      <button bindtap="addGoal">加入目标</button>
+    </view>
+
+    <view class="goal-list" wx:if="{{goals.length}}">
+      <view class="goal-item {{activeIndex===index ? 'active' : ''}}" wx:for="{{goals}}" wx:key="title">
+        <view class="goal-main">
+          <text>{{item.title}}</text>
+          <view class="bar"><view style="width: {{item.progress}}%;"></view></view>
+        </view>
+        <view class="goal-actions">
+          <text data-index="{{index}}" bindtap="stepGoal">+10%</text>
+          <text data-index="{{index}}" bindtap="deleteGoal">删除</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty" wx:else>
+      <text>还没有目标</text>
+      <text>从一件小事开始，比如一起散步、一起存钱、一起拍照。</text>
+    </view>
+  </block>
+</view>

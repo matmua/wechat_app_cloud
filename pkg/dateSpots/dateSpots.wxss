@@ -1,1 +1,194 @@
-/* pkg/dateSpots/dateSpots.wxss */
+page {
+  background: #fff4fb;
+}
+
+.like-page {
+  min-height: 100vh;
+  padding: 28rpx;
+  box-sizing: border-box;
+  color: #302633;
+}
+
+.like-hero {
+  padding: 34rpx 30rpx;
+  border-radius: 34rpx;
+  background: linear-gradient(135deg, #f35c9b, #8e6cf0);
+  color: #ffffff;
+}
+
+.kicker,
+.title,
+.subtitle,
+.like-type,
+.like-title,
+.like-detail,
+.empty text {
+  display: block;
+}
+
+.kicker {
+  font-size: 22rpx;
+  font-weight: 800;
+  opacity: 0.82;
+}
+
+.title {
+  margin-top: 10rpx;
+  font-size: 48rpx;
+  font-weight: 900;
+}
+
+.subtitle {
+  margin-top: 12rpx;
+  font-size: 25rpx;
+  line-height: 1.55;
+  opacity: 0.92;
+}
+
+.form-card {
+  margin-top: 24rpx;
+  padding: 24rpx;
+  border-radius: 28rpx;
+  background: #ffffff;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 20rpx;
+  background: #fff4fb;
+  font-size: 26rpx;
+}
+
+.input {
+  height: 76rpx;
+  padding: 0 20rpx;
+}
+
+.textarea {
+  margin-top: 14rpx;
+  min-height: 130rpx;
+  padding: 18rpx 20rpx;
+}
+
+.form-row {
+  margin-top: 14rpx;
+  display: grid;
+  grid-template-columns: 1fr 160rpx;
+  gap: 14rpx;
+}
+
+.picker,
+.add-btn {
+  height: 76rpx;
+  line-height: 76rpx;
+  border-radius: 20rpx;
+  text-align: center;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.picker {
+  background: #f3ecff;
+  color: #6b51c8;
+}
+
+.add-btn {
+  background: #f35c9b;
+  color: #ffffff;
+}
+
+.filter-row {
+  margin-top: 22rpx;
+  display: flex;
+  gap: 12rpx;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.filter-row text {
+  padding: 12rpx 20rpx;
+  border-radius: 999rpx;
+  background: #ffffff;
+  color: #7a667f;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.filter-row text.on {
+  background: #302633;
+  color: #ffffff;
+}
+
+.like-grid {
+  margin-top: 22rpx;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+}
+
+.like-card {
+  min-height: 210rpx;
+  padding: 22rpx;
+  border-radius: 28rpx;
+  background: #ffffff;
+  border: 1rpx solid #f3ddec;
+}
+
+.like-type {
+  color: #f35c9b;
+  font-size: 22rpx;
+  font-weight: 900;
+}
+
+.like-title {
+  margin-top: 12rpx;
+  font-size: 30rpx;
+  font-weight: 900;
+  line-height: 1.3;
+}
+
+.like-detail {
+  margin-top: 12rpx;
+  min-height: 68rpx;
+  color: #766b7a;
+  font-size: 23rpx;
+  line-height: 1.45;
+}
+
+.delete {
+  display: block;
+  margin-top: 16rpx;
+  color: #8e6cf0;
+  font-size: 23rpx;
+  font-weight: 800;
+}
+
+.empty {
+  margin-top: 24rpx;
+  padding: 42rpx 26rpx;
+  border-radius: 28rpx;
+  background: #ffffff;
+  text-align: center;
+}
+
+.empty text:first-child {
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.empty text:nth-child(2) {
+  margin-top: 10rpx;
+  color: #7a667f;
+  font-size: 24rpx;
+}
+
+.empty button {
+  margin-top: 24rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  border-radius: 20rpx;
+  background: #302633;
+  color: #ffffff;
+}

@@ -1,3 +1,4 @@
 {
-  "usingComponents": {}
+  "navigationBarTitleText": "美食猜猜",
+  "backgroundColor": "#fff7f4"
 }

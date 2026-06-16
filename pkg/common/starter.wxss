@@ -1,0 +1,252 @@
+page {
+  background: #f6f7fb;
+}
+
+.starter-page {
+  padding: 24rpx;
+  padding-bottom: 120rpx;
+}
+
+.starter-hero {
+  background: #ffffff;
+  border: 1rpx solid #f0dfe6;
+  border-radius: 24rpx;
+  padding: 28rpx 24rpx;
+  box-shadow: 0 12rpx 30rpx rgba(70, 45, 55, 0.06);
+}
+
+.starter-eyebrow {
+  display: block;
+  font-size: 22rpx;
+  color: #d85d78;
+  font-weight: 700;
+  margin-bottom: 10rpx;
+}
+
+.starter-title {
+  display: block;
+  font-size: 38rpx;
+  line-height: 1.25;
+  color: #25262b;
+  font-weight: 800;
+}
+
+.starter-subtitle {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: #69707d;
+  line-height: 1.6;
+}
+
+.starter-status {
+  display: inline-flex;
+  margin-top: 20rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  color: #9b3f58;
+  background: #fff1f5;
+  border: 1rpx solid #ffd5e0;
+  font-size: 22rpx;
+}
+
+.starter-card {
+  margin-top: 20rpx;
+  padding: 22rpx;
+  border-radius: 22rpx;
+  background: #ffffff;
+  border: 1rpx solid #eef0f5;
+  box-shadow: 0 10rpx 24rpx rgba(40, 45, 60, 0.05);
+}
+
+.section-title {
+  display: block;
+  font-size: 30rpx;
+  color: #24262c;
+  font-weight: 800;
+  margin-bottom: 16rpx;
+}
+
+.scene-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14rpx;
+}
+
+.scene-item {
+  min-height: 124rpx;
+  border-radius: 18rpx;
+  padding: 16rpx;
+  background: #fff8fa;
+  border: 1rpx solid #ffe1ea;
+}
+
+.scene-name {
+  display: block;
+  font-size: 26rpx;
+  color: #2d3037;
+  font-weight: 700;
+}
+
+.scene-desc {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #7d8490;
+  line-height: 1.45;
+}
+
+.step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.step-item {
+  display: flex;
+  gap: 14rpx;
+  align-items: flex-start;
+}
+
+.step-dot {
+  width: 34rpx;
+  height: 34rpx;
+  border-radius: 999rpx;
+  background: #ff7d98;
+  color: #ffffff;
+  font-size: 20rpx;
+  line-height: 34rpx;
+  text-align: center;
+  flex: 0 0 auto;
+  margin-top: 2rpx;
+}
+
+.step-text {
+  flex: 1;
+  font-size: 25rpx;
+  color: #535b67;
+  line-height: 1.55;
+}
+
+.empty-card {
+  margin-top: 20rpx;
+  padding: 34rpx 24rpx;
+  border-radius: 22rpx;
+  background: #ffffff;
+  border: 1rpx dashed #e6e9f0;
+  text-align: center;
+}
+
+.empty-title {
+  display: block;
+  font-size: 30rpx;
+  color: #2b2e35;
+  font-weight: 800;
+}
+
+.empty-text {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #7b828d;
+  line-height: 1.55;
+}
+
+.draft-list {
+  margin-top: 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.draft-item {
+  padding: 18rpx;
+  border-radius: 18rpx;
+  background: #ffffff;
+  border: 1rpx solid #eef0f5;
+}
+
+.draft-title {
+  display: block;
+  font-size: 27rpx;
+  color: #25262b;
+  font-weight: 700;
+}
+
+.draft-desc {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: #69707d;
+  line-height: 1.5;
+}
+
+.action-card {
+  margin-top: 22rpx;
+  display: flex;
+  gap: 14rpx;
+}
+
+.starter-btn {
+  flex: 1;
+  height: 76rpx;
+  line-height: 76rpx;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  padding: 0 18rpx;
+  border: none;
+}
+
+.starter-btn.primary {
+  background: #ff718f;
+  color: #ffffff;
+}
+
+.starter-btn.secondary {
+  color: #565d68;
+  background: #ffffff;
+  border: 1rpx solid #e7eaf0;
+}
+
+.note {
+  display: block;
+  margin-top: 18rpx;
+  padding: 16rpx 18rpx;
+  border-radius: 16rpx;
+  color: #7a6170;
+  background: #fff6f9;
+  border: 1rpx solid #ffe0e9;
+  font-size: 22rpx;
+  line-height: 1.5;
+}
+
+.bind-card {
+  margin-top: 20rpx;
+  padding: 26rpx 22rpx;
+  border-radius: 22rpx;
+  background: #ffffff;
+  border: 1rpx solid #ffe0e9;
+  box-shadow: 0 10rpx 24rpx rgba(40, 45, 60, 0.05);
+}
+
+.bind-title {
+  display: block;
+  font-size: 30rpx;
+  color: #2b2e35;
+  font-weight: 800;
+}
+
+.bind-text {
+  display: block;
+  margin-top: 10rpx;
+  color: #7b828d;
+  font-size: 24rpx;
+  line-height: 1.55;
+}
+
+.bind-actions {
+  margin-top: 18rpx;
+  display: flex;
+  gap: 14rpx;
+}

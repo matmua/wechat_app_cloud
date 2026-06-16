@@ -1,2 +1,71 @@
-<!--pkg/loveWords/loveWords.wxml-->
-<text>pkg/loveWords/loveWords.wxml</text>
+<view class="food-page">
+  <view class="food-hero">
+    <view>
+      <text class="eyebrow">爱木长诗 · 饭点裁判</text>
+      <text class="title">美食猜猜</text>
+      <text class="subtitle">把“吃什么”的纠结交给这张小卡片，抽到就出发。</text>
+    </view>
+    <view class="steam">
+      <text>热</text>
+      <text>乎</text>
+      <text>乎</text>
+    </view>
+  </view>
+
+  <view class="draw-stage {{rolling ? 'is-rolling' : ''}}">
+    <view class="plate-ring">
+      <view class="food-card">
+        <text class="food-tag">{{rollingFood.tag}}</text>
+        <text class="food-name">{{rollingFood.name}}</text>
+        <text class="food-note">{{rollingFood.note}}</text>
+      </view>
+    </view>
+    <button class="draw-btn" bindtap="drawFood" loading="{{rolling}}">
+      {{rolling ? '正在翻牌' : '随机抽今天吃什么'}}
+    </button>
+    <text class="draw-copy">{{rollText}}</text>
+  </view>
+
+  <view class="today-card" wx:if="{{selectedFood}}">
+    <text class="section-title">今日推荐</text>
+    <view class="today-row">
+      <text class="today-food">{{selectedFood.name}}</text>
+      <text class="today-time">{{selectedFood.pickedAt}}</text>
+    </view>
+    <text class="today-note">{{selectedFood.note}}</text>
+  </view>
+
+  <view class="menu-panel">
+    <view class="panel-head">
+      <text class="section-title">候选菜单</text>
+      <text class="mini-link" bindtap="resetFoods">恢复默认</text>
+    </view>
+    <view class="add-row">
+      <input class="food-input" placeholder="加一道你们最近想吃的" value="{{newFood}}" bindinput="onFoodInput" maxlength="20" />
+      <button class="add-btn" bindtap="addFood">加入</button>
+    </view>
+    <view class="quick-row">
+      <text class="quick-chip" wx:for="{{quickTags}}" wx:key="*this" data-tag="{{item}}" bindtap="addQuick">{{item}}</text>
+    </view>
+    <view class="food-list">
+      <view class="food-pill" wx:for="{{foods}}" wx:key="name">
+        <view>
+          <text class="pill-name">{{item.name}}</text>
+          <text class="pill-tag">{{item.tag}}</text>
+        </view>
+        <text class="delete" data-index="{{index}}" bindtap="deleteFood">删</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="history-panel" wx:if="{{history.length}}">
+    <view class="panel-head">
+      <text class="section-title">最近听谁的</text>
+      <text class="mini-link" bindtap="clearHistory">清空</text>
+    </view>
+    <view class="history-item" wx:for="{{history}}" wx:key="pickedAt">
+      <text>{{item.name}}</text>
+      <text>{{item.pickedAt}}</text>
+    </view>
+  </view>
+</view>

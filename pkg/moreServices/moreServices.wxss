@@ -1,1 +1,1 @@
-/* pkg/moreServices/moreServices.wxss */
+@import "../common/starter.wxss";

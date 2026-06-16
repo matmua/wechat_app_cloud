@@ -1,2 +1,118 @@
-<!--pkg/loveTest/loveTest.wxml-->
-<text>pkg/loveTest/loveTest.wxml</text>
+<view class="sock-page">
+  <view class="sock-hero">
+    <text class="hero-kicker">爱木长诗 · 悄悄话抽屉</text>
+    <text class="hero-title">树洞袜子</text>
+    <text class="hero-sub">有些话可以先塞进袜子里。想公开时公开，想等一等就让它到时间再掉出来。</text>
+  </view>
+
+  <view class="state-card" wx:if="{{bindingState==='loading'}}">
+    <text class="state-title">正在确认绑定状态</text>
+    <text class="state-text">{{bindingMessage}}</text>
+  </view>
+
+  <view class="state-card" wx:elif="{{!bindingReady}}">
+    <text class="state-title">请先绑定情侣关系</text>
+    <text class="state-text">{{bindingMessage}}</text>
+    <button bindtap="refreshBinding">重新检查</button>
+  </view>
+
+  <block wx:else>
+    <view class="drawer">
+      <view class="drawer-top">
+        <text>塞一封悄悄话</text>
+        <text>作者自己随时可看</text>
+      </view>
+
+      <view class="type-row">
+        <text class="{{contentType===item.key ? 'on' : ''}}"
+              wx:for="{{contentTypes}}"
+              wx:key="key"
+              data-key="{{item.key}}"
+              bindtap="setContentType">{{item.label}}</text>
+      </view>
+
+      <textarea class="secret-input"
+                placeholder="写一点现在还不想马上说出口的话"
+                value="{{text}}"
+                bindinput="onTextInput"
+                maxlength="500"></textarea>
+
+      <view class="media-box" wx:if="{{contentType !== 'text'}}">
+        <view class="media-empty" wx:if="{{!mediaTempPath}}" bindtap="chooseMediaFile">
+          <text>选择{{contentType==='image' ? '图片' : contentType==='video' ? '视频' : '音频'}}</text>
+          <text>会先上传到云存储，再把 fileID 写入数据库</text>
+        </view>
+        <view class="media-picked" wx:else>
+          <text>{{mediaName}}</text>
+          <text>{{mediaSize}} bytes</text>
+          <text bindtap="removeMedia">移除</text>
+        </view>
+      </view>
+
+      <view class="visibility-row">
+        <view class="visibility {{visibility===item.key ? 'on' : ''}}"
+              wx:for="{{visibilityOptions}}"
+              wx:key="key"
+              data-key="{{item.key}}"
+              bindtap="setVisibility">
+          <text>{{item.label}}</text>
+          <text>{{item.desc}}</text>
+        </view>
+      </view>
+
+      <view class="schedule-row" wx:if="{{visibility==='scheduled'}}">
+        <picker mode="date" value="{{revealDate}}" bindchange="onRevealDate">
+          <view>{{revealDate || '选择日期'}}</view>
+        </picker>
+        <picker mode="time" value="{{revealTime}}" bindchange="onRevealTime">
+          <view>{{revealTime || '选择时间'}}</view>
+        </picker>
+      </view>
+
+      <button class="save-btn" bindtap="saveSecret" loading="{{saving}}">塞进袜子</button>
+    </view>
+
+    <view class="loading" wx:if="{{loading}}">正在翻袜子抽屉...</view>
+    <view class="error" wx:elif="{{errorMessage}}">{{errorMessage}}</view>
+
+    <view class="sock-line" wx:elif="{{records.length}}">
+      <view class="secret-sock sock-{{item.sockColor}}" wx:for="{{records}}" wx:key="_id">
+        <view class="sock-head">
+          <text>{{item.isMine ? '我藏的' : 'Ta 留的'}}</text>
+          <text>{{item.statusText}}</text>
+        </view>
+
+        <view class="sock-body">
+          <text class="content-type">{{item.contentType}}</text>
+          <text class="secret-text" wx:if="{{item.text}}">{{item.text}}</text>
+
+          <view class="media-preview" wx:if="{{item.tempUrls.length}}">
+            <image wx:if="{{item.contentType==='image'}}"
+                   src="{{item.tempUrls[0]}}"
+                   mode="aspectFill"
+                   data-url="{{item.tempUrls[0]}}"
+                   data-type="image"
+                   bindtap="previewMedia"></image>
+            <view wx:elif="{{item.contentType==='video'}}"
+                  class="video-cover"
+                  data-url="{{item.tempUrls[0]}}"
+                  data-type="video"
+                  bindtap="previewMedia">播放视频</view>
+            <view wx:elif="{{item.contentType==='audio'}}"
+                  class="audio-cover"
+                  data-url="{{item.tempUrls[0]}}"
+                  data-type="audio"
+                  bindtap="previewMedia">播放声音</view>
+          </view>
+
+          <text class="reveal-time" wx:if="{{item.revealText}}">公开时间：{{item.revealText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-socks" wx:else>
+      <text>袜子抽屉还是空的</text>
+      <text>第一封悄悄话可以只给未来的某一天。</text>
+    </view>
+  </block>
+</view>
