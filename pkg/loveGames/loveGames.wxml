@@ -1,49 +1,116 @@
 <view class="arcade-page">
   <view class="arcade-hero">
-    <text class="kicker">爱木长诗 · 口袋街机厅</text>
+    <text class="kicker">爱木长诗 · 口袋小游戏机</text>
     <text class="title">打发时间</text>
-    <text class="subtitle">无聊的时候插一张卡带，先玩一局贪吃蛇。</text>
+    <text class="subtitle">等餐、排队、睡前，插一张卡带玩一局。</text>
   </view>
 
-  <scroll-view class="cassette-wall" scroll-x="true">
+  <scroll-view class="cassette-wall" scroll-x="true" enable-flex="true">
     <view class="cassette {{activeGame===item.key ? 'active' : ''}}"
           wx:for="{{games}}"
           wx:key="key"
           data-key="{{item.key}}"
           bindtap="chooseGame">
-      <text>{{item.status}}</text>
-      <text>{{item.title}}</text>
-      <text>{{item.desc}}</text>
+      <text class="cassette-icon">{{item.icon}}</text>
+      <text class="cassette-status">{{item.status}}</text>
+      <text class="cassette-title">{{item.title}}</text>
+      <text class="cassette-desc">{{item.desc}}</text>
     </view>
   </scroll-view>
 
   <view class="machine">
-    <view class="screen">
+    <view class="screen" wx:if="{{activeGame==='snake'}}" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd">
       <view class="screen-top">
         <text>贪吃蛇</text>
-        <text>得分 {{score}}</text>
+        <text>得分 {{snakeScore}}</text>
       </view>
-      <view class="snake-board">
-        <view class="cell {{item.type}}" wx:for="{{board}}" wx:key="index"></view>
+      <view class="snake-board board-grid">
+        <view class="cell {{item.type}}" wx:for="{{snakeBoard}}" wx:key="index"></view>
       </view>
-      <text class="message">{{message}}</text>
+      <text class="message">{{snakeMessage}}</text>
+      <text class="screen-tip">可滑动控制，也可以用下面的十字键。</text>
     </view>
 
-    <view class="controls">
-      <view></view>
-      <button data-dir="up" bindtap="changeDirection">上</button>
-      <view></view>
-      <button data-dir="left" bindtap="changeDirection">左</button>
-      <button class="start" bindtap="startGame">{{gameOver ? '再来' : running ? '进行中' : '开始'}}</button>
-      <button data-dir="right" bindtap="changeDirection">右</button>
-      <button bindtap="pauseGame">暂停</button>
-      <button data-dir="down" bindtap="changeDirection">下</button>
-      <button bindtap="resetGame">重置</button>
+    <view class="screen" wx:elif="{{activeGame==='mine'}}">
+      <view class="screen-top">
+        <text>扫雷</text>
+        <text>雷 {{6}}</text>
+      </view>
+      <view class="mine-board board-grid">
+        <view class="mine-cell {{item.revealed ? 'revealed ' + item.type : ''}}"
+              wx:for="{{mineBoard}}"
+              wx:key="index"
+              data-index="{{item.index}}"
+              bindtap="openMineCell">{{item.text}}</view>
+      </view>
+      <text class="message">{{mineStatus}}</text>
     </view>
-  </view>
 
-  <view class="coming">
-    <text>下一批卡带</text>
-    <text>扫雷、打飞机、俄罗斯方块会继续补成独立小游戏。</text>
+    <view class="screen" wx:elif="{{activeGame==='plane'}}">
+      <view class="screen-top">
+        <text>打飞机</text>
+        <text>得分 {{planeScore}}</text>
+      </view>
+      <view class="plane-board board-grid">
+        <view class="cell {{item.type}}" wx:for="{{planeBoard}}" wx:key="index"></view>
+      </view>
+      <text class="message">{{planeMessage}}</text>
+    </view>
+
+    <view class="screen" wx:elif="{{activeGame==='tetris'}}">
+      <view class="screen-top">
+        <text>俄罗斯方块</text>
+        <text>得分 {{tetrisScore}}</text>
+      </view>
+      <view class="tetris-board board-grid">
+        <view class="cell {{item.type}}" wx:for="{{tetrisBoard}}" wx:key="index"></view>
+      </view>
+      <text class="message">{{tetrisMessage}}</text>
+    </view>
+
+    <view class="controls snake-controls" wx:if="{{activeGame==='snake'}}">
+      <view class="direction-pad">
+        <view class="dir up" data-dir="up" bindtap="changeSnakeDirection">上</view>
+        <view class="dir left" data-dir="left" bindtap="changeSnakeDirection">左</view>
+        <view class="dir down" data-dir="down" bindtap="changeSnakeDirection">下</view>
+        <view class="dir right" data-dir="right" bindtap="changeSnakeDirection">右</view>
+      </view>
+      <view class="action-row">
+        <view class="action primary" bindtap="startSnake">{{snakeGameOver ? '再来' : snakeRunning ? '进行中' : '开始'}}</view>
+        <view class="action" bindtap="pauseSnake">暂停</view>
+        <view class="action ghost" bindtap="resetSnake">重开</view>
+      </view>
+    </view>
+
+    <view class="controls mine-controls" wx:elif="{{activeGame==='mine'}}">
+      <view class="wide-action primary" bindtap="resetMine">{{mineGameOver || mineWin ? '再来一局' : '重新布雷'}}</view>
+    </view>
+
+    <view class="controls plane-controls" wx:elif="{{activeGame==='plane'}}">
+      <view class="action-row">
+        <view class="action primary" bindtap="startPlane">{{planeGameOver ? '再飞' : planeRunning ? '飞行中' : '开始'}}</view>
+        <view class="action" bindtap="pausePlane">暂停</view>
+        <view class="action ghost" bindtap="resetPlane">重开</view>
+      </view>
+      <view class="action-row">
+        <view class="action" bindtap="movePlaneLeft">左移</view>
+        <view class="action fire" bindtap="shootPlane">发射</view>
+        <view class="action" bindtap="movePlaneRight">右移</view>
+      </view>
+    </view>
+
+    <view class="controls tetris-controls" wx:elif="{{activeGame==='tetris'}}">
+      <view class="action-row">
+        <view class="action primary" bindtap="startTetris">{{tetrisGameOver ? '再来' : tetrisRunning ? '下落中' : '开始'}}</view>
+        <view class="action" bindtap="pauseTetris">暂停</view>
+        <view class="action ghost" bindtap="resetTetris">重开</view>
+      </view>
+      <view class="action-row">
+        <view class="action" data-dx="-1" bindtap="moveTetris">左</view>
+        <view class="action fire" bindtap="rotateTetris">旋转</view>
+        <view class="action" data-dx="1" bindtap="moveTetris">右</view>
+      </view>
+      <view class="wide-action" bindtap="dropTetris">加速下落</view>
+    </view>
   </view>
 </view>

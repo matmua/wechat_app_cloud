@@ -1,5 +1,10 @@
 {
-  "requiredPrivateInfos": ["chooseLocation"],
+  "requiredPrivateInfos": ["chooseLocation", "getLocation"],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于同步你主动选择的位置，生成你和 Ta 的天气卡片"
+    }
+  },
   "pages": [
     "pages/index/index",
     "pages/matters/matters",
