@@ -1,35 +1,53 @@
 <view class="assistant-page">
   <view class="assistant-hero">
-    <text class="kicker">爱木长诗 · 本地心情助手</text>
-    <text class="title">AI助手</text>
-    <text class="subtitle">不联网、不分析隐私，只根据你选的状态给一句温柔提醒。</text>
-  </view>
-
-  <view class="orbit">
-    <view class="mood-dot dot-{{item.color}} {{active.key===item.key ? 'active' : ''}}"
-          wx:for="{{moods}}"
-          wx:key="key"
-          data-key="{{item.key}}"
-          bindtap="chooseMood">
-      <text>{{item.label}}</text>
+    <text class="kicker">爱木长诗 · 恋爱 AI 小助手</text>
+    <text class="title">小诗助手</text>
+    <text class="subtitle">后续接入 DeepSeek / OpenAI 后，小诗可以帮你写情话、想约会、润色树洞、给礼物建议。API key 只放云函数环境变量，不写进前端。</text>
+    <view class="config-pill {{configState}}">
+      <text>{{configText}}</text>
     </view>
   </view>
 
-  <view class="reply-card card-{{active.color}}">
-    <text class="reply-label">当前状态：{{active.label}}</text>
-    <text class="reply-text">{{active.reply}}</text>
-    <button class="copy-btn" bindtap="copyReply">复制这句提醒</button>
-  </view>
-
-  <view class="write-card">
-    <textarea placeholder="想补一句今天发生了什么，可以只写给自己看" value="{{sentence}}" bindinput="onSentenceInput" maxlength="120"></textarea>
-    <button bindtap="saveReflection">留在本页</button>
-  </view>
-
-  <view class="saved-list" wx:if="{{saved.length}}">
-    <view class="saved-item" wx:for="{{saved}}" wx:key="text">
-      <text>{{item.mood}}</text>
-      <text>{{item.text}}</text>
+  <scroll-view class="quick-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="quick-track">
+      <view class="quick-card {{activeScene === item.key ? 'active' : ''}}"
+            wx:for="{{quickPrompts}}"
+            wx:key="key"
+            data-key="{{item.key}}"
+            bindtap="useQuickPrompt">
+        <text class="quick-title">{{item.title}}</text>
+        <text class="quick-desc">{{item.desc}}</text>
+      </view>
     </view>
+  </scroll-view>
+
+  <view class="chat-panel">
+    <view class="chat-head">
+      <text>对话</text>
+      <text class="clear" bindtap="clearChat">清空</text>
+    </view>
+
+    <view class="message {{item.role}} {{item.pendingConfig ? 'pending' : ''}}"
+          wx:for="{{messages}}"
+          wx:key="index"
+          data-index="{{index}}"
+          bindlongpress="copyMessage">
+      <text class="message-role">{{item.role === 'user' ? '我' : '小诗'}}</text>
+      <text class="message-text">{{item.text}}</text>
+    </view>
+
+    <view wx:if="{{loading}}" class="thinking">
+      <text>小诗正在等云函数回应...</text>
+    </view>
+  </view>
+
+  <view class="composer">
+    <textarea class="composer-input"
+              placeholder="问小诗：比如「帮我写一句今晚发给 Ta 的话」"
+              value="{{inputText}}"
+              bindinput="onInput"
+              maxlength="500"
+              auto-height></textarea>
+    <button class="send-btn" bindtap="sendMessage" loading="{{loading}}">发送给小诗</button>
   </view>
 </view>

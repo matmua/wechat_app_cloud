@@ -29,7 +29,7 @@
 | `pkg/coupleTasks/coupleTasks` | 情侣任务 | 最小可用占位，需要绑定 | 与心动瞬间任务日志部分重复 | 是 | 后续决定是否独立任务页，或并入心动任务 |
 | `pkg/loveCalendar/loveCalendar` | 恋爱日历 | 最小可用占位，需要绑定 | 未聚合纪念日、约会、任务数据 | 是 | 后续可作为聚合日历，只读展示多个集合 |
 | `pkg/loveTips/loveTips` | 恋爱小贴士 | 最小可用占位 | 静态建议，不需要云数据 | 是 | 后续可做每日一条和收藏 |
-| `pkg/moodDiary/moodDiary` | 心情日记 | 最小可用占位，需要绑定 | 未接入数据库，不能长期保存 | 是 | 后续可设计 `mood_diaries`，也可并入心动瞬间 |
+| `pkg/moodDiary/moodDiary` | 小诗助手 | AI 接口待配置 | 保留 AI 助手定位，已预留 `aiChat` 云函数调用；真实 DeepSeek / OpenAI API 待后续配置 | 是 | 后续新增 `cloudfunctions/aiChat`，API key 只放云函数环境变量 |
 | `pkg/chatTopics/chatTopics` | 聊天话题 | 最小可用占位 | 静态话题卡片，不需要绑定 | 是 | 后续可加随机抽题和收藏 |
 | `pkg/dateSpots/dateSpots` | 约会地点 | 最小可用占位 | 未接入地图服务和地点库 | 是 | 后续可结合 `chooseLocation`，转入约会规划 |
 | `pkg/loveGames/loveGames` | 情侣小游戏 | 最小可用占位 | 只有轻量互动入口 | 是 | 后续可补 1-2 个真正可玩的小游戏 |
@@ -52,7 +52,7 @@
 
 以下页面已经能打开、能显示基础内容和交互，但暂未接入正式云数据库或完整业务逻辑：`weather`、`datePlan`、`giftSuggest`、`loveWords`、`memorialDay`、`photolove`、`loveTest`、`coupleTasks`、`loveCalendar`、`loveTips`、`moodDiary`、`chatTopics`、`dateSpots`、`loveGames`、`relationshipAdvice`、`loveStory`、`surpriseIdeas`、`coupleGoals`、`emotionAnalysis`、`moreServices`。
 
-其中 `datePlan`、`memorialDay`、`photolove`、`coupleTasks`、`loveCalendar`、`moodDiary`、`loveStory`、`coupleGoals` 会先检查情侣绑定；未绑定时只显示提示，不允许记录临时草稿。
+其中 `datePlan`、`memorialDay`、`photolove`、`coupleTasks`、`loveCalendar`、`loveStory`、`coupleGoals` 会先检查情侣绑定；未绑定时只显示提示，不允许记录临时草稿。`moodDiary` 当前作为小诗助手保留 AI 定位，不再按心情日记处理。
 
 ## 5. 后续建议
 

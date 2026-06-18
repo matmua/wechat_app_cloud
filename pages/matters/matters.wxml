@@ -1,140 +1,114 @@
-<view class="container">
-  <!-- 主标题和搜索栏 -->
-  <view class="main-header">
-    <view class="title-section">
-      <text class="main-title">恋爱助手</text>
-      <text class="sub-title">随叫随到 ▶</text>
+<view class="toolbox-page">
+  <view class="toolbox-hero">
+    <view>
+      <text class="hero-kicker">爱木长诗的小工具箱</text>
+      <text class="hero-title">今天想做点什么？</text>
+      <text class="hero-sub">{{currentDate}} · {{weatherDesc}}</text>
     </view>
-    <view class="search-bar">
-      <picker class="location-picker" bindchange="onLocationChange">
-        <view class="picker-text">{{selectedLocation}}</view>
-        <!-- <image class="dropdown-icon" src="/images/home.png"></image> -->
-      </picker>
-      <input class="search-input" placeholder="输入你要找的服务" confirm-type="search" bindconfirm="onSearch"/>
-      <image class="search-icon" src="{{img.search}}"></image>
-    </view>
-  </view>
-  <!-- https://www.iconfont.cn/collections/detail?spm=a313x.home_2025.i1.dfa9d9a29.4cde3a81nQtOmc&cid=47088 -->
-  <!-- 功能菜单网格 -->
-  <view class="menu-grid">
-    <!-- 第一行 -->
-    <view class="menu-row">
-      <view class="menu-item" bindtap="goToDatePlan">
-        <image class="menu-icon" src="{{img.plan}}"></image>
-        <text class="menu-text">约会规划</text>
-      </view>
-      <view class="menu-item" bindtap="goToGiftSuggest">
-        <image class="menu-icon" src="{{img.mood}}"></image>
-        <text class="menu-text">礼物建议</text>
-      </view>
-      <view class="menu-item" bindtap="goToLoveWords">
-        <image class="menu-icon" src="{{img.food}}"></image>
-        <text class="menu-text">美食猜猜</text>
-      </view>
-      <view class="menu-item" bindtap="goToMemorialDay">
-        <image class="menu-icon" src="{{img.game}}"></image>
-        <text class="menu-text">纪念日备忘</text>
-      </view>
-      <view class="menu-item" bindtap="goToPhotoAlbum">
-        <image class="menu-icon" src="{{img.goal}}"></image>
-        <text class="menu-text">甜蜜相册</text>
-      </view>
-    </view>
-
-    <!-- 第二行 -->
-    <view class="menu-row">
-      <view class="menu-item" bindtap="goToLoveTest">
-        <image class="menu-icon" src="{{img.socks}}"></image>
-        <text class="menu-text">树洞袜子</text>
-      </view>
-      <view class="menu-item" bindtap="goToCoupleTasks">
-        <image class="menu-icon" src="{{img.task}}"></image>
-        <text class="menu-text">情侣任务</text>
-      </view>
-      <view class="menu-item" bindtap="goToLoveCalendar">
-        <image class="menu-icon" src="{{img.calendar}}"></image>
-        <text class="menu-text">恋爱日历</text>
-      </view>
-      <view class="menu-item" bindtap="goToLoveTips">
-        <image class="menu-icon" src="{{img.balloon}}"></image>
-        <text class="menu-text">呼叫对方</text>
-      </view>
-      <view class="menu-item" bindtap="goToMoodDiary">
-        <image class="menu-icon" src="{{img.assistant}}"></image>
-        <text class="menu-text">AI助手</text>
-      </view>
-    </view>
-
-    <!-- 第三行 -->
-    <view class="menu-row">
-      <view class="menu-item" bindtap="goToChatTopics">
-        <image class="menu-icon" src="{{img.bear}}"></image>
-        <text class="menu-text">小小计划</text>
-      </view>
-      <view class="menu-item" bindtap="goToDateSpots">
-        <image class="menu-icon" src="{{img.doll}}"></image>
-        <text class="menu-text">大大喜欢</text>
-      </view>
-      <view class="menu-item" bindtap="goToLoveGames">
-        <image class="menu-icon" src="{{img.play}}"></image>
-        <text class="menu-text">打发时间</text>
-      </view>
-      <view class="menu-item" bindtap="goToRelationshipAdvice">
-        <image class="menu-icon" src="{{img.album}}"></image>
-        <text class="menu-text">关系建议</text>
-      </view>
-      <view class="menu-item" bindtap="goToWishList">
-        <image class="menu-icon" src="{{img.sound}}"></image>
-        <text class="menu-text">心愿清单</text>
-      </view>
-    </view>
-
-    <!-- 第四行 -->
-    <view class="menu-row">
-      <view class="menu-item" bindtap="goToLoveStory">
-        <image class="menu-icon" src="{{img.period}}"></image>
-        <text class="menu-text">经期日历</text>
-      </view>
-      <view class="menu-item" bindtap="goToSurpriseIdeas">
-        <image class="menu-icon" src="{{img.placeholder}}"></image>
-        <text class="menu-text">惊喜灵感</text>
-      </view>
-      <view class="menu-item" bindtap="goToCoupleGoals">
-        <image class="menu-icon" src="{{img.placeholder}}"></image>
-        <text class="menu-text">恋爱目标</text>
-      </view>
-      <view class="menu-item" bindtap="goToEmotionAnalysis">
-        <image class="menu-icon" src="{{img.placeholder}}"></image>
-        <text class="menu-text">情绪分析</text>
-      </view>
-      <view class="menu-item" bindtap="goToMoreServices">
-        <image class="menu-icon" src="{{img.placeholder}}"></image>
-        <text class="menu-text">更多服务</text>
-      </view>
+    <view class="hero-badge">
+      <text>木</text>
+      <text>诗</text>
     </view>
   </view>
 
-  <!-- 分页指示器 -->
-  <view class="pagination">
-    <view class="dot active"></view>
-    <view class="dot"></view>
+  <view class="search-panel">
+    <input class="search-input"
+           placeholder="搜：天气、美食、树洞、AI、纪念日"
+           value="{{searchValue}}"
+           bindinput="onSearchInput"
+           confirm-type="search"
+           bindconfirm="onSearch" />
+    <text wx:if="{{searchValue}}" class="search-clear" bindtap="clearSearch">清空</text>
   </view>
 
-  <!-- 对方天气卡片 -->
-  <view class="weather-card">
-    <view class="weather-header">
-      <text class="weather-title">对方天气</text>
-      <text class="weather-date">{{currentDate}}</text>
+  <scroll-view class="group-tabs" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="tab-track">
+      <view class="tab {{activeGroupKey === item.key ? 'active' : ''}}"
+            wx:for="{{groups}}"
+            wx:key="key"
+            data-key="{{item.key}}"
+            bindtap="selectGroup">
+        <text>{{item.name}}</text>
+      </view>
     </view>
-    <view class="weather-content">
-      <view class="weather-info">
-        <text class="weather-main-text">看看 Ta 那里的天气 {{weatherDesc}}</text>
-        <text class="weather-sub-text">只有对方主动同步位置后，这里才会显示远方天气卡</text>
-        <view class="weather-suggestion">
-          <button class="weather-btn" bindtap="checkWeatherDetail">查看对方天气</button>
+  </scroll-view>
+
+  <view class="result-line">
+    <text>{{resultText}}</text>
+  </view>
+
+  <swiper wx:if="{{!searchMode}}"
+          class="group-swiper"
+          current="{{activeGroupIndex}}"
+          bindchange="onGroupSwiperChange"
+          duration="260">
+    <swiper-item wx:for="{{groups}}" wx:key="key">
+      <swiper class="tool-swiper"
+              current="{{activeToolPage}}"
+              bindchange="onToolPageChange"
+              duration="220">
+        <swiper-item wx:for="{{toolPages}}" wx:key="index">
+          <view class="tool-grid">
+            <view wx:if="{{item.length === 0}}" class="empty-box">{{emptyText}}</view>
+            <view class="tool-card {{tool.status === 'later' ? 'is-later' : ''}}"
+                  wx:for="{{item}}"
+                  wx:for-item="tool"
+                  wx:key="key"
+                  data-route="{{tool.route}}"
+                  data-tabbar="{{tool.tabbar}}"
+                  bindtap="openTool">
+              <view class="tool-icon">{{tool.icon}}</view>
+              <view class="tool-main">
+                <view class="tool-title-row">
+                  <text class="tool-name">{{tool.name}}</text>
+                  <text wx:if="{{tool.status === 'later'}}" class="status-tag">后续</text>
+                </view>
+                <text class="tool-desc">{{tool.desc}}</text>
+              </view>
+            </view>
+          </view>
+        </swiper-item>
+      </swiper>
+    </swiper-item>
+  </swiper>
+
+  <swiper wx:else
+          class="tool-swiper search-swiper"
+          current="{{activeToolPage}}"
+          bindchange="onToolPageChange"
+          duration="220">
+    <swiper-item wx:for="{{toolPages}}" wx:key="index">
+      <view class="tool-grid">
+        <view wx:if="{{item.length === 0}}" class="empty-box">{{emptyText}}</view>
+        <view class="tool-card {{tool.status === 'later' ? 'is-later' : ''}}"
+              wx:for="{{item}}"
+              wx:for-item="tool"
+              wx:key="key"
+              data-route="{{tool.route}}"
+              data-tabbar="{{tool.tabbar}}"
+              bindtap="openTool">
+          <view class="tool-icon">{{tool.icon}}</view>
+          <view class="tool-main">
+            <view class="tool-title-row">
+              <text class="tool-name">{{tool.name}}</text>
+              <text wx:if="{{tool.status === 'later'}}" class="status-tag">后续</text>
+            </view>
+            <text class="tool-desc">{{tool.desc}}</text>
+          </view>
         </view>
       </view>
-      <image class="weather-image" src="{{img.weather}}"></image>
+    </swiper-item>
+  </swiper>
+
+  <view class="pagination" wx:if="{{pageDots.length > 1}}">
+    <view class="dot {{activeToolPage === item ? 'active' : ''}}" wx:for="{{pageDots}}" wx:key="*this"></view>
+  </view>
+
+  <view class="weather-card">
+    <view class="weather-copy">
+      <text class="weather-title">远方天气卡片</text>
+      <text class="weather-desc">可以看自己的天气，也可以看 Ta 主动同步的位置。没有位置时，会温柔地等一等。</text>
     </view>
+    <button class="weather-btn" bindtap="checkWeatherDetail">打开天气卡片</button>
   </view>
 </view>

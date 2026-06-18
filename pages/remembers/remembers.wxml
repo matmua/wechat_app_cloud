@@ -1,76 +1,58 @@
 <view class="page">
-  <!-- 顶部安全区：仅占位，避免内容顶到状态栏 -->
-  <!-- <view style="height: {{statusBarHeight}}px;"></view> -->
-
   <view class="content">
     <view wx:if="{{bindingMessage}}" class="bind-status {{bindingState}}">
       <text>{{bindingMessage}}</text>
     </view>
 
-    <!-- 1. 顶部 用户-爱心-邀请（外层圆角框 + 内层卡片） -->
-<view class="moments-frame">
-  <view class="card card-outlined top-card no-margin">
+    <view class="moments-frame hero-frame">
+      <view class="top-card">
+        <view class="top-item" bindtap="onMe">
+          <view class="avatar">
+            <image class="avatar-img" src="{{selfAvatarUrl || '/images/avatar_placeholder.png'}}" mode="aspectFill"></image>
+          </view>
+          <text class="label">{{selfName || '我'}}</text>
+        </view>
 
-    <!-- 左：永远显示“我”的头像 -->
-    <view class="top-item" bindtap="onMe">
-      <view class="avatar">
-        <image class="avatar-img"
-               src="{{ selfAvatarUrl || '/images/avatar_placeholder.png' }}"
-               mode="aspectFill"></image>
+        <view class="heart-link">
+          <text>爱木长诗</text>
+          <text class="heart">♥</text>
+          <text>{{todayLabel}}</text>
+        </view>
+
+        <view class="top-item">
+          <view class="avatar" bindtap="onInviteOrEditPartner">
+            <image class="avatar-img" src="{{partnerAvatarUrl || '/images/avatar_placeholder.png'}}" mode="aspectFill"></image>
+          </view>
+          <text class="label" bindtap="onEditPartnerName">{{partnerName || '邀请 Ta'}}</text>
+        </view>
       </view>
-      <text class="label">{{ selfName || '我' }}</text>
-    </view>
 
-    <!-- 中：爱心 -->
-    <view class="top-item">
-      <image class="heart-img" src="/images/爱心.svg" mode="widthFix"></image>
-    </view>
+      <view wx:if="{{bindingState !== 'bound'}}" class="bind-row">
+        <view class="bind-actions">
+          <button class="bind-btn" loading="{{bindingLoading}}" bindtap="onInviteOrEditPartner">生成邀请码</button>
+          <button class="bind-btn ghost" bindtap="openInviteInput">输入对方邀请码</button>
+        </view>
 
-    <!-- 右：永远显示“我的情侣”的头像 -->
-    <view class="top-item">
-      <view class="avatar" bindtap="onInviteOrEditPartner">
-        <image class="avatar-img"
-              src="{{ partnerAvatarUrl || '/images/avatar_placeholder.png' }}"
-              mode="aspectFill"></image>
-      </view>
-      <text class="label" bindtap="onEditPartnerName">{{ partnerName || '邀请Ta' }}</text>
-    </view>
-
-
-  </view>
-
-  <!-- 未完成绑定时生成邀请 -->
-  <view wx:if="{{ bindingState !== 'bound' }}" class="bind-row">
-    <view class="bind-actions">
-      <button class="bind-btn" loading="{{bindingLoading}}" bindtap="onInviteOrEditPartner">
-        生成邀请码
-      </button>
-      <button class="bind-btn ghost" bindtap="openInviteInput">
-        输入对方邀请码
-      </button>
-    </view>
-
-    <view wx:if="{{inviteCode}}" class="invite-panel">
-      <text class="invite-label">我的邀请码</text>
-      <text class="invite-code" selectable="true">{{inviteCode}}</text>
-      <text class="invite-hint">复制后发给Ta，Ta在“我们页”输入即可绑定。</text>
-      <view class="invite-actions">
-        <button class="bind-btn compact" bindtap="copyInviteCode">复制邀请码</button>
-        <button class="bind-btn compact ghost" open-type="share" bindtap="onShareInviteTap">分享给Ta（可选）</button>
+        <view wx:if="{{inviteCode}}" class="invite-panel">
+          <text class="invite-label">我的邀请码</text>
+          <text class="invite-code" selectable="true">{{inviteCode}}</text>
+          <text class="invite-hint">复制后发给 Ta，Ta 在“我们页”输入即可绑定。分享仍保留为可选能力。</text>
+          <view class="invite-actions">
+            <button class="bind-btn compact" bindtap="copyInviteCode">复制邀请码</button>
+            <button class="bind-btn compact ghost" open-type="share" bindtap="onShareInviteTap">分享给 Ta</button>
+          </view>
+        </view>
       </view>
     </view>
-  </view>
-</view>
 
     <view wx:if="{{showInviteInput}}" class="mask" bindtap="closeInviteInput">
       <view class="invite-modal" catchtap="noop">
         <text class="modal-title">输入对方邀请码</text>
         <textarea class="invite-input"
-                  placeholder="粘贴对方发来的完整邀请码"
+                  placeholder="粘贴对方发来的完整邀请码，格式为 inviteId:token"
                   value="{{inviteInput}}"
                   bindinput="onInviteInput"
                   maxlength="260"></textarea>
-        <text class="invite-hint">邀请码格式为 inviteId:token，请复制完整内容。</text>
         <view class="modal-actions">
           <button class="bind-btn ghost" bindtap="closeInviteInput" disabled="{{inviteSubmitting}}">取消</button>
           <button class="bind-btn" bindtap="confirmInviteBind" loading="{{inviteSubmitting}}">确认绑定</button>
@@ -78,56 +60,127 @@
       </view>
     </view>
 
-
-    <!-- 2. 美好瞬间（外层圆角框 + 内层卡片） -->
-    <view class="moments-frame">
-      <view class="card card-outlined section-card no-margin">
-        <view class="section-header">
-          <text class="section-title">待办提醒</text>
-          <text class="more" bindtap="onMoreMoments">查看更多</text>
+    <view class="moments-frame plan-frame">
+      <view class="section-header">
+        <view>
+          <text class="section-title">今日计划</text>
+          <text class="section-sub">{{planProgressText}}</text>
+          <text wx:if="{{dailyPlanStorage === 'local'}}" class="storage-note">{{storageNotice}}</text>
         </view>
-        <view class="divider"></view>
-        <view class="placeholder">暂无照片</view>
+        <text class="more" bindtap="togglePlanHistory">{{showPlanHistory ? '收起历史' : '查看历史'}}</text>
+      </view>
+
+      <view class="progress-track" wx:if="{{planTotalCount}}">
+        <view class="progress-fill" style="width: {{planProgressPercent}}%;"></view>
+      </view>
+
+      <view class="plan-input-row">
+        <input class="plan-input" placeholder="比如：晚上一起散步 20 分钟" value="{{planInput}}" bindinput="onPlanInput" maxlength="36" />
+        <button class="add-plan-btn" bindtap="addDailyPlan">加入</button>
+      </view>
+
+      <view wx:if="{{dailyPlans.length}}" class="plan-list">
+        <view class="plan-item {{item.done ? 'done' : ''}}" wx:for="{{dailyPlans}}" wx:key="_id">
+          <view class="check" data-id="{{item._id}}" bindtap="toggleDailyPlan">{{item.done ? '✓' : ''}}</view>
+          <view class="plan-main" data-id="{{item._id}}" bindtap="toggleDailyPlan">
+            <text class="plan-title">{{item.title}}</text>
+            <text class="plan-meta">{{item.done ? '完成于 ' + item.doneText : '今天的小事'}}</text>
+          </view>
+          <text class="plan-delete" data-id="{{item._id}}" bindtap="deleteDailyPlan">删</text>
+        </view>
+      </view>
+      <view wx:else class="soft-empty">
+        <text>今天还没有计划。写一件很小的事也算，比如“睡前说晚安”。</text>
+      </view>
+
+      <view wx:if="{{showPlanHistory}}" class="history-panel">
+        <view class="history-day" wx:for="{{planHistory}}" wx:key="date">
+          <view class="history-head">
+            <text>{{item.label}}</text>
+            <text>{{item.done}}/{{item.total}} 完成</text>
+          </view>
+          <view class="history-mini-list">
+            <text wx:for="{{item.items}}" wx:for-item="plan" wx:key="_id" class="{{plan.done ? 'finished' : ''}}">{{plan.done ? '✓' : '·'}} {{plan.title}}</text>
+          </view>
+        </view>
       </view>
     </view>
 
-    <!-- 3. 今日心情（外层圆角框 + 内层卡片） -->
-    <view class="moments-frame">
-      <view class="card card-outlined section-card no-margin">
-        <view class="section-header">
+    <view class="moments-frame mood-frame">
+      <view class="section-header">
+        <view>
           <text class="section-title">今日心情</text>
+          <text class="section-sub">选一个天气，再留一句今天的话</text>
+          <text wx:if="{{dailyMoodStorage === 'local'}}" class="storage-note">{{storageNotice}}</text>
         </view>
-        <view class="divider"></view>
-        <view class="mood-area">
-          <text class="mood-empty">今天还没有记录心情~</text>
-          <button class="primary-btn" bindtap="handleRecordMood">记录心情</button>
+      </view>
+
+      <view class="mood-picker">
+        <view class="mood-chip {{selectedMoodKey === item.key ? 'active' : ''}}"
+              wx:for="{{moods}}"
+              wx:key="key"
+              data-key="{{item.key}}"
+              bindtap="selectMood">
+          <text>{{item.emoji}}</text>
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+
+      <textarea class="mood-textarea" placeholder="今天的心情备注，可写可不写" value="{{moodNote}}" bindinput="onMoodNoteInput" maxlength="100"></textarea>
+      <input class="word-input" placeholder="今日一句话：想对 Ta 说什么？" value="{{dailyWord}}" bindinput="onDailyWordInput" maxlength="60" />
+      <button class="save-mood-btn" bindtap="saveDailyMood" loading="{{moodSaving}}">保存今日心情</button>
+
+      <view class="mood-board">
+        <view class="mood-card mine">
+          <text class="mood-owner">我的今天</text>
+          <text class="mood-value">{{myMood ? myMood.moodEmoji + ' ' + myMood.moodLabel : '还没记录'}}</text>
+          <text class="mood-note">{{myMood.note || myMood.dailyWord || '写一点，Ta 打开时就能看到。'}}</text>
+        </view>
+        <view class="mood-card partner">
+          <text class="mood-owner">Ta 的今天</text>
+          <text class="mood-value">{{partnerMood ? partnerMood.moodEmoji + ' ' + partnerMood.moodLabel : '等待 Ta 记录'}}</text>
+          <text class="mood-note">{{partnerMood.note || partnerMood.dailyWord || '没有内容时，就给 Ta 留一点空间。'}}</text>
         </view>
       </view>
     </view>
 
-    <!-- 快捷功能 -->
     <view class="quick-wrapper">
       <view class="quick-grid">
-        <view class="quick-item" hover-class="tile-hover" data-type="album" bindtap="onQuick">
-          <view class="icon-box">🖼️</view>
-          <text class="quick-text">相册</text>
+        <view class="quick-item plan" data-type="plan" bindtap="onQuick">
+          <text class="icon-box">✅</text>
+          <text class="quick-text">今日计划</text>
         </view>
-        <view class="quick-item" hover-class="tile-hover" data-type="letter" bindtap="onQuick">
-          <view class="icon-box">💌</view>
-          <text class="quick-text">情书</text>
+        <view class="quick-item mood" data-type="mood" bindtap="onQuick">
+          <text class="icon-box">🌤️</text>
+          <text class="quick-text">今日心情</text>
         </view>
-        <view class="quick-item" hover-class="tile-hover" data-type="diary" bindtap="onQuick">
-          <view class="icon-box">📒</view>
-          <text class="quick-text">日记</text>
+        <view class="quick-item weather" data-type="weather" bindtap="onQuick">
+          <text class="icon-box">🌦️</text>
+          <text class="quick-text">天气提醒</text>
         </view>
-        <view class="quick-item" hover-class="tile-hover" data-type="more" bindtap="onQuick">
-          <view class="icon-box">📎</view>
-          <text class="quick-text">更多</text>
+        <view class="quick-item memorial" data-type="memorial" bindtap="onQuick">
+          <text class="icon-box">⏳</text>
+          <text class="quick-text">纪念日</text>
+        </view>
+        <view class="quick-item sock" data-type="sock" bindtap="onQuick">
+          <text class="icon-box">🧦</text>
+          <text class="quick-text">写树洞</text>
+        </view>
+        <view class="quick-item date" data-type="date" bindtap="onQuick">
+          <text class="icon-box">🎟️</text>
+          <text class="quick-text">记约会</text>
+        </view>
+        <view class="quick-item food" data-type="food" bindtap="onQuick">
+          <text class="icon-box">🍜</text>
+          <text class="quick-text">吃什么</text>
+        </view>
+        <view class="quick-item ai" data-type="ai" bindtap="onQuick">
+          <text class="icon-box">✨</text>
+          <text class="quick-text">小诗助手</text>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 悬浮按钮 -->
-  <view class="fab" hover-class="fab-hover" bindtap="onFab">🎈</view>
+  <view class="fab" hover-class="fab-hover" bindtap="onFab">＋</view>
 </view>

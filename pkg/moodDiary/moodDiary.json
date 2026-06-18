@@ -1,4 +1,4 @@
 {
-  "navigationBarTitleText": "AI助手",
-  "backgroundColor": "#f3f7fb"
+  "navigationBarTitleText": "小诗助手",
+  "enablePullDownRefresh": false
 }

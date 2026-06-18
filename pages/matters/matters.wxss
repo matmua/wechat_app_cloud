@@ -1,231 +1,287 @@
-/* pages/home/home.wxss */
-.container {
-  background: linear-gradient(135deg, #a1b0f1 0%, #764ba2 100%);
-  margin: 0; padding: 0; border: none;
+page {
+  background: #f7f2ec;
 }
 
-/* 主标题区域 */
-.main-header {
-  padding: 10rpx 0rpx 30rpx 40rpx;
-  padding-left: 80rpx;
-  height: 210rpx;
-  width: 100%;
-  margin: 0;
-  background: linear-gradient(135deg, #a1b0f1 0%, #764ba2 100%);
-}
-
-.title-section {
-  margin-top: 15rpx;
-  margin-bottom: 30rpx;
-}
-
-.main-title {
-  font-size: 48rpx;
-  font-weight: bold;
-  color: white;
-  margin-right: 20rpx;
-}
-
-.sub-title {
-  font-size: 28rpx;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-/* 搜索栏 */
-.search-bar {
-  display: flex;
-  align-items: center;
-  background: white;
-  border-radius: 50rpx;
-  padding: 15rpx 30rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
-  width: 93%;
+.toolbox-page {
+  min-height: 100vh;
+  padding: 28rpx;
   box-sizing: border-box;
+  color: #2e2a28;
 }
 
-/* 地址选择器容器：强制内部元素水平排列 + 不被挤压 */
-.location-picker {
-  display: flex; /* 水平排列子元素 */
-  align-items: center; /* 垂直居中对齐 */
-  white-space: nowrap; /* 禁止容器内元素换行 */
-  margin-right: 15rpx; /* 与搜索框间距 */
-  min-width: 120rpx; /* 增大最小宽度，确保文本+图标有足够空间 */
-  flex-shrink: 0; /* 关键！禁止父容器被 search-input 挤压（之前缺失） */
-  padding: 5rpx 0; /* 可选：增加垂直内边距，避免内容贴边 */
-}
-
-/* 地址文本：确保单行显示 */
-.picker-text {
-  font-size: 26rpx;
-  color: #333;
-  margin-right: 8rpx; /* 文本与图标之间的间距 */
-  /* 禁止文本换行（核心：防止文本过长挤到图标下方） */
-  white-space: nowrap;
-  /* 文本过长时显示省略号，避免撑开容器 */
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* 下拉图标：与文本精准对齐 */
-.dropdown-icon {
-  width: 20rpx;
-  height: 20rpx;
-  vertical-align: middle; /* 与文本中线对齐 */
-  display: inline-block; /* 确保图标为行内元素，不独占一行 */
-  margin-top: -2rpx; /* 可选：微调垂直位置，视觉更居中 */
-}
-
-
-.search-input {
-  flex: 1;
-  font-size: 28rpx;
-  color: #666;
-  margin: 0 20rpx;
-}
-
-.search-icon {
-  width: 36rpx;
-  height: 36rpx;
-}
-
-/* 功能菜单网格 */
-.menu-grid {
-  background: white;
-  margin: 10rpx 30rpx;
-  border-radius: 20rpx;
-  padding: 40rpx 20rpx 20rpx;
-  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.1);
-}
-
-.menu-row {
+.toolbox-hero {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 40rpx;
+  gap: 22rpx;
+  padding: 34rpx 30rpx;
+  border-radius: 34rpx;
+  background: #fffdf8;
+  border: 1rpx solid #eadcc9;
+  box-shadow: 0 20rpx 42rpx rgba(98, 72, 45, 0.1);
 }
 
-.menu-item {
+.hero-kicker,
+.hero-title,
+.hero-sub,
+.result-line text,
+.tool-name,
+.tool-desc,
+.weather-title,
+.weather-desc {
+  display: block;
+}
+
+.hero-kicker {
+  color: #b56d45;
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.hero-title {
+  margin-top: 10rpx;
+  font-size: 48rpx;
+  line-height: 1.12;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.hero-sub {
+  margin-top: 12rpx;
+  color: #7b6d63;
+  font-size: 25rpx;
+}
+
+.hero-badge {
+  width: 112rpx;
+  min-width: 112rpx;
+  height: 144rpx;
+  border-radius: 56rpx 56rpx 30rpx 30rpx;
+  background: #2e2a28;
+  color: #f7e4bb;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 120rpx;
-  padding: 20rpx 10rpx;
-  border-radius: 16rpx;
-  transition: all 0.3s ease;
+  justify-content: center;
+  font-size: 34rpx;
+  font-weight: 900;
+  box-shadow: inset 0 -10rpx 0 rgba(255,255,255,0.08);
 }
 
-.menu-item:active {
-  background: #f5f5f5;
-  transform: scale(0.95);
+.search-panel {
+  margin-top: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 20rpx;
+  border-radius: 26rpx;
+  background: #ffffff;
+  border: 1rpx solid #eadcc9;
 }
 
-.menu-icon {
-  width: 60rpx;
-  height: 60rpx;
+.search-input {
+  flex: 1;
+  min-width: 0;
+  height: 56rpx;
+  font-size: 26rpx;
+  color: #2e2a28;
+}
+
+.search-clear {
+  color: #b56d45;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.group-tabs {
+  margin: 24rpx -28rpx 0;
+  white-space: nowrap;
+}
+
+.tab-track {
+  display: block;
+  padding: 0 28rpx 4rpx;
+  white-space: nowrap;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 132rpx;
+  box-sizing: border-box;
+  margin-right: 14rpx;
+  padding: 16rpx 24rpx;
+  border-radius: 999rpx;
+  background: #ffffff;
+  border: 1rpx solid #eadcc9;
+  color: #7b6d63;
+  font-size: 25rpx;
+  font-weight: 800;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tab.active {
+  background: #2e2a28;
+  color: #fff4df;
+  border-color: #2e2a28;
+}
+
+.result-line {
+  margin: 20rpx 4rpx 14rpx;
+  color: #8a7d72;
+  font-size: 24rpx;
+}
+
+.group-swiper {
+  height: 650rpx;
+}
+
+.tool-swiper {
+  height: 650rpx;
+}
+
+.search-swiper {
+  margin-top: 8rpx;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18rpx;
+  box-sizing: border-box;
+}
+
+.tool-card {
+  min-height: 176rpx;
+  padding: 22rpx;
+  border-radius: 30rpx;
+  background: #ffffff;
+  border: 1rpx solid #eadcc9;
+  box-shadow: 0 12rpx 26rpx rgba(98, 72, 45, 0.08);
+  box-sizing: border-box;
+}
+
+.tool-card:active {
+  transform: scale(0.98);
+}
+
+.tool-card.is-later {
+  background: #fbf8f1;
+  border-style: dashed;
+}
+
+.tool-icon {
+  width: 70rpx;
+  height: 70rpx;
+  border-radius: 24rpx;
+  background: #f7f2ec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38rpx;
   margin-bottom: 16rpx;
 }
 
-.menu-text {
-  font-size: 24rpx;
-  color: #333;
-  text-align: center;
-  line-height: 1.2;
+.tool-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
 }
 
-/* 分页指示器 */
+.tool-name {
+  flex: 1;
+  min-width: 0;
+  color: #2e2a28;
+  font-size: 29rpx;
+  font-weight: 900;
+}
+
+.tool-desc {
+  margin-top: 10rpx;
+  color: #7b6d63;
+  font-size: 23rpx;
+  line-height: 1.35;
+}
+
+.status-tag {
+  padding: 4rpx 10rpx;
+  border-radius: 999rpx;
+  background: #efe3d1;
+  color: #8b6a47;
+  font-size: 20rpx;
+  font-weight: 800;
+}
+
+.empty-box {
+  grid-column: 1 / span 2;
+  min-height: 260rpx;
+  border-radius: 30rpx;
+  background: #fffdf8;
+  border: 1rpx dashed #d8c6ac;
+  color: #8a7d72;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
-  margin: 30rpx 0 40rpx;
-  gap: 16rpx;
+  gap: 12rpx;
+  margin: 8rpx 0 22rpx;
 }
 
 .dot {
-  width: 16rpx;
-  height: 16rpx;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
-  transition: all 0.3s ease;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 999rpx;
+  background: #d4c4b0;
 }
 
 .dot.active {
-  background: white;
-  width: 32rpx;
-  border-radius: 8rpx;
+  width: 34rpx;
+  background: #2e2a28;
 }
 
-/* 天气提醒卡片 */
 .weather-card {
-  margin: 0 30rpx 30rpx;
-  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
-  border-radius: 20rpx;
-  padding: 30rpx;
-  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.15);
+  margin-top: 12rpx;
+  padding: 26rpx;
+  border-radius: 30rpx;
+  background: #dff2ff;
+  border: 1rpx solid #bee3fb;
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
 }
 
-.weather-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20rpx;
+.weather-copy {
+  flex: 1;
+  min-width: 0;
 }
 
 .weather-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
+  color: #24547b;
+  font-size: 30rpx;
+  font-weight: 900;
 }
 
-.weather-date {
-  font-size: 24rpx;
-  color: #666;
-}
-
-.weather-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.weather-info {
-  flex: 1;
-}
-
-.weather-main-text {
-  display: block;
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10rpx;
-}
-
-.weather-sub-text {
-  display: block;
-  font-size: 26rpx;
-  color: #666;
-  margin-bottom: 20rpx;
+.weather-desc {
+  margin-top: 8rpx;
+  color: #557389;
+  font-size: 23rpx;
   line-height: 1.4;
 }
 
-.weather-suggestion {
-  margin-top: 20rpx;
-}
-
 .weather-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 25rpx;
-  padding: 16rpx 32rpx;
-  font-size: 26rpx;
-  box-shadow: 0 4rpx 15rpx rgba(102, 126, 234, 0.4);
-}
-
-.weather-btn:active {
-  transform: scale(0.95);
-}
-
-.weather-image {
-  width: 120rpx;
-  height: 120rpx;
-  margin-left: 20rpx;
+  width: 190rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: 22rpx;
+  background: #2f80d5;
+  color: #ffffff;
+  font-size: 25rpx;
+  font-weight: 900;
 }
