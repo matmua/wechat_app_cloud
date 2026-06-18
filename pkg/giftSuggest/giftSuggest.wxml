@@ -1,44 +1,81 @@
-<view class="starter-page">
-  <view class="starter-hero">
-    <text class="starter-eyebrow">{{eyebrow}}</text>
-    <text class="starter-title">{{title}}</text>
-    <text class="starter-subtitle">{{subtitle}}</text>
-    <text class="starter-status">{{statusText}}</text>
+<view class="gift-page">
+  <view class="gift-hero">
+    <text class="hero-icon">🎁</text>
+    <view>
+      <text class="title">心意仓库</text>
+      <text class="subtitle">记录 Ta 的偏好、礼物灵感和那些还没拆开的心意。</text>
+    </view>
   </view>
 
-  <block>
-    <view class="starter-card" wx:if="{{sceneList.length}}">
-      <text class="section-title">可以先这样用</text>
-      <view class="scene-grid">
-        <view class="scene-item" wx:for="{{sceneList}}" wx:key="title">
-          <text class="scene-name">{{item.title}}</text>
-          <text class="scene-desc">{{item.desc}}</text>
-        </view>
+  <view wx:if="{{bindingLoading}}" class="state-card">正在确认情侣关系...</view>
+  <view wx:elif="{{!bindingReady}}" class="state-card">
+    <text class="state-title">请先绑定情侣关系</text>
+    <text class="state-text">{{bindingMessage}}</text>
+    <button class="primary" bindtap="goBind">先去绑定</button>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{storageMode === 'local'}}" class="notice">{{errorMessage}}</view>
+
+    <view class="random-box">
+      <view>
+        <text class="box-title">拆一个灵感盒</text>
+        <text class="box-sub">{{randomGift ? randomGift.title : '不知道送什么时，让仓库替你抽一张。'}}</text>
+      </view>
+      <button bindtap="randomPick">随机拆盒</button>
+    </view>
+
+    <scroll-view class="scenario-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="scenario-track">
+        <view class="scenario {{activeScenario === item ? 'active' : ''}}"
+              wx:for="{{scenarios}}"
+              wx:key="*this"
+              data-scenario="{{item}}"
+              bindtap="selectScenario">{{item}}</view>
+      </view>
+    </scroll-view>
+
+    <view class="composer">
+      <text class="section-title">新放入一个心意</text>
+      <input class="input" placeholder="礼物灵感，比如：她一直想要的小夜灯" value="{{form.title}}" bindinput="onTitleInput" maxlength="36" />
+      <view class="form-row">
+        <picker range="{{scenarios}}" value="{{scenarioIndex}}" bindchange="onScenarioChange">
+          <view class="picker-field">{{form.scenario}}</view>
+        </picker>
+        <input class="input budget" placeholder="预算，如 200" value="{{form.budget}}" bindinput="onBudgetInput" maxlength="16" />
+      </view>
+      <input class="input" placeholder="偏好标签，用逗号分隔：香味、可爱、实用" value="{{form.tagsText}}" bindinput="onTagsInput" maxlength="50" />
+      <textarea class="textarea" placeholder="补一句原因或准备方式" value="{{form.note}}" bindinput="onNoteInput" maxlength="120"></textarea>
+      <button class="primary" loading="{{saving}}" bindtap="saveGift">放进礼物盒</button>
+    </view>
+
+    <view class="shelf-head">
+      <text>礼物盒</text>
+      <text>{{filteredGifts.length}} 个</text>
+    </view>
+
+    <view wx:if="{{loading}}" class="state-card">正在整理礼物盒...</view>
+    <view wx:elif="{{filteredGifts.length === 0}}" class="empty-card">
+      <text class="empty-icon">💌</text>
+      <text class="state-title">这里还空着</text>
+      <text class="state-text">先写一个很小的灵感，比如“下次路过花店带一支花”。</text>
+    </view>
+
+    <view class="gift-card {{item.isGiven ? 'given' : ''}} {{item.isPinned ? 'pinned' : ''}}"
+          wx:for="{{filteredGifts}}"
+          wx:key="_id">
+      <view class="ribbon">{{item.isPinned ? '置顶' : item.scenario}}</view>
+      <text class="gift-title">{{item.title}}</text>
+      <text class="gift-meta">{{item.budget ? '预算 ' + item.budget : '预算待定'}} · {{item.stateText}}</text>
+      <view class="tag-row">
+        <text class="tag" wx:for="{{item.tagList}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+      </view>
+      <text class="gift-note">{{item.note || '还没有补充说明。'}}</text>
+      <view class="card-actions">
+        <button data-id="{{item._id}}" bindtap="toggleGiven">{{item.isGiven ? '改为未送' : '标记已送'}}</button>
+        <button data-id="{{item._id}}" bindtap="togglePinned">{{item.isPinned ? '取消置顶' : '置顶'}}</button>
+        <button class="danger" data-id="{{item._id}}" bindtap="deleteGift">删除</button>
       </view>
     </view>
-    <view class="starter-card" wx:if="{{steps.length}}">
-      <text class="section-title">下一步</text>
-      <view class="step-list">
-        <view class="step-item" wx:for="{{steps}}" wx:key="*this">
-          <text class="step-dot">{{index + 1}}</text>
-          <text class="step-text">{{item}}</text>
-        </view>
-      </view>
-    </view>
-    <view class="empty-card" wx:if="{{localItems.length===0}}">
-      <text class="empty-title">{{emptyTitle}}</text>
-      <text class="empty-text">{{emptyText}}</text>
-    </view>
-    <view class="draft-list" wx:else>
-      <view class="draft-item" wx:for="{{localItems}}" wx:key="_id">
-        <text class="draft-title">{{item.title}}</text>
-        <text class="draft-desc">{{item.desc}}</text>
-      </view>
-    </view>
-    <view class="action-card">
-      <button class="starter-btn primary" bindtap="primaryTap">{{primaryText}}</button>
-      <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
-    </view>
-    <text class="note">{{note}}</text>
   </block>
 </view>

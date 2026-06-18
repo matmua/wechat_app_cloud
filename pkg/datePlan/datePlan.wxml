@@ -1,60 +1,112 @@
-<view class="starter-page">
-  <view class="starter-hero">
-    <text class="starter-eyebrow">{{eyebrow}}</text>
-    <text class="starter-title">{{title}}</text>
-    <text class="starter-subtitle">{{subtitle}}</text>
-    <text class="starter-status">{{statusText}}</text>
+<view class="date-page">
+  <view class="route-hero">
+    <text class="eyebrow">DATE ROUTE</text>
+    <text class="title">约会路线卡</text>
+    <text class="subtitle">把时间、地点、预算和准备事项放在一张轻量路线里。</text>
   </view>
 
-  <view class="bind-card" wx:if="{{requiresCouple && bindingState==='loading'}}">
-    <text class="bind-title">正在确认绑定状态</text>
-    <text class="bind-text">{{bindingMessage}}</text>
-  </view>
-  <view class="bind-card" wx:elif="{{requiresCouple && !bindingReady}}">
-    <text class="bind-title">请先绑定情侣关系</text>
-    <text class="bind-text">{{bindingMessage}}</text>
-    <view class="bind-actions">
-      <button class="starter-btn primary" bindtap="goBind">先去绑定</button>
-      <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
-    </view>
+  <view wx:if="{{bindingLoading}}" class="state-card">正在确认情侣关系...</view>
+  <view wx:elif="{{!bindingReady}}" class="state-card">
+    <text class="state-title">请先绑定情侣关系</text>
+    <text class="state-text">{{bindingMessage}}</text>
+    <button class="main-btn" bindtap="goBind">先去绑定</button>
   </view>
 
   <block wx:else>
-    <view class="starter-card" wx:if="{{sceneList.length}}">
-      <text class="section-title">可以先这样用</text>
-      <view class="scene-grid">
-        <view class="scene-item" wx:for="{{sceneList}}" wx:key="title">
-          <text class="scene-name">{{item.title}}</text>
-          <text class="scene-desc">{{item.desc}}</text>
-        </view>
-      </view>
-    </view>
+    <view wx:if="{{storageMode === 'local'}}" class="notice">{{errorMessage}}</view>
 
-    <view class="starter-card" wx:if="{{steps.length}}">
-      <text class="section-title">下一步</text>
-      <view class="step-list">
-        <view class="step-item" wx:for="{{steps}}" wx:key="*this">
-          <text class="step-dot">{{index + 1}}</text>
+    <view class="route-card composer">
+      <view class="card-head">
+        <text class="card-title">新建路线</text>
+        <text class="card-badge">今日可用</text>
+      </view>
+
+      <input class="route-input title-input" placeholder="约会标题，比如：周六江边散步" value="{{form.title}}" bindinput="onTitleInput" maxlength="36" />
+      <view class="split-row">
+        <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+          <view class="mini-field">{{form.date}}</view>
+        </picker>
+        <picker range="{{budgets}}" value="{{budgetIndex}}" bindchange="onBudgetChange">
+          <view class="mini-field">{{form.budget}}</view>
+        </picker>
+      </view>
+      <input class="route-input" placeholder="地点，比如：电影院 / 公园 / 家附近" value="{{form.place}}" bindinput="onPlaceInput" maxlength="40" />
+
+      <view class="section">
+        <text class="section-name">活动路线</text>
+        <view class="step-line" wx:for="{{form.steps}}" wx:key="*this">
+          <text class="dot">{{index + 1}}</text>
           <text class="step-text">{{item}}</text>
+          <text class="remove" data-index="{{index}}" bindtap="removeStep">删</text>
+        </view>
+        <view class="inline-add">
+          <input placeholder="加一步，比如：买热饮" value="{{form.stepDraft}}" bindinput="onStepDraft" maxlength="20" />
+          <button bindtap="addStep">加一步</button>
         </view>
       </view>
+
+      <view class="section">
+        <text class="section-name">准备清单</text>
+        <view class="check-row {{item.done ? 'checked' : ''}}" wx:for="{{form.checklist}}" wx:key="text">
+          <text class="check-dot" data-index="{{index}}" bindtap="toggleFormChecklist">{{item.done ? '✓' : ''}}</text>
+          <text class="check-text" data-index="{{index}}" bindtap="toggleFormChecklist">{{item.text}}</text>
+          <text class="remove" data-index="{{index}}" bindtap="removeFormChecklist">删</text>
+        </view>
+        <view class="inline-add">
+          <input placeholder="加准备事项" value="{{form.checklistDraft}}" bindinput="onChecklistDraft" maxlength="20" />
+          <button bindtap="addChecklist">加入</button>
+        </view>
+      </view>
+
+      <button class="main-btn" loading="{{saving}}" bindtap="savePlan">保存约会路线</button>
     </view>
 
-    <view class="empty-card" wx:if="{{localItems.length===0}}">
-      <text class="empty-title">{{emptyTitle}}</text>
-      <text class="empty-text">{{emptyText}}</text>
+    <view class="list-head">
+      <text>历史路线</text>
+      <text>{{plans.length}} 张</text>
     </view>
-    <view class="draft-list" wx:else>
-      <view class="draft-item" wx:for="{{localItems}}" wx:key="_id">
-        <text class="draft-title">{{item.title}}</text>
-        <text class="draft-desc">{{item.desc}}</text>
+
+    <view wx:if="{{loading}}" class="state-card">正在翻路线卡...</view>
+    <view wx:elif="{{plans.length === 0}}" class="empty-card">
+      <text class="empty-icon">🗺️</text>
+      <text class="state-title">还没有约会路线</text>
+      <text class="state-text">先保存一张小路线，哪怕只是“吃饭后散步十分钟”。</text>
+    </view>
+
+    <view class="route-card saved {{item.status === 'done' ? 'done' : ''}}" wx:for="{{plans}}" wx:key="_id">
+      <view class="card-head">
+        <view>
+          <text class="card-title">{{item.title}}</text>
+          <text class="card-sub">{{item.dateText}} · {{item.place || '地点待定'}}</text>
+        </view>
+        <text class="card-badge">{{item.budget}}</text>
+      </view>
+      <view class="progress">
+        <view class="progress-fill" style="width: {{item.progressPercent}}%;"></view>
+      </view>
+      <text class="progress-text">{{item.progressText}}</text>
+
+      <view class="saved-steps">
+        <text wx:for="{{item.steps}}" wx:for-item="step" wx:key="*this" class="saved-step">{{index + 1}}. {{step}}</text>
+      </view>
+
+      <view class="saved-checks">
+        <view class="mini-check {{task.done ? 'checked' : ''}}"
+              wx:for="{{item.checklist}}"
+              wx:for-item="task"
+              wx:key="text"
+              data-id="{{item._id}}"
+              data-index="{{index}}"
+              bindtap="togglePlanChecklist">
+          <text>{{task.done ? '✓' : ''}}</text>
+          <text>{{task.text}}</text>
+        </view>
+      </view>
+
+      <view class="card-actions">
+        <button data-id="{{item._id}}" bindtap="markDone">标记完成</button>
+        <button class="ghost" data-id="{{item._id}}" bindtap="deletePlan">删除</button>
       </view>
     </view>
-
-    <view class="action-card">
-      <button class="starter-btn primary" bindtap="primaryTap">{{primaryText}}</button>
-      <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
-    </view>
-    <text class="note">{{note}}</text>
   </block>
 </view>

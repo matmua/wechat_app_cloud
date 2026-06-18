@@ -19,28 +19,28 @@ const TOOLS = [
   { key: 'dateRecord', group: 'memory', icon: '🎟️', name: '约会记录', desc: '时间轴、地点和心情', route: '/pkg/daterecord/daterecord', status: 'ready', tags: '约会 记录 地点 照片' },
   { key: 'heartbeat', group: 'memory', icon: '💗', name: '心动瞬间', desc: '碎片、纸条、金库和任务', route: '/pkg/heartbeat/heartbeat', status: 'ready', tags: '心动 纸条 金库 任务' },
   { key: 'timeline', group: 'memory', icon: '📍', name: '恋爱仪表盘', desc: '里程碑、待办和共同目标', route: '/pkg/timeline/timeline', status: 'ready', tags: '仪表盘 里程碑 目标' },
-  { key: 'photoStory', group: 'memory', icon: '🎞️', name: '照片故事', desc: '后续做成单张照片故事页', route: '/pkg/photolove/photolove', status: 'later', tags: '照片 故事' },
-  { key: 'memorialNote', group: 'memory', icon: '📌', name: '纪念日备忘', desc: '轻量占位，后续合并纪念日', route: '/pkg/memorialDay/memorialDay', status: 'later', tags: '纪念日 备忘' },
+  { key: 'photoStory', group: 'memory', icon: '🎞️', name: '照片故事', desc: '几张照片拼成一张回忆故事卡', route: '/pkg/photolove/photolove', status: 'ready', tags: '照片 故事 回忆卡' },
+  { key: 'memorialNote', group: 'memory', icon: '📌', name: '纪念日准备', desc: '提前准备清单、礼物和想说的话', route: '/pkg/memorialDay/memorialDay', status: 'ready', tags: '纪念日 备忘 准备' },
 
   { key: 'sock', group: 'fun', icon: '🧦', name: '树洞袜子', desc: '藏起来或定时掉出的悄悄话', route: '/pkg/loveTest/loveTest', status: 'ready', tags: '树洞 袜子 悄悄话 定时' },
   { key: 'games', group: 'fun', icon: '🎮', name: '打发时间', desc: '贪吃蛇、扫雷、打飞机、俄罗斯方块', route: '/pkg/loveGames/loveGames', status: 'ready', tags: '游戏 贪吃蛇 扫雷 打飞机 俄罗斯方块' },
   { key: 'call', group: 'fun', icon: '📣', name: '呼叫对方', desc: '复制一条轻巧的呼叫文案', route: '/pkg/loveTips/loveTips', status: 'ready', tags: '呼叫 文案 复制' },
   { key: 'tinyPlan', group: 'fun', icon: '📝', name: '小小计划', desc: '本地便签式的小计划板', route: '/pkg/chatTopics/chatTopics', status: 'ready', tags: '计划 便签' },
   { key: 'likes', group: 'fun', icon: '🧡', name: '大大喜欢', desc: '记录 Ta 的偏好和小习惯', route: '/pkg/dateSpots/dateSpots', status: 'ready', tags: '喜欢 偏好 收藏' },
-  { key: 'surprise', group: 'fun', icon: '🎁', name: '惊喜灵感', desc: '后续补成惊喜抽屉', route: '/pkg/surpriseIdeas/surpriseIdeas', status: 'later', tags: '惊喜 灵感' },
+  { key: 'surprise', group: 'fun', icon: '🎁', name: '惊喜盲盒', desc: '藏起小惊喜，准备好了再打开', route: '/pkg/surpriseIdeas/surpriseIdeas', status: 'ready', tags: '惊喜 灵感 盲盒' },
 
   { key: 'period', group: 'practical', icon: '🌙', name: '经期记录', desc: '月历和关心提醒', route: '/pkg/loveStory/loveStory', status: 'ready', tags: '经期 生理期 月历 关心' },
-  { key: 'datePlan', group: 'practical', icon: '🗺️', name: '约会规划', desc: '后续做成路线规划器', route: '/pkg/datePlan/datePlan', status: 'later', tags: '约会 规划 路线' },
-  { key: 'gift', group: 'practical', icon: '💝', name: '礼物建议', desc: '后续接小诗助手生成建议', route: '/pkg/giftSuggest/giftSuggest', status: 'later', tags: '礼物 建议' },
+  { key: 'datePlan', group: 'practical', icon: '🗺️', name: '约会规划', desc: '时间、地点、预算和路线清单', route: '/pkg/datePlan/datePlan', status: 'ready', tags: '约会 规划 路线' },
+  { key: 'gift', group: 'practical', icon: '💝', name: '礼物建议', desc: '礼物盒、场景筛选和随机推荐', route: '/pkg/giftSuggest/giftSuggest', status: 'ready', tags: '礼物 建议 心意' },
   { key: 'goals', group: 'practical', icon: '🏁', name: '恋爱目标', desc: '两个人一起推进的小目标', route: '/pkg/coupleGoals/coupleGoals', status: 'ready', tags: '目标 进度' },
-  { key: 'calendar', group: 'practical', icon: '📅', name: '恋爱日历', desc: '后续整合计划和纪念日', route: '/pkg/loveCalendar/loveCalendar', status: 'later', tags: '日历 计划' },
-  { key: 'tasks', group: 'practical', icon: '🏅', name: '情侣任务', desc: '后续和任务日志统一', route: '/pkg/coupleTasks/coupleTasks', status: 'later', tags: '任务 打卡' },
+  { key: 'calendar', group: 'practical', icon: '📅', name: '恋爱日历', desc: '聚合纪念日、约会、计划和提醒', route: '/pkg/loveCalendar/loveCalendar', status: 'ready', tags: '日历 计划 聚合' },
+  { key: 'tasks', group: 'practical', icon: '🏅', name: '情侣任务', desc: '任务板、连续打卡和成就徽章', route: '/pkg/coupleTasks/coupleTasks', status: 'ready', tags: '任务 打卡 成就' },
 
   { key: 'aiMain', group: 'ai', icon: '✨', name: '小诗助手', desc: '恋爱陪伴、情话、约会、礼物建议', route: '/pkg/moodDiary/moodDiary', status: 'ready', tags: 'AI 小诗 助手' },
-  { key: 'relationship', group: 'ai', icon: '🫶', name: '关系建议', desc: '后续由 AI 辅助生成', route: '/pkg/relationshipAdvice/relationshipAdvice', status: 'later', tags: '关系 建议 AI' },
-  { key: 'emotion', group: 'ai', icon: '🪞', name: '情绪分析', desc: '后续接 AI，不自动读取隐私', route: '/pkg/emotionAnalysis/emotionAnalysis', status: 'later', tags: '情绪 分析 AI' },
+  { key: 'relationship', group: 'ai', icon: '🫶', name: '关系建议', desc: '恋爱急救包，可收藏和跳小诗助手', route: '/pkg/relationshipAdvice/relationshipAdvice', status: 'ready', tags: '关系 建议 AI 急救包' },
+  { key: 'emotion', group: 'ai', icon: '🪞', name: '情绪温度计', desc: '记录心情、标签和 7 天趋势', route: '/pkg/emotionAnalysis/emotionAnalysis', status: 'ready', tags: '情绪 分析 AI 记录' },
 
-  { key: 'more', group: 'later', icon: '🧰', name: '更多服务', desc: '整理后续想法和测试事项', route: '/pkg/moreServices/moreServices', status: 'later', tags: '更多 服务 后续' },
+  { key: 'more', group: 'later', icon: '🧰', name: '功能地图', desc: '查看能力、测试事项、后续计划和反馈', route: '/pkg/moreServices/moreServices', status: 'ready', tags: '更多 服务 后续 功能地图' },
   { key: 'future1', group: 'later', icon: '🎲', name: '随机约会', desc: '后续做成抽签式约会灵感', route: '/pkg/datePlan/datePlan', status: 'later', tags: '随机 约会' },
   { key: 'future2', group: 'later', icon: '📮', name: '未来信箱', desc: '后续和树洞袜子联动', route: '/pkg/loveTest/loveTest', status: 'later', tags: '未来 信箱 树洞' }
 ];

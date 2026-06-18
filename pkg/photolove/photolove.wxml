@@ -1,46 +1,80 @@
-<view class="starter-page">
-  <view class="starter-hero">
-    <text class="starter-eyebrow">{{eyebrow}}</text>
-    <text class="starter-title">{{title}}</text>
-    <text class="starter-subtitle">{{subtitle}}</text>
-    <text class="starter-status">{{statusText}}</text>
+<view class="story-page">
+  <view class="story-hero">
+    <text class="title">照片故事卡</text>
+    <text class="subtitle">不是普通相册，而是把几张照片、地点和一句故事拼成一张回忆卡。</text>
+    <button bindtap="openAlbum">去甜蜜相册</button>
   </view>
-  <view class="bind-card" wx:if="{{requiresCouple && bindingState==='loading'}}">
-    <text class="bind-title">正在确认绑定状态</text>
-    <text class="bind-text">{{bindingMessage}}</text>
+
+  <view wx:if="{{bindingLoading}}" class="state-card">正在确认情侣关系...</view>
+  <view wx:elif="{{!bindingReady}}" class="state-card">
+    <text class="state-title">请先绑定情侣关系</text>
+    <text class="state-text">{{bindingMessage}}</text>
+    <button class="primary" bindtap="goBind">先去绑定</button>
   </view>
-  <view class="bind-card" wx:elif="{{requiresCouple && !bindingReady}}">
-    <text class="bind-title">请先绑定情侣关系</text>
-    <text class="bind-text">{{bindingMessage}}</text>
-    <view class="bind-actions">
-      <button class="starter-btn primary" bindtap="goBind">先去绑定</button>
-      <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
-    </view>
-  </view>
+
   <block wx:else>
-    <view class="starter-card" wx:if="{{sceneList.length}}">
-      <text class="section-title">可以先这样用</text>
-      <view class="scene-grid">
-        <view class="scene-item" wx:for="{{sceneList}}" wx:key="title">
-          <text class="scene-name">{{item.title}}</text>
-          <text class="scene-desc">{{item.desc}}</text>
+    <view wx:if="{{storageMode === 'local'}}" class="notice">{{errorMessage}}</view>
+
+    <view class="composer">
+      <view class="preview-card">
+        <view wx:if="{{form.images.length}}" class="preview-grid">
+          <image wx:for="{{form.images}}" wx:key="tempFilePath" class="preview-img" src="{{item.tempFilePath}}" mode="aspectFill"></image>
+        </view>
+        <view wx:else class="preview-empty">把今天装进故事卡</view>
+        <text class="preview-title">{{form.title || '故事标题'}}</text>
+        <text class="preview-text">{{form.storyText || '这里会显示你写下的故事文字。'}}</text>
+        <text class="preview-meta">{{form.date}} · {{form.place || '地点待填'}}</text>
+      </view>
+
+      <input class="input" placeholder="故事标题，比如：雨天也很好的一天" value="{{form.title}}" bindinput="onTitleInput" maxlength="36" />
+      <textarea class="textarea" placeholder="写下这组照片背后的小故事" value="{{form.storyText}}" bindinput="onStoryInput" maxlength="220"></textarea>
+      <view class="row">
+        <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+          <view class="field">{{form.date}}</view>
+        </picker>
+        <input class="input place" placeholder="地点" value="{{form.place}}" bindinput="onPlaceInput" maxlength="30" />
+      </view>
+
+      <view class="picked-list" wx:if="{{form.images.length}}">
+        <view class="picked" wx:for="{{form.images}}" wx:key="tempFilePath">
+          <image src="{{item.tempFilePath}}" mode="aspectFill"></image>
+          <text data-index="{{index}}" bindtap="removeImage">×</text>
         </view>
       </view>
-    </view>
-    <view class="empty-card" wx:if="{{localItems.length===0}}">
-      <text class="empty-title">{{emptyTitle}}</text>
-      <text class="empty-text">{{emptyText}}</text>
-    </view>
-    <view class="draft-list" wx:else>
-      <view class="draft-item" wx:for="{{localItems}}" wx:key="_id">
-        <text class="draft-title">{{item.title}}</text>
-        <text class="draft-desc">{{item.desc}}</text>
+
+      <view class="actions">
+        <button class="ghost" bindtap="chooseImages">选择照片</button>
+        <button class="primary" loading="{{saving || uploading}}" bindtap="saveStory">{{uploading ? '上传照片中' : '保存故事卡'}}</button>
       </view>
     </view>
-    <view class="action-card">
-      <button class="starter-btn primary" bindtap="primaryTap">{{primaryText}}</button>
-      <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
+
+    <view class="list-head">
+      <text>故事墙</text>
+      <text>{{stories.length}} 张</text>
     </view>
-    <text class="note">{{note}}</text>
+
+    <view wx:if="{{loading}}" class="state-card">正在摆放故事卡...</view>
+    <view wx:elif="{{stories.length === 0}}" class="empty-card">
+      <text class="empty-icon">🎞️</text>
+      <text class="state-title">故事墙还空着</text>
+      <text class="state-text">可以从一张照片开始，也可以只写一段文字。</text>
+    </view>
+
+    <view class="story-card" wx:for="{{stories}}" wx:key="_id">
+      <image wx:if="{{item.cover}}" class="cover" src="{{item.cover}}" mode="aspectFill" data-id="{{item._id}}" data-src="{{item.cover}}" bindtap="previewStoryImage"></image>
+      <view wx:else class="cover text-cover">LOVE</view>
+      <view class="story-body">
+        <view class="story-head">
+          <text class="story-title">{{item.title}}</text>
+          <text class="count">{{item.countText}}</text>
+        </view>
+        <text class="story-text">{{item.storyText || '这张故事卡暂时只有照片。'}}</text>
+        <text class="story-meta">{{item.dateText}} · {{item.place || '没有写地点'}}</text>
+        <view class="thumbs" wx:if="{{item.fileIDs.length > 1}}">
+          <image wx:for="{{item.fileIDs}}" wx:for-item="src" wx:key="*this" src="{{src}}" mode="aspectFill" data-id="{{item._id}}" data-src="{{src}}" bindtap="previewStoryImage"></image>
+        </view>
+        <button class="delete" data-id="{{item._id}}" bindtap="deleteStory">删除故事</button>
+      </view>
+    </view>
   </block>
 </view>

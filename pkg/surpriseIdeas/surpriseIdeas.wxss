@@ -1,1 +1,238 @@
-@import "../common/starter.wxss";
+page {
+  background: #101523;
+  color: #fff;
+}
+
+.surprise-page {
+  min-height: 100vh;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.blind-hero,
+.draw-card,
+.composer,
+.idea-card,
+.state-card,
+.empty-card,
+.notice {
+  border-radius: 30rpx;
+  box-sizing: border-box;
+}
+
+.blind-hero {
+  padding: 40rpx 32rpx;
+  background: radial-gradient(circle at 15% 20%, #ffcf6c 0 18%, transparent 19%), linear-gradient(135deg, #ff5d8f, #7147d8);
+  box-shadow: 0 18rpx 40rpx rgba(6, 8, 16, 0.28);
+}
+
+.title {
+  display: block;
+  font-size: 48rpx;
+  font-weight: 900;
+}
+
+.subtitle,
+.state-text,
+.draw-text,
+.idea-date,
+.idea-note {
+  display: block;
+  font-size: 25rpx;
+  line-height: 1.55;
+}
+
+.draw-card,
+.composer,
+.idea-card,
+.state-card,
+.empty-card,
+.notice {
+  margin-top: 24rpx;
+  padding: 26rpx;
+  background: #1d2436;
+  border: 1rpx solid rgba(255, 255, 255, 0.08);
+}
+
+.notice {
+  color: #ffd487;
+}
+
+.draw-card {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+
+.draw-icon {
+  font-size: 52rpx;
+}
+
+.draw-card view {
+  flex: 1;
+  min-width: 0;
+}
+
+.draw-title,
+.section-title,
+.state-title,
+.list-title,
+.idea-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 850;
+}
+
+.draw-card button,
+.primary,
+.quick-link button,
+.card-actions button {
+  height: 78rpx;
+  line-height: 78rpx;
+  border-radius: 22rpx;
+  border: 0;
+  font-size: 27rpx;
+  font-weight: 800;
+  box-sizing: border-box;
+}
+
+.draw-card button,
+.primary {
+  background: #ffcf6c;
+  color: #211725;
+}
+
+.input,
+.textarea,
+.field {
+  width: 100%;
+  min-height: 82rpx;
+  margin-top: 16rpx;
+  padding: 0 22rpx;
+  border-radius: 22rpx;
+  background: #111827;
+  color: #fff;
+  box-sizing: border-box;
+  font-size: 27rpx;
+}
+
+.textarea {
+  min-height: 126rpx;
+  padding-top: 20rpx;
+}
+
+.row,
+.hide-row,
+.quick-link,
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.row picker {
+  flex: 1;
+  min-width: 0;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+}
+
+.hide-row {
+  margin-top: 18rpx;
+  color: #d9dfef;
+  font-size: 26rpx;
+}
+
+.switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: #111827;
+  border: 2rpx solid #5b6378;
+}
+
+.switch.on {
+  background: #ffcf6c;
+  color: #211725;
+}
+
+.primary {
+  width: 100%;
+  margin-top: 22rpx;
+}
+
+.quick-link {
+  margin-top: 22rpx;
+}
+
+.quick-link button {
+  flex: 1;
+  min-width: 0;
+  background: #222b40;
+  color: #f7d778;
+}
+
+.list-title {
+  margin-top: 30rpx;
+}
+
+.empty-icon {
+  display: block;
+  font-size: 58rpx;
+}
+
+.idea-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.idea-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 18rpx;
+  background: linear-gradient(90deg, #ff5d8f, #ffcf6c, #7147d8);
+}
+
+.lid {
+  display: inline-block;
+  margin-bottom: 14rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 207, 108, 0.16);
+  color: #ffcf6c;
+  font-size: 22rpx;
+  font-weight: 900;
+}
+
+.masked {
+  background: repeating-linear-gradient(135deg, #1d2436 0, #1d2436 20rpx, #202a3f 20rpx, #202a3f 40rpx);
+}
+
+.done {
+  border-color: rgba(255, 207, 108, 0.45);
+}
+
+.card-actions {
+  margin-top: 20rpx;
+}
+
+.card-actions button {
+  flex: 1;
+  min-width: 0;
+  background: #ffcf6c;
+  color: #211725;
+}
+
+.card-actions .ghost {
+  background: #2d3548;
+  color: #d9dfef;
+}

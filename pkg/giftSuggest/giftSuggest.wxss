@@ -1,1 +1,265 @@
-@import "../common/starter.wxss";
+page {
+  background: #fff4f6;
+  color: #3c2b33;
+}
+
+.gift-page {
+  min-height: 100vh;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.gift-hero,
+.random-box,
+.composer,
+.gift-card,
+.state-card,
+.empty-card,
+.notice {
+  border-radius: 30rpx;
+  box-sizing: border-box;
+}
+
+.gift-hero {
+  display: flex;
+  gap: 22rpx;
+  align-items: center;
+  padding: 34rpx 30rpx;
+  background: linear-gradient(135deg, #ff6d96, #ffc36f);
+  color: #fff;
+  box-shadow: 0 18rpx 38rpx rgba(230, 88, 122, 0.22);
+}
+
+.hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 94rpx;
+  height: 94rpx;
+  border-radius: 28rpx;
+  background: rgba(255, 255, 255, 0.22);
+  font-size: 48rpx;
+}
+
+.title {
+  display: block;
+  font-size: 46rpx;
+  font-weight: 900;
+}
+
+.subtitle,
+.state-text,
+.box-sub,
+.gift-meta,
+.gift-note {
+  display: block;
+  font-size: 25rpx;
+  line-height: 1.55;
+}
+
+.random-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  margin-top: 24rpx;
+  padding: 26rpx;
+  background: #fff;
+  border: 2rpx dashed #ffa5be;
+}
+
+.box-title,
+.section-title,
+.shelf-head,
+.state-title,
+.gift-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 850;
+}
+
+.random-box button,
+.primary,
+.card-actions button {
+  height: 78rpx;
+  line-height: 78rpx;
+  border-radius: 22rpx;
+  border: 0;
+  font-size: 27rpx;
+  font-weight: 800;
+  box-sizing: border-box;
+}
+
+.random-box button,
+.primary {
+  background: #ff5d8f;
+  color: #fff;
+}
+
+.scenario-scroll {
+  margin: 22rpx -24rpx 0;
+  white-space: nowrap;
+}
+
+.scenario-track {
+  display: inline-flex;
+  gap: 14rpx;
+  padding: 0 24rpx;
+}
+
+.scenario {
+  min-width: 116rpx;
+  padding: 18rpx 22rpx;
+  border-radius: 999rpx;
+  background: #fff;
+  color: #8b6572;
+  font-size: 26rpx;
+  text-align: center;
+  box-shadow: 0 8rpx 20rpx rgba(160, 92, 117, 0.08);
+}
+
+.scenario.active {
+  background: #3a2f3c;
+  color: #fff;
+}
+
+.composer,
+.gift-card,
+.state-card,
+.empty-card,
+.notice {
+  margin-top: 24rpx;
+  padding: 26rpx;
+  background: #fff;
+  box-shadow: 0 12rpx 28rpx rgba(176, 92, 122, 0.08);
+}
+
+.notice {
+  color: #9c5e13;
+  background: #fff4d6;
+}
+
+.input,
+.textarea,
+.picker-field {
+  width: 100%;
+  min-height: 82rpx;
+  margin-top: 16rpx;
+  padding: 0 22rpx;
+  border-radius: 22rpx;
+  background: #fff4f6;
+  box-sizing: border-box;
+  font-size: 27rpx;
+}
+
+.textarea {
+  min-height: 136rpx;
+  padding-top: 20rpx;
+}
+
+.form-row {
+  display: flex;
+  gap: 14rpx;
+}
+
+.form-row picker,
+.budget {
+  flex: 1;
+  min-width: 0;
+}
+
+.picker-field {
+  display: flex;
+  align-items: center;
+}
+
+.shelf-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 28rpx;
+}
+
+.empty-icon {
+  display: block;
+  font-size: 56rpx;
+  margin-bottom: 10rpx;
+}
+
+.gift-card {
+  position: relative;
+  overflow: hidden;
+  padding-top: 50rpx;
+}
+
+.gift-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 14rpx;
+  background: repeating-linear-gradient(90deg, #ff6d96 0, #ff6d96 28rpx, #ffd1dc 28rpx, #ffd1dc 56rpx);
+}
+
+.ribbon {
+  position: absolute;
+  top: 22rpx;
+  right: 22rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  background: #fff0aa;
+  color: #8b6400;
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.given {
+  opacity: 0.82;
+}
+
+.given .gift-title {
+  text-decoration: line-through;
+}
+
+.pinned {
+  border: 2rpx solid #ffc36f;
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 14rpx;
+}
+
+.tag {
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  background: #fff4d4;
+  color: #8d6213;
+  font-size: 22rpx;
+}
+
+.gift-note {
+  margin-top: 14rpx;
+  color: #755a62;
+}
+
+.card-actions {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 20rpx;
+}
+
+.card-actions button {
+  flex: 1;
+  min-width: 0;
+  background: #fff0f4;
+  color: #c44672;
+}
+
+.card-actions .danger {
+  background: #f3eef0;
+  color: #6d5d64;
+}

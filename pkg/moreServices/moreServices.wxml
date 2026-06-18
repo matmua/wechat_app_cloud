@@ -1,22 +1,63 @@
-<view class="starter-page">
-  <view class="starter-hero">
-    <text class="starter-eyebrow">{{eyebrow}}</text>
-    <text class="starter-title">{{title}}</text>
-    <text class="starter-subtitle">{{subtitle}}</text>
-    <text class="starter-status">{{statusText}}</text>
+<view class="map-page">
+  <view class="map-hero">
+    <text class="eyebrow">爱木长诗 · 功能地图</text>
+    <text class="title">更多服务</text>
+    <text class="subtitle">这里不是空服务页，而是当前能力、测试事项、后续计划和反馈记录的总览。</text>
   </view>
-  <view class="starter-card" wx:if="{{sceneList.length}}">
-    <text class="section-title">当前入口</text>
-    <view class="scene-grid">
-      <view class="scene-item" wx:for="{{sceneList}}" wx:key="title">
-        <text class="scene-name">{{item.title}}</text>
-        <text class="scene-desc">{{item.desc}}</text>
-      </view>
+
+  <view wx:if="{{!bindingReady && !bindingLoading}}" class="bind-tip">
+    <text>{{bindingMessage || '未绑定时也可以查看功能地图；反馈会先保存在本地。'}}</text>
+  </view>
+  <view wx:if="{{storageMode === 'local'}}" class="notice">当前反馈使用本地记录；绑定并创建集合后可云端同步。</view>
+
+  <view class="section-card">
+    <text class="section-title">已完成能力</text>
+    <view class="feature done" wx:for="{{doneFeatures}}" wx:key="*this">
+      <text>✓</text>
+      <text>{{item}}</text>
     </view>
   </view>
-  <view class="action-card">
-    <button class="starter-btn primary" bindtap="primaryTap">{{primaryText}}</button>
-    <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
+
+  <view class="route-grid">
+    <view class="route-card" data-route="/pkg/weather/weather" bindtap="openPage">
+      <text>🌦️</text><text>天气卡片</text>
+    </view>
+    <view class="route-card" data-route="/pkg/loveGames/loveGames" bindtap="openPage">
+      <text>🎮</text><text>小游戏</text>
+    </view>
+    <view class="route-card" data-route="/pkg/moodDiary/moodDiary" bindtap="openPage">
+      <text>✨</text><text>小诗助手</text>
+    </view>
+    <view class="route-card" data-route="/pages/matters/matters" bindtap="openPage">
+      <text>🧰</text><text>工具箱</text>
+    </view>
   </view>
-  <text class="note">{{note}}</text>
+
+  <view class="section-card">
+    <text class="section-title">集中测试清单</text>
+    <view class="feature test" wx:for="{{testItems}}" wx:key="*this">
+      <text>□</text>
+      <text>{{item}}</text>
+    </view>
+  </view>
+
+  <view class="section-card">
+    <text class="section-title">后续计划</text>
+    <view class="feature next" wx:for="{{nextFeatures}}" wx:key="*this">
+      <text>→</text>
+      <text>{{item}}</text>
+    </view>
+  </view>
+
+  <view class="section-card">
+    <text class="section-title">反馈记录</text>
+    <textarea class="textarea" placeholder="记录一个测试问题、想补的功能或体验建议" value="{{feedbackText}}" bindinput="onFeedbackInput" maxlength="160"></textarea>
+    <button class="primary" loading="{{saving}}" bindtap="saveFeedback">保存反馈</button>
+    <view wx:if="{{loading}}" class="small-state">正在读取反馈...</view>
+    <view wx:elif="{{feedbackList.length === 0}}" class="small-empty">还没有反馈记录。</view>
+    <view class="feedback" wx:for="{{feedbackList}}" wx:key="_id">
+      <text>{{item.text}}</text>
+      <text class="delete" data-id="{{item._id}}" bindtap="deleteFeedback">删除</text>
+    </view>
+  </view>
 </view>

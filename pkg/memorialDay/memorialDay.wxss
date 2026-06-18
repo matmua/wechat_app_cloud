@@ -1,1 +1,262 @@
-@import "../common/starter.wxss";
+page {
+  background: #fff8ee;
+  color: #352821;
+}
+
+.prep-page {
+  min-height: 100vh;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.envelope-hero,
+.mail-card,
+.state-card,
+.empty-card,
+.notice {
+  border-radius: 30rpx;
+  box-sizing: border-box;
+}
+
+.envelope-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 38rpx 32rpx;
+  background: linear-gradient(135deg, #fff 0%, #ffe0ba 100%);
+  border: 2rpx solid #f1c999;
+  box-shadow: 0 14rpx 34rpx rgba(147, 91, 36, 0.12);
+}
+
+.envelope-hero::after {
+  content: "";
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  bottom: -90rpx;
+  height: 170rpx;
+  background: rgba(255, 188, 112, 0.22);
+  transform: rotate(-6deg);
+}
+
+.stamp {
+  position: absolute;
+  top: 30rpx;
+  right: 30rpx;
+  width: 66rpx;
+  height: 66rpx;
+  line-height: 66rpx;
+  border-radius: 18rpx;
+  text-align: center;
+  border: 2rpx dashed #dd8d51;
+  color: #b4582a;
+  font-weight: 900;
+}
+
+.title {
+  display: block;
+  font-size: 44rpx;
+  font-weight: 900;
+}
+
+.subtitle,
+.state-text,
+.mail-date,
+.progress-text,
+.saved-text {
+  display: block;
+  font-size: 25rpx;
+  line-height: 1.55;
+  color: #7c6657;
+}
+
+.envelope-hero button,
+.primary,
+.actions button,
+.inline-add button {
+  height: 78rpx;
+  line-height: 78rpx;
+  border-radius: 22rpx;
+  border: 0;
+  font-size: 27rpx;
+  font-weight: 800;
+  box-sizing: border-box;
+}
+
+.envelope-hero button,
+.primary {
+  margin-top: 22rpx;
+  background: #9b5a36;
+  color: #fff;
+}
+
+.mail-card,
+.state-card,
+.empty-card,
+.notice {
+  margin-top: 24rpx;
+  padding: 28rpx;
+  background: #fff;
+  border: 1rpx solid #f0d5b3;
+  box-shadow: 0 12rpx 26rpx rgba(139, 84, 38, 0.08);
+}
+
+.notice {
+  color: #9c5e13;
+  background: #fff1d8;
+}
+
+.section-title,
+.state-title,
+.list-title,
+.mail-title,
+.mini-title {
+  display: block;
+  font-size: 31rpx;
+  font-weight: 850;
+}
+
+.input,
+.textarea,
+.date-field,
+.inline-add input {
+  width: 100%;
+  min-height: 82rpx;
+  margin-top: 16rpx;
+  padding: 0 22rpx;
+  border-radius: 22rpx;
+  background: #fff8ee;
+  box-sizing: border-box;
+  font-size: 27rpx;
+}
+
+.textarea {
+  min-height: 132rpx;
+  padding-top: 20rpx;
+}
+
+.date-field {
+  display: flex;
+  align-items: center;
+}
+
+.todo-list {
+  margin-top: 22rpx;
+}
+
+.todo,
+.inline-add,
+.actions,
+.mail-head {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.mail-head,
+.actions {
+  justify-content: space-between;
+}
+
+.todo {
+  margin-top: 14rpx;
+  padding: 12rpx 0;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: #fff8ee;
+  border: 2rpx solid #dfb681;
+  color: #9b5a36;
+  flex: 0 0 auto;
+}
+
+.todo-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 27rpx;
+}
+
+.todo.done .todo-text {
+  text-decoration: line-through;
+  color: #a99a8d;
+}
+
+.remove {
+  color: #b85c36;
+  font-size: 24rpx;
+}
+
+.inline-add input {
+  flex: 1;
+  min-width: 0;
+}
+
+.inline-add button {
+  width: 144rpx;
+  background: #9b5a36;
+  color: #fff;
+}
+
+.list-title {
+  margin-top: 30rpx;
+}
+
+.empty-icon {
+  display: block;
+  font-size: 56rpx;
+  margin-bottom: 10rpx;
+}
+
+.seal {
+  padding: 9rpx 16rpx;
+  border-radius: 999rpx;
+  background: #ffe9cf;
+  color: #a3592c;
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.progress {
+  height: 14rpx;
+  margin-top: 18rpx;
+  border-radius: 999rpx;
+  overflow: hidden;
+  background: #f3dfc6;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #9b5a36, #f1b36c);
+}
+
+.saved-block {
+  margin-top: 20rpx;
+  padding: 18rpx;
+  border-radius: 22rpx;
+  background: #fff8ee;
+}
+
+.actions {
+  margin-top: 22rpx;
+}
+
+.actions button {
+  flex: 1;
+  min-width: 0;
+  background: #9b5a36;
+  color: #fff;
+}
+
+.actions .ghost {
+  background: #f1e1cf;
+  color: #815034;
+}
+
+.finished {
+  border-color: #c7d9b7;
+}

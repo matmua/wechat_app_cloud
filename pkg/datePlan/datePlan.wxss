@@ -1,1 +1,305 @@
-@import "../common/starter.wxss";
+page {
+  background: #f5f0e8;
+  color: #342b25;
+}
+
+.date-page {
+  min-height: 100vh;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.route-hero {
+  padding: 34rpx 32rpx;
+  border-radius: 30rpx;
+  background: linear-gradient(135deg, #3e6f63 0%, #df9b5e 100%);
+  color: #fff;
+  box-shadow: 0 16rpx 36rpx rgba(99, 72, 44, 0.18);
+}
+
+.eyebrow,
+.subtitle,
+.card-sub,
+.progress-text,
+.state-text {
+  display: block;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.eyebrow {
+  opacity: 0.78;
+  letter-spacing: 0;
+}
+
+.title {
+  display: block;
+  margin: 12rpx 0;
+  font-size: 48rpx;
+  font-weight: 800;
+}
+
+.route-card,
+.state-card,
+.empty-card,
+.notice {
+  margin-top: 24rpx;
+  border-radius: 28rpx;
+  box-sizing: border-box;
+}
+
+.route-card {
+  padding: 26rpx;
+  background: #fffdf8;
+  border: 1rpx solid rgba(96, 63, 30, 0.12);
+  box-shadow: 0 10rpx 28rpx rgba(71, 46, 28, 0.08);
+}
+
+.composer {
+  position: relative;
+  overflow: hidden;
+}
+
+.composer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 28rpx;
+  width: 6rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(#5f927f, #e6a25b);
+}
+
+.card-head,
+.split-row,
+.inline-add,
+.card-actions,
+.list-head {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.card-head,
+.list-head {
+  justify-content: space-between;
+}
+
+.card-title,
+.section-name,
+.state-title,
+.list-head {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+.card-badge {
+  padding: 10rpx 18rpx;
+  border-radius: 999rpx;
+  background: #fff0d8;
+  color: #a05c20;
+  font-size: 22rpx;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.route-input,
+.mini-field,
+.inline-add input {
+  min-height: 86rpx;
+  padding: 0 24rpx;
+  border-radius: 22rpx;
+  background: #f7efe6;
+  box-sizing: border-box;
+  font-size: 28rpx;
+}
+
+.title-input {
+  margin-top: 26rpx;
+  font-weight: 700;
+}
+
+.split-row {
+  margin-top: 16rpx;
+}
+
+.split-row picker {
+  flex: 1;
+  min-width: 0;
+}
+
+.mini-field {
+  display: flex;
+  align-items: center;
+}
+
+.route-input {
+  margin-top: 16rpx;
+}
+
+.section {
+  position: relative;
+  margin-top: 28rpx;
+  padding-left: 28rpx;
+}
+
+.step-line,
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-top: 16rpx;
+}
+
+.dot,
+.check-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46rpx;
+  height: 46rpx;
+  border-radius: 50%;
+  background: #3e6f63;
+  color: #fff;
+  font-size: 24rpx;
+  flex: 0 0 auto;
+}
+
+.check-dot {
+  background: #fff;
+  border: 2rpx solid #d8b688;
+  color: #3e6f63;
+}
+
+.step-text,
+.check-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 28rpx;
+}
+
+.checked .check-text {
+  color: #93877d;
+  text-decoration: line-through;
+}
+
+.remove {
+  color: #bf7048;
+  font-size: 24rpx;
+  padding: 8rpx;
+}
+
+.inline-add {
+  margin-top: 16rpx;
+}
+
+.inline-add input {
+  flex: 1;
+  min-width: 0;
+}
+
+.inline-add button,
+.card-actions button,
+.main-btn {
+  height: 82rpx;
+  line-height: 82rpx;
+  border-radius: 22rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  border: 0;
+  box-sizing: border-box;
+}
+
+.inline-add button {
+  width: 150rpx;
+  background: #3e6f63;
+  color: #fff;
+}
+
+.main-btn {
+  width: 100%;
+  margin-top: 26rpx;
+  background: #263d35;
+  color: #fff;
+}
+
+.state-card,
+.empty-card,
+.notice {
+  padding: 28rpx;
+  background: #fffdf8;
+  border: 1rpx solid rgba(96, 63, 30, 0.12);
+}
+
+.notice {
+  color: #986224;
+  background: #fff4dd;
+}
+
+.empty-icon {
+  display: block;
+  font-size: 58rpx;
+  margin-bottom: 10rpx;
+}
+
+.progress {
+  height: 14rpx;
+  margin-top: 22rpx;
+  border-radius: 999rpx;
+  background: #efe4d7;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #5f927f, #f0a95d);
+}
+
+.saved-steps,
+.saved-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 18rpx;
+}
+
+.saved-step,
+.mini-check {
+  padding: 12rpx 16rpx;
+  border-radius: 18rpx;
+  background: #f7efe6;
+  font-size: 24rpx;
+}
+
+.mini-check {
+  display: flex;
+  gap: 8rpx;
+}
+
+.mini-check.checked {
+  background: #e4f0e8;
+  color: #3e6f63;
+}
+
+.card-actions {
+  margin-top: 20rpx;
+}
+
+.card-actions button {
+  flex: 1;
+  min-width: 0;
+  background: #3e6f63;
+  color: #fff;
+}
+
+.card-actions .ghost {
+  background: #f6e3d0;
+  color: #7d4427;
+}
+
+.saved.done {
+  border-color: rgba(74, 139, 103, 0.35);
+}

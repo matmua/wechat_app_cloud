@@ -1,36 +1,72 @@
-<view class="starter-page">
-  <view class="starter-hero">
-    <text class="starter-eyebrow">{{eyebrow}}</text>
-    <text class="starter-title">{{title}}</text>
-    <text class="starter-subtitle">{{subtitle}}</text>
-    <text class="starter-status">{{statusText}}</text>
+<view class="calendar-page">
+  <view class="calendar-hero">
+    <text class="title">恋爱日历</text>
+    <text class="subtitle">把纪念日、约会规划、今日计划、经期提醒和自定义小事放进同一个月历。</text>
   </view>
-  <view class="bind-card" wx:if="{{requiresCouple && bindingState==='loading'}}">
-    <text class="bind-title">正在确认绑定状态</text>
-    <text class="bind-text">{{bindingMessage}}</text>
+
+  <view wx:if="{{bindingLoading}}" class="state-card">正在确认情侣关系...</view>
+  <view wx:elif="{{!bindingReady}}" class="state-card">
+    <text class="state-title">请先绑定情侣关系</text>
+    <text class="state-text">{{bindingMessage}}</text>
+    <button class="primary" bindtap="goBind">先去绑定</button>
   </view>
-  <view class="bind-card" wx:elif="{{requiresCouple && !bindingReady}}">
-    <text class="bind-title">请先绑定情侣关系</text>
-    <text class="bind-text">{{bindingMessage}}</text>
-    <view class="bind-actions">
-      <button class="starter-btn primary" bindtap="goBind">先去绑定</button>
-      <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
-    </view>
-  </view>
+
   <block wx:else>
-    <view class="starter-card" wx:if="{{sceneList.length}}">
-      <text class="section-title">可以先这样用</text>
-      <view class="scene-grid">
-        <view class="scene-item" wx:for="{{sceneList}}" wx:key="title">
-          <text class="scene-name">{{item.title}}</text>
-          <text class="scene-desc">{{item.desc}}</text>
+    <view wx:if="{{storageMode === 'local'}}" class="notice">{{errorMessage}}</view>
+
+    <view class="month-card">
+      <view class="month-head">
+        <button bindtap="prevMonth">‹</button>
+        <text>{{monthTitle}}</text>
+        <button bindtap="nextMonth">›</button>
+      </view>
+      <view class="week-row">
+        <text wx:for="{{weekdays}}" wx:key="*this">{{item}}</text>
+      </view>
+      <view class="day-grid">
+        <view class="day {{item.inMonth ? '' : 'muted'}} {{item.isToday ? 'today' : ''}} {{item.isSelected ? 'selected' : ''}}"
+              wx:for="{{calendarDays}}"
+              wx:key="date"
+              data-date="{{item.date}}"
+              bindtap="selectDay">
+          <text class="day-num">{{item.day}}</text>
+          <view class="dot-row">
+            <text wx:for="{{item.eventDots}}" wx:for-item="dot" wx:key="*this" class="dot {{dot}}"></text>
+          </view>
         </view>
       </view>
     </view>
-    <view class="action-card">
-      <button class="starter-btn primary" bindtap="primaryTap">{{primaryText}}</button>
-      <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
+
+    <view class="selected-card">
+      <view class="selected-head">
+        <text>{{selectedDateLabel}}</text>
+        <text>{{selectedEvents.length}} 件小事</text>
+      </view>
+      <view wx:if="{{loading}}" class="small-state">正在同步月历...</view>
+      <view wx:elif="{{selectedEvents.length === 0}}" class="small-empty">这一天还没有记录，可以新增一个自定义提醒。</view>
+      <view class="event-row" wx:for="{{selectedEvents}}" wx:key="_id">
+        <text class="event-icon">{{item.icon}}</text>
+        <view class="event-main" data-type="{{item.type}}" bindtap="goRoute">
+          <text class="event-title">{{item.title}}</text>
+          <text class="event-meta">{{item.typeLabel}} · {{item.note || '点击可去对应页面查看'}}</text>
+        </view>
+        <text wx:if="{{item.removable}}" class="delete" data-id="{{item._id}}" bindtap="deleteEvent">删</text>
+      </view>
     </view>
-    <text class="note">{{note}}</text>
+
+    <view class="composer">
+      <text class="section-title">新增自定义事件</text>
+      <input class="input" placeholder="比如：提醒买花 / 一起吃火锅" value="{{form.title}}" bindinput="onTitleInput" maxlength="34" />
+      <view class="row">
+        <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+          <view class="field">{{form.date}}</view>
+        </picker>
+        <picker range="{{eventTypes}}" range-key="label" value="{{typeIndex}}" bindchange="onTypeChange">
+          <view class="field">{{eventTypes[typeIndex].label}}</view>
+        </picker>
+      </view>
+      <textarea class="textarea" placeholder="补一句备注，可不写" value="{{form.note}}" bindinput="onNoteInput" maxlength="100"></textarea>
+      <button class="primary" loading="{{saving}}" bindtap="saveEvent">加入月历</button>
+    </view>
   </block>
 </view>

@@ -1,32 +1,70 @@
-<view class="starter-page">
-  <view class="starter-hero">
-    <text class="starter-eyebrow">{{eyebrow}}</text>
-    <text class="starter-title">{{title}}</text>
-    <text class="starter-subtitle">{{subtitle}}</text>
-    <text class="starter-status">{{statusText}}</text>
+<view class="surprise-page">
+  <view class="blind-hero">
+    <text class="title">惊喜盲盒</text>
+    <text class="subtitle">把小礼物、一顿饭、一封信或一次约会偷偷放进盒子里，准备好了再打开。</text>
   </view>
-  <view class="starter-card" wx:if="{{sceneList.length}}">
-    <text class="section-title">可以先这样用</text>
-    <view class="scene-grid">
-      <view class="scene-item" wx:for="{{sceneList}}" wx:key="title">
-        <text class="scene-name">{{item.title}}</text>
-        <text class="scene-desc">{{item.desc}}</text>
+
+  <view wx:if="{{bindingLoading}}" class="state-card">正在确认情侣关系...</view>
+  <view wx:elif="{{!bindingReady}}" class="state-card">
+    <text class="state-title">请先绑定情侣关系</text>
+    <text class="state-text">{{bindingMessage}}</text>
+    <button class="primary" bindtap="goBind">先去绑定</button>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{storageMode === 'local'}}" class="notice">{{errorMessage}}</view>
+
+    <view class="draw-card">
+      <text class="draw-icon">🎲</text>
+      <view>
+        <text class="draw-title">{{randomIdea ? randomIdea.title : '随机抽一个惊喜'}}</text>
+        <text class="draw-text">{{randomIdea ? randomIdea.note : '不知道准备什么时，就从没有隐藏的灵感里抽一个。'}}</text>
+      </view>
+      <button bindtap="randomPick">抽盲盒</button>
+    </view>
+
+    <view class="composer">
+      <text class="section-title">放入一个新盲盒</text>
+      <input class="input" placeholder="惊喜标题，比如：下班后带一束小花" value="{{form.title}}" bindinput="onTitleInput" maxlength="36" />
+      <view class="row">
+        <picker range="{{types}}" value="{{typeIndex}}" bindchange="onTypeChange">
+          <view class="field">{{form.type}}</view>
+        </picker>
+        <picker mode="date" value="{{form.plannedDate}}" bindchange="onDateChange">
+          <view class="field">{{form.plannedDate}}</view>
+        </picker>
+      </view>
+      <textarea class="textarea" placeholder="准备方式、预算、想说的话" value="{{form.note}}" bindinput="onNoteInput" maxlength="140"></textarea>
+      <view class="hide-row" bindtap="toggleHidden">
+        <text class="switch {{form.hidden ? 'on' : ''}}">{{form.hidden ? '✓' : ''}}</text>
+        <text>先隐藏，避免 Ta 提前看到内容</text>
+      </view>
+      <button class="primary" loading="{{saving}}" bindtap="saveIdea">放进盲盒墙</button>
+    </view>
+
+    <view class="quick-link">
+      <button bindtap="openGift">去礼物建议</button>
+      <button bindtap="openDatePlan">去约会规划</button>
+    </view>
+
+    <view class="list-title">盲盒墙</view>
+    <view wx:if="{{loading}}" class="state-card">正在整理盲盒...</view>
+    <view wx:elif="{{ideas.length === 0}}" class="empty-card">
+      <text class="empty-icon">🎁</text>
+      <text class="state-title">还没有惊喜盲盒</text>
+      <text class="state-text">先存一个不用花很多钱、但很具体的小心意。</text>
+    </view>
+
+    <view class="idea-card {{item.masked ? 'masked' : ''}} {{item.done ? 'done' : ''}}" wx:for="{{ideas}}" wx:key="_id">
+      <view class="lid">{{item.masked ? 'LOCKED' : item.type}}</view>
+      <text class="idea-title">{{item.displayTitle}}</text>
+      <text class="idea-date">{{item.dateText}}</text>
+      <text class="idea-note">{{item.displayNote}}</text>
+      <view class="card-actions" wx:if="{{!item.masked}}">
+        <button data-id="{{item._id}}" bindtap="toggleDone">{{item.done ? '改为未完成' : '标记完成'}}</button>
+        <button data-id="{{item._id}}" bindtap="toggleIdeaHidden">{{item.hidden ? '公开内容' : '重新隐藏'}}</button>
+        <button class="ghost" data-id="{{item._id}}" bindtap="deleteIdea">删除</button>
       </view>
     </view>
-  </view>
-  <view class="empty-card" wx:if="{{localItems.length===0}}">
-    <text class="empty-title">{{emptyTitle}}</text>
-    <text class="empty-text">{{emptyText}}</text>
-  </view>
-  <view class="draft-list" wx:else>
-    <view class="draft-item" wx:for="{{localItems}}" wx:key="_id">
-      <text class="draft-title">{{item.title}}</text>
-      <text class="draft-desc">{{item.desc}}</text>
-    </view>
-  </view>
-  <view class="action-card">
-    <button class="starter-btn primary" bindtap="primaryTap">{{primaryText}}</button>
-    <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
-  </view>
-  <text class="note">{{note}}</text>
+  </block>
 </view>

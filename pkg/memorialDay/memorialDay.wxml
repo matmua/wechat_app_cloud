@@ -1,46 +1,86 @@
-<view class="starter-page">
-  <view class="starter-hero">
-    <text class="starter-eyebrow">{{eyebrow}}</text>
-    <text class="starter-title">{{title}}</text>
-    <text class="starter-subtitle">{{subtitle}}</text>
-    <text class="starter-status">{{statusText}}</text>
+<view class="prep-page">
+  <view class="envelope-hero">
+    <text class="stamp">纪</text>
+    <text class="title">纪念日准备信封</text>
+    <text class="subtitle">正式纪念日在倒计时页管理，这里只负责提前准备礼物、清单和想说的话。</text>
+    <button bindtap="openMemorial">去看正式纪念日</button>
   </view>
-  <view class="bind-card" wx:if="{{requiresCouple && bindingState==='loading'}}">
-    <text class="bind-title">正在确认绑定状态</text>
-    <text class="bind-text">{{bindingMessage}}</text>
+
+  <view wx:if="{{bindingLoading}}" class="state-card">正在确认情侣关系...</view>
+  <view wx:elif="{{!bindingReady}}" class="state-card">
+    <text class="state-title">请先绑定情侣关系</text>
+    <text class="state-text">{{bindingMessage}}</text>
+    <button class="primary" bindtap="goBind">先去绑定</button>
   </view>
-  <view class="bind-card" wx:elif="{{requiresCouple && !bindingReady}}">
-    <text class="bind-title">请先绑定情侣关系</text>
-    <text class="bind-text">{{bindingMessage}}</text>
-    <view class="bind-actions">
-      <button class="starter-btn primary" bindtap="goBind">先去绑定</button>
-      <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
-    </view>
-  </view>
+
   <block wx:else>
-    <view class="starter-card" wx:if="{{sceneList.length}}">
-      <text class="section-title">可以先这样用</text>
-      <view class="scene-grid">
-        <view class="scene-item" wx:for="{{sceneList}}" wx:key="title">
-          <text class="scene-name">{{item.title}}</text>
-          <text class="scene-desc">{{item.desc}}</text>
+    <view wx:if="{{storageMode === 'local'}}" class="notice">{{errorMessage}}</view>
+
+    <view class="mail-card composer">
+      <text class="section-title">写一封准备信</text>
+      <input class="input" placeholder="主题，比如：恋爱 100 天准备" value="{{form.title}}" bindinput="onTitleInput" maxlength="34" />
+      <picker mode="date" value="{{form.targetDate}}" bindchange="onDateChange">
+        <view class="date-field">目标日期：{{form.targetDate}}</view>
+      </picker>
+      <textarea class="textarea" placeholder="礼物准备，比如：提前买花、订蛋糕" value="{{form.giftPlan}}" bindinput="onGiftInput" maxlength="120"></textarea>
+      <textarea class="textarea" placeholder="当天想说的话，可以先写草稿" value="{{form.messageDraft}}" bindinput="onMessageInput" maxlength="160"></textarea>
+
+      <view class="todo-list">
+        <text class="mini-title">准备事项</text>
+        <view class="todo {{item.done ? 'done' : ''}}" wx:for="{{form.todoList}}" wx:key="text">
+          <text class="check" data-index="{{index}}" bindtap="toggleFormTodo">{{item.done ? '✓' : ''}}</text>
+          <text class="todo-text" data-index="{{index}}" bindtap="toggleFormTodo">{{item.text}}</text>
+          <text class="remove" data-index="{{index}}" bindtap="removeFormTodo">删</text>
+        </view>
+        <view class="inline-add">
+          <input placeholder="加一个准备事项" value="{{form.todoDraft}}" bindinput="onTodoDraft" maxlength="22" />
+          <button bindtap="addTodo">加入</button>
         </view>
       </view>
+
+      <button class="primary" loading="{{saving}}" bindtap="savePreparation">封存这份准备</button>
     </view>
-    <view class="empty-card" wx:if="{{localItems.length===0}}">
-      <text class="empty-title">{{emptyTitle}}</text>
-      <text class="empty-text">{{emptyText}}</text>
+
+    <view class="list-title">准备中的信封</view>
+    <view wx:if="{{loading}}" class="state-card">正在翻信封...</view>
+    <view wx:elif="{{preparations.length === 0}}" class="empty-card">
+      <text class="empty-icon">💌</text>
+      <text class="state-title">还没有准备信封</text>
+      <text class="state-text">纪念日不用很隆重，但提前写下一点点心意会很有用。</text>
     </view>
-    <view class="draft-list" wx:else>
-      <view class="draft-item" wx:for="{{localItems}}" wx:key="_id">
-        <text class="draft-title">{{item.title}}</text>
-        <text class="draft-desc">{{item.desc}}</text>
+
+    <view class="mail-card saved {{item.done ? 'finished' : ''}}" wx:for="{{preparations}}" wx:key="_id">
+      <view class="mail-head">
+        <view>
+          <text class="mail-title">{{item.title}}</text>
+          <text class="mail-date">{{item.targetDateText}}</text>
+        </view>
+        <text class="seal">{{item.done ? '已完成' : '准备中'}}</text>
+      </view>
+      <view class="progress"><view class="progress-fill" style="width: {{item.progressPercent}}%;"></view></view>
+      <text class="progress-text">{{item.progressText}}</text>
+      <view class="saved-block">
+        <text class="mini-title">礼物准备</text>
+        <text class="saved-text">{{item.giftPlan || '还没写礼物计划。'}}</text>
+      </view>
+      <view class="saved-block">
+        <text class="mini-title">想说的话</text>
+        <text class="saved-text">{{item.messageDraft || '还没写当天的话。'}}</text>
+      </view>
+      <view class="todo {{task.done ? 'done' : ''}}"
+            wx:for="{{item.todoList}}"
+            wx:for-item="task"
+            wx:key="text"
+            data-id="{{item._id}}"
+            data-index="{{index}}"
+            bindtap="toggleTodo">
+        <text class="check">{{task.done ? '✓' : ''}}</text>
+        <text class="todo-text">{{task.text}}</text>
+      </view>
+      <view class="actions">
+        <button data-id="{{item._id}}" bindtap="toggleDone">{{item.done ? '继续准备' : '准备完成'}}</button>
+        <button class="ghost" data-id="{{item._id}}" bindtap="deletePreparation">删除</button>
       </view>
     </view>
-    <view class="action-card">
-      <button class="starter-btn primary" bindtap="primaryTap">{{primaryText}}</button>
-      <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
-    </view>
-    <text class="note">{{note}}</text>
   </block>
 </view>

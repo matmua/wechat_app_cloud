@@ -1,32 +1,59 @@
-<view class="starter-page">
-  <view class="starter-hero">
-    <text class="starter-eyebrow">{{eyebrow}}</text>
-    <text class="starter-title">{{title}}</text>
-    <text class="starter-subtitle">{{subtitle}}</text>
-    <text class="starter-status">{{statusText}}</text>
+<view class="advice-page">
+  <view class="aid-kit">
+    <text class="kit-label">LOVE FIRST AID</text>
+    <text class="title">恋爱急救包</text>
+    <text class="subtitle">不是说教，先给一句能落地的话。需要更细的版本，可以交给小诗助手继续生成。</text>
   </view>
-  <view class="starter-card" wx:if="{{sceneList.length}}">
-    <text class="section-title">可以先这样用</text>
-    <view class="scene-grid">
-      <view class="scene-item" wx:for="{{sceneList}}" wx:key="title">
-        <text class="scene-name">{{item.title}}</text>
-        <text class="scene-desc">{{item.desc}}</text>
+
+  <view wx:if="{{!bindingReady && !bindingLoading}}" class="bind-tip">
+    <text>未绑定时可以看建议，但收藏需要先绑定情侣关系。</text>
+    <button bindtap="goBind">去绑定</button>
+  </view>
+  <view wx:if="{{storageMode === 'local'}}" class="notice">{{errorMessage}}</view>
+
+  <scroll-view class="scene-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="scene-track">
+      <view class="scene {{activeKey === item.key ? 'active' : ''}}"
+            wx:for="{{scenarios}}"
+            wx:key="key"
+            data-key="{{item.key}}"
+            bindtap="selectScenario">
+        <text>{{item.icon}}</text>
+        <text>{{item.label}}</text>
       </view>
     </view>
-  </view>
-  <view class="empty-card" wx:if="{{localItems.length===0}}">
-    <text class="empty-title">{{emptyTitle}}</text>
-    <text class="empty-text">{{emptyText}}</text>
-  </view>
-  <view class="draft-list" wx:else>
-    <view class="draft-item" wx:for="{{localItems}}" wx:key="_id">
-      <text class="draft-title">{{item.title}}</text>
-      <text class="draft-desc">{{item.desc}}</text>
+  </scroll-view>
+
+  <view class="advice-card">
+    <text class="advice-icon">{{current.icon}}</text>
+    <text class="advice-title">{{current.label}}</text>
+    <text class="advice-text">{{current.text}}</text>
+    <view class="line-card">
+      <text>{{current.line}}</text>
+    </view>
+    <view class="actions">
+      <button bindtap="copyLine">复制这句话</button>
+      <button bindtap="saveFavorite" loading="{{saving}}">收藏</button>
+      <button class="ghost" bindtap="randomAdvice">换一张</button>
     </view>
   </view>
-  <view class="action-card">
-    <button class="starter-btn primary" bindtap="primaryTap">{{primaryText}}</button>
-    <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
+
+  <view class="ai-card">
+    <view>
+      <text class="section-title">让小诗继续写</text>
+      <text class="section-sub">后续配置 DeepSeek / OpenAI 后，可以按你们的具体语气生成更贴近的回复。</text>
+    </view>
+    <button bindtap="goAI">去小诗助手</button>
   </view>
-  <text class="note">{{note}}</text>
+
+  <view class="favorites">
+    <text class="section-title">收藏的话术</text>
+    <view wx:if="{{loading}}" class="small-state">正在读取收藏...</view>
+    <view wx:elif="{{favorites.length === 0}}" class="small-empty">还没有收藏。遇到合适的话，可以先存下来。</view>
+    <view class="fav-row" wx:for="{{favorites}}" wx:key="_id">
+      <text class="fav-scenario">{{item.scenario}}</text>
+      <text class="fav-text">{{item.text}}</text>
+      <text class="delete" data-id="{{item._id}}" bindtap="deleteFavorite">删除</text>
+    </view>
+  </view>
 </view>

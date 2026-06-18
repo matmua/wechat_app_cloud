@@ -1,46 +1,54 @@
-<view class="starter-page">
-  <view class="starter-hero">
-    <text class="starter-eyebrow">{{eyebrow}}</text>
-    <text class="starter-title">{{title}}</text>
-    <text class="starter-subtitle">{{subtitle}}</text>
-    <text class="starter-status">{{statusText}}</text>
+<view class="task-page">
+  <view class="task-hero">
+    <text class="title">情侣任务板</text>
+    <text class="subtitle">把两个人想一起完成的小挑战贴上墙，打卡、推进、解锁小徽章。</text>
   </view>
-  <view class="bind-card" wx:if="{{requiresCouple && bindingState==='loading'}}">
-    <text class="bind-title">正在确认绑定状态</text>
-    <text class="bind-text">{{bindingMessage}}</text>
+
+  <view wx:if="{{bindingLoading}}" class="state-card">正在确认情侣关系...</view>
+  <view wx:elif="{{!bindingReady}}" class="state-card">
+    <text class="state-title">请先绑定情侣关系</text>
+    <text class="state-text">{{bindingMessage}}</text>
+    <button class="primary" bindtap="goBind">先去绑定</button>
   </view>
-  <view class="bind-card" wx:elif="{{requiresCouple && !bindingReady}}">
-    <text class="bind-title">请先绑定情侣关系</text>
-    <text class="bind-text">{{bindingMessage}}</text>
-    <view class="bind-actions">
-      <button class="starter-btn primary" bindtap="goBind">先去绑定</button>
-      <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
-    </view>
-  </view>
+
   <block wx:else>
-    <view class="starter-card" wx:if="{{sceneList.length}}">
-      <text class="section-title">可以先这样用</text>
-      <view class="scene-grid">
-        <view class="scene-item" wx:for="{{sceneList}}" wx:key="title">
-          <text class="scene-name">{{item.title}}</text>
-          <text class="scene-desc">{{item.desc}}</text>
+    <view wx:if="{{storageMode === 'local'}}" class="notice">{{errorMessage}}</view>
+
+    <view class="board-card composer">
+      <text class="section-title">贴一个新任务</text>
+      <input class="input" placeholder="比如：连续 7 天互道晚安" value="{{form.title}}" bindinput="onTitleInput" maxlength="36" />
+      <view class="row">
+        <picker range="{{types}}" range-key="label" value="{{typeIndex}}" bindchange="onTypeChange">
+          <view class="field">{{types[typeIndex].label}}</view>
+        </picker>
+        <input class="input count" type="number" disabled="{{form.type === 'once'}}" placeholder="目标次数" value="{{form.targetCount}}" bindinput="onTargetInput" />
+      </view>
+      <button class="primary" loading="{{saving}}" bindtap="saveTask">贴到任务板</button>
+    </view>
+
+    <view class="list-title">任务墙</view>
+    <view wx:if="{{loading}}" class="state-card">正在更新任务墙...</view>
+    <view wx:elif="{{tasks.length === 0}}" class="empty-card">
+      <text class="empty-icon">🏅</text>
+      <text class="state-title">还没有情侣任务</text>
+      <text class="state-text">可以先从一个很小的任务开始，比如“本周一起早睡一次”。</text>
+    </view>
+
+    <view class="task-card {{item.done ? 'done' : ''}}" wx:for="{{tasks}}" wx:key="_id">
+      <view class="task-head">
+        <view>
+          <text class="task-title">{{item.title}}</text>
+          <text class="task-meta">{{item.typeText}} · {{item.participantsCount}} 人参与</text>
         </view>
+        <view class="badge">{{item.badgeText}}</view>
+      </view>
+      <view class="progress"><view class="progress-fill" style="width: {{item.progressPercent}}%;"></view></view>
+      <text class="task-note">{{item.done ? '完成啦，可以留作一枚小成就。' : (item.checkedToday ? '今天已经打卡，明天继续。' : '今天还可以推进一下。')}}</text>
+      <view class="actions">
+        <button data-id="{{item._id}}" bindtap="checkIn">{{item.done ? '已完成' : (item.type === 'once' ? '完成任务' : '今日打卡')}}</button>
+        <button class="ghost" data-id="{{item._id}}" bindtap="resetTask">重置</button>
+        <button class="ghost" data-id="{{item._id}}" bindtap="deleteTask">删除</button>
       </view>
     </view>
-    <view class="empty-card" wx:if="{{localItems.length===0}}">
-      <text class="empty-title">{{emptyTitle}}</text>
-      <text class="empty-text">{{emptyText}}</text>
-    </view>
-    <view class="draft-list" wx:else>
-      <view class="draft-item" wx:for="{{localItems}}" wx:key="_id">
-        <text class="draft-title">{{item.title}}</text>
-        <text class="draft-desc">{{item.desc}}</text>
-      </view>
-    </view>
-    <view class="action-card">
-      <button class="starter-btn primary" bindtap="primaryTap">{{primaryText}}</button>
-      <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
-    </view>
-    <text class="note">{{note}}</text>
   </block>
 </view>

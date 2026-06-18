@@ -1,32 +1,71 @@
-<view class="starter-page">
-  <view class="starter-hero">
-    <text class="starter-eyebrow">{{eyebrow}}</text>
-    <text class="starter-title">{{title}}</text>
-    <text class="starter-subtitle">{{subtitle}}</text>
-    <text class="starter-status">{{statusText}}</text>
+<view class="emotion-page">
+  <view class="orbit-hero">
+    <text class="title">情绪温度计</text>
+    <text class="subtitle">记录今天的心情和原因，近 7 天做轻量回顾。AI 深度分析需要后续配置接口后使用。</text>
   </view>
-  <view class="starter-card" wx:if="{{sceneList.length}}">
-    <text class="section-title">可以先这样用</text>
-    <view class="scene-grid">
-      <view class="scene-item" wx:for="{{sceneList}}" wx:key="title">
-        <text class="scene-name">{{item.title}}</text>
-        <text class="scene-desc">{{item.desc}}</text>
+
+  <view wx:if="{{bindingLoading}}" class="state-card">正在确认情侣关系...</view>
+  <view wx:elif="{{!bindingReady}}" class="state-card">
+    <text class="state-title">请先绑定情侣关系</text>
+    <text class="state-text">{{bindingMessage}}</text>
+    <button class="primary" bindtap="goBind">先去绑定</button>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{storageMode === 'local'}}" class="notice">{{errorMessage}}</view>
+
+    <view class="thermo-card">
+      <text class="section-title">今天的温度</text>
+      <view class="mood-row">
+        <view class="mood {{selectedMoodKey === item.key ? 'active' : ''}}"
+              wx:for="{{moods}}"
+              wx:key="key"
+              data-key="{{item.key}}"
+              bindtap="selectMood">
+          <text>{{item.emoji}}</text>
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+      <view class="score-line">
+        <text>情绪分数</text>
+        <slider min="1" max="5" step="1" value="{{score}}" activeColor="#7b61ff" block-size="18" bindchange="onScoreChange" />
+        <text>{{score}}/5</text>
+      </view>
+      <view class="tag-row">
+        <text class="tag {{item.active ? 'active' : ''}}"
+              wx:for="{{tagOptions}}"
+              wx:key="text"
+              data-tag="{{item.text}}"
+              bindtap="toggleTag">{{item.text}}</text>
+      </view>
+      <textarea class="textarea" placeholder="今天为什么是这种心情？写一句就好。" value="{{reason}}" bindinput="onReasonInput" maxlength="140"></textarea>
+      <button class="primary" loading="{{saving}}" bindtap="saveRecord">保存今天的情绪</button>
+    </view>
+
+    <view class="trend-card">
+      <view class="section-head">
+        <text class="section-title">近 7 天趋势</text>
+        <text>{{records.length}} 条记录</text>
+      </view>
+      <view wx:if="{{loading}}" class="small-state">正在读取情绪记录...</view>
+      <view class="bars" wx:else>
+        <view class="bar-item" wx:for="{{trend}}" wx:key="date">
+          <view class="bar" style="height: {{item.height}}rpx;"></view>
+          <text>{{item.day}}</text>
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+      <view class="suggestion">
+        <text>{{suggestion}}</text>
       </view>
     </view>
-  </view>
-  <view class="empty-card" wx:if="{{localItems.length===0}}">
-    <text class="empty-title">{{emptyTitle}}</text>
-    <text class="empty-text">{{emptyText}}</text>
-  </view>
-  <view class="draft-list" wx:else>
-    <view class="draft-item" wx:for="{{localItems}}" wx:key="_id">
-      <text class="draft-title">{{item.title}}</text>
-      <text class="draft-desc">{{item.desc}}</text>
+
+    <view class="ai-card">
+      <view>
+        <text class="section-title">后续交给小诗</text>
+        <text class="section-sub">小诗助手保留 AI 定位。配置 DeepSeek / OpenAI 后，可在你主动输入内容时做更细的复盘。</text>
+      </view>
+      <button bindtap="goAI">去小诗助手</button>
     </view>
-  </view>
-  <view class="action-card">
-    <button class="starter-btn primary" bindtap="primaryTap">{{primaryText}}</button>
-    <button class="starter-btn secondary" bindtap="secondaryTap">{{secondaryText}}</button>
-  </view>
-  <text class="note">{{note}}</text>
+  </block>
 </view>

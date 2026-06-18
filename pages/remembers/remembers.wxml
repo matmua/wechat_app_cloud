@@ -160,19 +160,19 @@
         </view>
         <view class="quick-item memorial" data-type="memorial" bindtap="onQuick">
           <text class="icon-box">⏳</text>
-          <text class="quick-text">纪念日</text>
+          <text class="quick-text">纪念准备</text>
         </view>
         <view class="quick-item sock" data-type="sock" bindtap="onQuick">
           <text class="icon-box">🧦</text>
           <text class="quick-text">写树洞</text>
         </view>
         <view class="quick-item date" data-type="date" bindtap="onQuick">
-          <text class="icon-box">🎟️</text>
-          <text class="quick-text">记约会</text>
+          <text class="icon-box">🗺️</text>
+          <text class="quick-text">约会规划</text>
         </view>
-        <view class="quick-item food" data-type="food" bindtap="onQuick">
-          <text class="icon-box">🍜</text>
-          <text class="quick-text">吃什么</text>
+        <view class="quick-item food" data-type="surprise" bindtap="onQuick">
+          <text class="icon-box">🎁</text>
+          <text class="quick-text">惊喜灵感</text>
         </view>
         <view class="quick-item ai" data-type="ai" bindtap="onQuick">
           <text class="icon-box">✨</text>
